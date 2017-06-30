@@ -1,0 +1,99 @@
+/*******************************************************************************
+* Copyright (c) 2017 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html 
+*
+* Contributors:
+*   Alexander Kaiser
+*******************************************************************************/
+module MQTT_TestSystem {
+
+import from IPL4asp_PortType all;
+import from MQTT_TypesAndValues all;
+
+
+group portDefinitionsGroup
+{
+	// TODO:
+	// Translation Port: MQTT <-> IPL4
+	// The Feature with Translation Ports is not supported by the TITAN Designer yet.
+	// see MQTT_Functions.f_send: this function currently covers the Functionallity of 
+	// a Translation Port
+
+	//	type port MQTT_TCP_PT message map to IPL4asp_PT
+	//	{
+	//		out
+	//		MQTT_v3_1_1_Message to ASP_Send with f_enc_MQTT_v3_1_1_TranslationPort()
+	//		in
+	//		MQTT_v3_1_1_Message from ASP_RecvFrom with f_dec_MQTT_v3_1_1_TranslationPort(),
+	//		ASP_Event
+	//	}
+	//
+	//	function f_enc_MQTT_v3_1_1_TranslationPort(in MQTT_v3_1_1_Message p_in, out ASP_Send p_out)
+	//	{
+	//		var octetstring v_encoded := f_MQTT_enc(valueof(p_in));
+	//		v_encoded := f_adjustLength(f_calcRemLength(v_encoded));
+	//
+	//		p_out.connId := -1;
+	//		p_out.proto := { tcp := {}};
+	//		p_out.msg := v_encoded;
+	//
+	//		port.setstate(0);
+	//	} with {extension "prototype(fast)"}
+	//
+	//	function f_dec_MQTT_v3_1_1_TranslationPort(in ASP_RecvFrom p_in, out MQTT_v3_1_1_Message p_out)
+	//	{
+	//		port.setstate(0);
+	//	} with {extension "prototype(fast)"}
+}
+
+group testComponentsGroup
+{
+	/*
+	Base MQTT Test Component 
+	*/
+	type component MQTT_PTC
+	{
+		// PCO: Point of Control and Obeservation
+		// ASP: Abstract Service Primitive
+		port IPL4asp_PT IPL4_PCO;
+
+		// TODO: see portDefinitionsGroup
+		// this Translation Port will be used instead of IPL4_PCO in the future
+		// port MQTT_TCP_PT MQTT_PCO;
+	}
+
+	/*
+	MQTT Client Test Component contains capabilities and context of a MQTT Client
+	*/
+	type component MQTT_Client extends MQTT_PTC
+	{
+		var MqttClientContext ctx := c_MqttClientContext_empty; 
+		var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
+
+        // TODO: obtain maxResponseTime from PIXITS
+		var float maxResponseTime := 5.0;
+	}
+
+	/*
+	MQTT Broker Test Component contains capabilities and context of a MQTT Broker
+	*/
+	type component MQTT_Broker extends MQTT_PTC
+	{
+
+	}
+
+	type record of MQTT_Client MQTT_Client_List;
+
+	/*
+	MQTT MTC aggregates and controls a List of MQTT Clients (and/or Brokers?)
+	*/
+	type component MQTT_MTC {
+		var MQTT_Client_List mqttClients := {};
+	}
+
+}
+}
+

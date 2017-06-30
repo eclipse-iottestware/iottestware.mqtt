@@ -1,0 +1,743 @@
+/*******************************************************************************
+* Copyright (c) 2017 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html 
+*
+* Contributors:
+*   Alexander Kaiser
+*******************************************************************************/
+module MQTT_Functions {
+
+import from MQTT_TestSystem all;
+import from MQTT_TypesAndValues all;
+import from MQTT_Templates all;
+import from MQTT_Pixits all;
+
+import from Mqtt_v3_1_1_IPL4SizeFunction all;
+import from MQTT_v3_1_1_Types all;
+
+import from IPL4asp_PortType all;
+import from IPL4asp_Types all;
+
+/*
+* This group contains all functions running on MQTT_MTC component
+*/
+group MqttMTC_FunctionsGroup
+{
+	function f_clientInit(in charstring p_clientId) runs on MQTT_MTC 
+	return integer
+	{
+		var integer v_clientIdx := -1;
+		v_clientIdx := f_clientCreate(p_clientId);
+
+		mqttClients[v_clientIdx].start(f_init(p_clientId));
+		mqttClients[v_clientIdx].done;
+
+		return v_clientIdx;
+	}  
+
+	function f_clientConnectNetwork(in integer p_clientIdx, in charstring p_serverId) runs on MQTT_MTC
+	return ReturnBoolean
+	{
+		var ReturnBoolean v_return := false;
+
+		if(p_clientIdx < 0 or p_clientIdx >= sizeof(mqttClients))
+		{
+			return v_return;
+		}
+		else
+		{
+			mqttClients[p_clientIdx].start(f_connectNetwork(p_serverId));
+			mqttClients[p_clientIdx].done;
+			
+			v_return := true;
+		}
+
+		return v_return;
+	}
+
+	// TODO:
+	// function f_clientConnectMqtt(in integer p_clientIdx)
+
+	function f_allClientsConnectNetwork(in charstring p_serverId) runs on MQTT_MTC
+	{
+		for(var integer i := 0; i < sizeof(mqttClients); i := i + 1)
+		{
+			f_clientConnectNetwork(i, p_serverId);
+		}
+	}
+
+	function f_clientDisconnectNetwork(in integer p_clientIdx) runs on MQTT_MTC
+	return boolean
+	{
+		var MQTT_Client v_client := mqttClients[p_clientIdx];     
+		if (v_client == null) { log("No mqtt client found"); return false; }   
+		f_isRunningGuard(v_client);
+
+		v_client.start(f_disconnectNetwork());
+		v_client.done;
+
+		return true;
+	}
+
+	function f_allClientsDisconnectNetwork() runs on MQTT_MTC
+	{
+		for(var integer i := 0; i < sizeof(mqttClients); i := i + 1)
+		{
+			f_clientDisconnectNetwork(i);
+		}
+	}
+
+	function f_clientCleanUp(in integer p_clientIdx) runs on MQTT_MTC 
+	return boolean
+	{
+		var MQTT_Client v_client := mqttClients[p_clientIdx];     
+		if (v_client == null) { log("No mqtt client found"); return false; }   
+		f_isRunningGuard(v_client);
+
+		v_client.start(f_cleanUp());
+		v_client.done;
+
+		return true;
+	}
+
+	function f_allClientsCleanUp() runs on MQTT_MTC
+	{
+		for(var integer i := 0; i < sizeof(mqttClients); i := i + 1)
+		{
+			f_clientCleanUp(i);
+		}
+	}
+
+	private function f_clientCreate(in charstring p_clientId) runs on MQTT_MTC
+	return integer
+	{
+		var MQTT_Client v_client := MQTT_Client.create(p_clientId) alive;
+		var integer v_clientIdx := sizeof(mqttClients);
+
+		mqttClients[v_clientIdx] := v_client;
+
+		return v_clientIdx;
+	}
+
+	function f_sendMqttMessage(in integer p_clientIdx, in MQTT_v3_1_1_Message p_msg) runs on MQTT_MTC
+	{
+		var MQTT_Client v_client := mqttClients[p_clientIdx];     
+		if (v_client != null) 
+		{ 
+			f_isRunningGuard(v_client);
+
+			if(v_client.alive)
+			{
+				v_client.start(f_send(p_msg));
+				v_client.done;
+			}
+			else
+			{
+				log("Could not send ", p_msg, " because client ", p_clientIdx, " is not alive");
+			}
+
+		}
+		else
+		{
+			log("No mqtt client found"); 
+		}
+	}
+
+	function f_receiveMqttMessage(in integer p_clientIdx) runs on MQTT_MTC
+	return IPL4_Response
+	{
+		var MQTT_Client v_client := mqttClients[p_clientIdx];  
+		var IPL4_Response v_response;   
+
+		if (v_client != null) 
+		{ 
+			f_isRunningGuard(v_client);
+
+			if(v_client.alive)
+			{
+				v_client.start(f_receive());
+				v_client.done;
+				
+				// TODO: get the received response from v_client
+				v_response := valueof(t_empty_response);
+			}
+			else
+			{
+				log("Could not receive from client ", p_clientIdx, " because client is not alive");
+			}
+		}
+		else
+		{
+			v_response := valueof(t_empty_response);
+		}
+		return v_response;
+	}
+
+	function f_receiveAndMatch(in integer p_clientIdx, in template IPL4_Response p_expected) runs on MQTT_MTC
+	return boolean
+	{
+		var boolean v_return := false;
+		var IPL4_Response v_response := f_receiveMqttMessage(p_clientIdx);
+
+		v_return := match(v_response, p_expected);
+
+		return v_return;
+	}
+
+}
+
+/*
+* This group contains all functions running on MQTT_Client component
+*/
+group MqttPTC_FunctionsGroup
+{
+
+	function f_init(in charstring p_clientId) runs on MQTT_Client
+	{
+		log("started for ", p_clientId);
+
+		var NamedHostPort v_clientAddr;
+
+		//set the local Host
+		if(f_lookupAddress(p_clientId, v_clientAddr))
+		{
+			ctx.connId := -1;
+			ctx.localHost := v_clientAddr.hostName;
+			ctx.localPort := v_clientAddr.portNumber;
+
+
+			if(ispresent(v_clientAddr.credentials))
+			{
+				credentials := v_clientAddr.credentials;
+			}
+
+			map(self:IPL4_PCO, system:IPL4_PCO);
+		}
+		else
+		{
+			log("PTC ", p_clientId, " could not be initialized");
+			self.stop;
+		}
+
+	}
+
+	function f_connectNetwork(in charstring p_serverId) runs on MQTT_Client
+	{
+		log("started for ", ctx.localHost, ":", ctx.localPort);
+
+		const boolean c_reuseAddress := true;
+
+		var NamedHostPort v_serverAddr;
+
+		// set the remote Host 
+		if(f_lookupAddress(p_serverId, v_serverAddr))
+		{
+			ctx.remoteHost := v_serverAddr.hostName;
+			ctx.remotePort := v_serverAddr.portNumber;
+		}
+
+		var Result vl_result := f_IPL4_connect(IPL4_PCO, ctx.remoteHost, ctx.remotePort, ctx.localHost, ctx.localPort, ctx.connId, {tcp := {}}, {{reuseAddress := {enable := c_reuseAddress}}});
+
+		if (not(ispresent(vl_result.connId)))
+		{
+			log("Connect Network to ", p_serverId, "(", ctx.remoteHost, ":", ctx.remotePort, ") not possible");
+			stop;
+		} 
+
+		var integer v_cid := vl_result.connId 
+		var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
+		f_IPL4_setGetMsgLen(IPL4_PCO, v_cid, getMsg_Func, {});
+
+		ctx.connId := vl_result.connId;
+	}
+
+
+	function f_disconnectNetwork() runs on MQTT_Client
+	{
+		var Result vl_result;
+
+		log("Closing connection " & int2str(ctx.connId));
+		if (ctx.connId >= 0)
+		{
+			vl_result := f_IPL4_close(IPL4_PCO, ctx.connId);
+
+			// TODO: wait until IPL4 is closed (??)
+			f_sleep(0.5);
+
+			if(ispresent(vl_result.errorCode))
+			{
+				log("ERROR CODE: " & int2str(enum2int(vl_result.errorCode)));
+			}
+			else if(ispresent(vl_result.connId))
+			{
+				log("CONN ID: " & int2str(vl_result.connId));
+			} 
+			else if(ispresent(vl_result.os_error_code))    
+			{
+				log("OS Error Code: ", vl_result.os_error_code);
+			} 
+			else if(ispresent(vl_result.os_error_text))
+			{
+				log("OS Error Text: ", vl_result.os_error_text);
+			}
+		}
+	}
+
+
+
+	function f_cleanUp() runs on MQTT_Client
+	{
+		log("Cleanup started");
+
+		unmap(self:IPL4_PCO, system:IPL4_PCO);
+		self.stop;
+	}
+
+	/*
+	* This group contains functions for abstracting valid MQTT Control Packets.
+	* Useful for preconditions...
+	*/
+	group MqttControl_FunctionsGroup
+	{
+		function f_connectMqtt(in BIT1n p_cleanSession := '1'B) runs on MQTT_Client
+		return ReturnBoolean
+		{
+			var ReturnBoolean v_ret := false;
+
+			var UTF8EncodedString v_clientId := f_getClientId();
+			var UTF8EncodedString v_username := f_getUsername();
+			var OctStringWithLength v_password := f_getPassword();
+
+			var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_session(v_clientId, v_username, v_password, p_cleanSession));
+			f_send(v_conMsg);
+
+			// wait for CONNACK with return_code := 0
+			var template IPL4_Response v_expected := { receivedMsg :=  t_connack };
+			var IPL4_Response v_response := f_receive();
+
+			if(match(v_response, v_expected))
+			{
+				v_ret := true;
+			}
+			else
+			{
+				v_ret := false;
+			}
+
+			return v_ret;
+		}
+
+		function f_disconnectMqtt() runs on MQTT_Client
+		return ReturnBoolean
+		{
+			var ReturnBoolean v_ret := false;
+
+			// disconnect
+			f_send(valueof(t_disconnect));
+
+			if(f_receiveNetworkClosedEvent())
+			{
+				v_ret := true;
+			}
+			else
+			{
+				v_ret := false;
+			}
+
+			return v_ret;
+		}
+
+		function f_subscribe(UCHAR0_65535 p_topic_filter, QoS p_requested_qos) runs on MQTT_Client
+		return ReturnBoolean
+		{
+			var ReturnBoolean v_ret := false;
+			var integer v_packet_id := float2int(rnd() * 1000.0);
+			var MQTT_v3_1_1_SubscribePayloadList v_sub_payload := { valueof(t_subscribe_payload(p_topic_filter, p_requested_qos)) };
+			var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topiclist(p_packet_id := v_packet_id, p_topic_list := v_sub_payload));
+
+			f_send(v_subscribe);
+
+			var IPL4_Response v_response := f_receive();
+			var template MQTT_v3_1_1_Message v_suback := tw_suback_packet_id(v_packet_id);
+
+			if(ischosen(v_response.receivedMsg))
+			{
+				if(match(v_response.receivedMsg, v_suback))
+				{
+					v_ret := true;
+				}
+			}
+
+
+			return v_ret;
+		}
+
+		function f_publish(UCHAR0_65535 p_topic_name, octetstring p_payload, QoS p_qos) runs on MQTT_Client
+		return integer
+		{
+			var template MQTT_v3_1_1_Message v_pub;
+			var integer v_packet_id := f_randomPacketId();
+
+			if(p_qos == AT_MOST_ONCE_DELIVERY)
+			{
+				v_pub := t_publish_base(p_topic_name, p_payload);
+				f_send(valueof(v_pub));
+			}
+			else if(p_qos == AT_LEAST_ONCE_DELIVERY)
+			{
+				v_pub := t_publish_qos(p_topic_name, p_payload, p_qos, v_packet_id);
+				f_publish_qos1(valueof(v_pub));
+			}
+			else if(p_qos == EXACTLY_ONE_DELIVERY)
+			{
+				v_pub := t_publish_qos(p_topic_name, p_payload, p_qos, v_packet_id);
+				f_publish_qos1(valueof(v_pub));
+			}
+			else
+			{
+				// nothing to do here!
+				v_packet_id := -1;
+			}
+
+			return v_packet_id;
+
+		}
+
+
+		private function f_publish_qos1(MQTT_v3_1_1_Message p_pub) runs on MQTT_Client
+		return ReturnBoolean
+		{
+			var ReturnBoolean v_ret := true;
+			var IPL4_Response v_response;
+			var integer v_packet_id := p_pub.msg.publish.packet_identifier;
+
+			// send PUBLISH
+			f_send(p_pub);
+
+			// receive PUBACK
+			v_response := f_receive();
+			if(ispresent(v_response.receivedMsg.msg.puback))
+			{
+				if(v_response.receivedMsg.msg.puback.packet_identifier != v_packet_id)
+				{
+					// packet ID in PUBACK was wrong
+					v_ret := false;
+				}
+			}
+
+
+			return v_ret;
+		}
+
+		private function f_publish_qos2(MQTT_v3_1_1_Message p_pub) runs on MQTT_Client
+		return ReturnBoolean
+		{
+			var ReturnBoolean v_ret := true;
+			var IPL4_Response v_response;
+			var integer v_packet_id := p_pub.msg.publish.packet_identifier;
+
+			// send PUBLISH
+			f_send(p_pub);
+
+			// receive PUBREC
+			v_response := f_receive();
+			if(ispresent(v_response.receivedMsg.msg.pubrec))
+			{
+				if(v_response.receivedMsg.msg.pubrec.packet_identifier != v_packet_id)
+				{
+					// packet ID in PUBREC was wrong
+					v_ret := false;
+				}
+			}
+			else
+			{
+				// response was not a PUBREC
+				v_ret := false;
+			}
+
+			// send PUBREL
+			if(v_ret)
+			{
+				f_send(valueof(t_pubrel(v_packet_id)));
+
+				// receive PUBCOMP
+				v_response := f_receive();
+				if(ispresent(v_response.receivedMsg.msg.pubcomp))
+				{
+					if(v_response.receivedMsg.msg.pubcomp.packet_identifier != v_packet_id)
+					{
+						// packet ID in PUBCOMP was wrong
+						v_ret := false;
+					}
+				}
+				else
+				{
+					// response was not a PUBCOMP
+					v_ret := false;
+				}
+			}
+
+			return v_ret;
+		}
+	}
+
+	/*
+	* This group contains generic functions wrapping IPL4asp for sending and receiving 
+	* all kinds of MQTT Messages
+	*/
+	group SendReceive_FunctionsGroup
+	{
+		function f_send(in MQTT_v3_1_1_Message p_msg) runs on MQTT_Client
+		{
+			//			var octetstring v_encoded := f_MQTT_encode(msg := p_msg);
+			var octetstring v_encoded := f_MQTT_enc(valueof(p_msg));
+			v_encoded := f_adjustLength(f_calcRemLength(v_encoded));
+
+			var ASP_Send vl_send;
+
+			if(ctx.connId > 0) 
+			{
+				vl_send.connId := ctx.connId;
+				//vl_send.remName := ctx.remoteHost;
+				//vl_send.remPort := ctx.remotePort;
+				vl_send.proto := {tcp := {}}
+
+				vl_send.msg := v_encoded;
+
+				IPL4_PCO.send(vl_send);
+			} 
+			else 
+			{
+				log("send MQTT Message not possible because of connId := " & int2str(ctx.connId));
+			}
+		}
+
+		/*
+		* TODO: 
+		* This function is a workaround: calling f_MQTT_enc(..) seems not to calculate the remLength field
+		*/
+		function f_calcRemLength(in octetstring p_os) return octetstring
+		{
+			// cut 1 Byte Packet Type + 4 Byte empty remLength
+			var integer v_remLength := lengthof(p_os) - 5;
+			p_os := replace(p_os, 1, 4, int2oct(v_remLength, 4));
+
+			return p_os;
+		}
+
+		/*
+		this is a blocking function that waits for the response from IPL4_PCO. 
+
+		@return IPL4_Response 
+		*/
+		function f_receive() runs on MQTT_Client 
+		return IPL4_Response
+		{
+			timer t_Timeout := maxResponseTime;
+			if (maxResponseTime > 0.0) { t_Timeout.start; }
+
+			var ASP_RecvFrom v_ipl4Recv;
+
+			var IPL4_Response v_response;
+
+			alt
+			{
+				[] IPL4_PCO.receive(ASP_RecvFrom:?) -> value v_ipl4Recv
+				{
+					log("Received: ", v_ipl4Recv);
+
+					var MQTT_v3_1_1_Message v_mqttMsg;
+					v_mqttMsg := f_MQTT_decode(v_ipl4Recv.msg);
+
+					if (ischosen(v_mqttMsg.msg)) {
+						v_response.receivedMsg := v_mqttMsg;
+						log("MQTT PDU: ", v_mqttMsg.msg);    
+					}
+					else {
+						// The received data seems to be not decoded??
+						//v_response.receivedMsg := c_MQTTMessage_empty;
+						log("MQTT PDU [raw]:",v_mqttMsg);
+					}
+				}
+				[] IPL4_PCO.receive(ASP_Event:?) -> value v_response.aspEvent
+				{
+					log("Received: ", v_response.aspEvent);
+				}
+				[] t_Timeout.timeout
+				{
+					// TODO: extend IPL4_Response with TimeoutEvent ?
+					//					 v_response.receivedMsg := c_MQTTMessage_empty;
+					log("Timeout while waiting for Message");
+				}
+			}
+			return v_response;
+		}
+
+		function f_receiveNetworkClosedEvent() runs on MQTT_Client
+		return boolean
+		{
+			var boolean v_ret := false;
+			var IPL4_Response v_response := f_receive();
+
+			if(ischosen(v_response.aspEvent))
+			{
+				// TODO:
+				// connection closed is sometimes signalised with connClosed 
+				// and sometimes with Result.ERROR_SOCKET
+				if(ischosen(v_response.aspEvent.connClosed))
+				{
+					v_ret := true;
+					log("NetworkClosed Event connection closed with ", v_response.aspEvent.connClosed);
+				}
+				else if(ischosen(v_response.aspEvent.result))
+				{
+					v_ret := true;
+					log("NetworkClosed Event connection closed with ", v_response.aspEvent.result)
+				}
+			}
+			else
+			{
+				v_ret := false;
+			}
+
+			return v_ret;
+		}
+	}
+
+	group GetterSetter_FunctionsGroup
+	{
+		function f_getContext() runs on MQTT_Client
+		return MqttClientContext
+		{
+			return ctx;
+		}
+
+		function f_setContext(in MqttClientContext p_ctx) runs on MQTT_Client
+		{
+			ctx := p_ctx;
+		}  
+
+		function f_getCredentials() runs on MQTT_Client
+		return MqttClientCredentials
+		{
+			return credentials;
+		}
+
+		function f_setCredentials(in MqttClientCredentials p_credentials) runs on MQTT_Client
+		{
+			credentials := p_credentials;
+		}
+
+		function f_getClientId() runs on MQTT_Client
+		return UTF8EncodedString
+		{
+			return { stringLength := lengthof(credentials.clientId), stringItem := credentials.clientId };
+		}
+
+		function f_getUsername() runs on MQTT_Client
+		return UTF8EncodedString
+		{
+			return { stringLength := lengthof(credentials.username), stringItem := credentials.username };
+		}
+
+		function f_getPassword() runs on MQTT_Client
+		return OctStringWithLength
+		{
+			return { stringLength := lengthof(credentials.password), stringItem := unichar2oct(credentials.password) };
+		}
+
+		function f_getBaseTopicName() runs on MQTT_Client
+		return UTF8EncodedString
+		{
+			return { stringLength := lengthof(credentials.topicName), stringItem := credentials.topicName };
+		}
+
+		function f_getConcatenatedTopicName(UCHAR0_65535 p_appendix) runs on MQTT_Client
+		return UTF8EncodedString
+		{
+			// TODO: check the ending of base topic name for a slash
+			// TODO: check the beginning of p_appendix for a slash 
+			return { stringLength := lengthof(credentials.topicName & p_appendix), stringItem := credentials.topicName & p_appendix };
+		}
+	}
+}
+
+/*
+* This group contains commonly used utility functions
+*/
+group Common_FunctionsGroup {
+	function f_sleep(in float p_time)
+	{
+		timer T_busywait := p_time;
+		T_busywait.start;
+		T_busywait.timeout;
+	}
+
+    // this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
+	function f_isRunningGuard(in MQTT_Client p_comp, in float p_timeout := 10.0)
+	{
+		timer T_wait;
+		if(p_comp.running)
+		{
+			T_wait.start(p_timeout);
+			log("runningGuard "
+				& ": waiting for function to stop executing on component "
+				& log2str(p_comp) & ", timeout in "
+				& log2str(p_timeout) & " seconds.");
+			alt
+			{
+				[] p_comp.done
+				{
+					log("runningGuard "
+						& ": component " & log2str(p_comp)
+						& " returned done properly after waiting for "
+						& log2str(T_wait.read) & " seconds.");
+				}
+				[] T_wait.timeout
+				{
+					log("runningGuard "
+						& ": Stopping function running on component " & log2str(p_comp)
+						& " due to timeout.");
+					p_comp.stop;
+				}
+				[else]
+				{
+					// busy loop to ensure no default altsteps are executed and
+					// unexpectedly ends our alt-statement by not calling 'repeat'
+					// correctly.
+					// v_dummy exists only to avoid busy-loop warning during compilation
+					var integer v_dummy;
+					repeat;
+				}
+			}
+		}
+	}  
+
+    // this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
+	function f_lookupAddress(in charstring p_id, out NamedHostPort v_addr)
+	return boolean
+	{
+
+		for (var integer i:=0; i<sizeof(tsp_addresses); i:=i+1)
+		{
+			if (tsp_addresses[i].id == p_id)
+			{
+				v_addr := tsp_addresses[i];
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function f_randomPacketId()
+	return integer
+	{
+		var integer v_ret := float2int(rnd() * 65535.0);
+		return v_ret;
+	}
+}
+
+}

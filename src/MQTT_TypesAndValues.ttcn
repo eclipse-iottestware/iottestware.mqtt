@@ -1,0 +1,87 @@
+/*******************************************************************************
+ * Copyright (c) 2017 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html 
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *******************************************************************************/
+module MQTT_TypesAndValues {
+
+import from MQTT_v3_1_1_Types all;
+import from IPL4asp_Types all;
+
+type record of NamedHostPort Address_List;
+
+type record NamedHostPort
+{
+	charstring id,
+	charstring hostName,
+	integer portNumber,
+
+	MqttClientCredentials credentials optional
+}
+
+type record MqttClientCredentials
+{
+	UCHAR0_65535 clientId,
+	UCHAR0_65535 username,
+	UCHAR0_65535 password,
+	UCHAR0_65535 topicName
+}
+with { extension "done" }
+
+const MqttClientCredentials c_MqttClientCredentials_empty :=
+{
+	clientId := "",
+	username := "",
+	password := "",
+	topicName := "/topic"
+}
+
+// TODO:
+// type must be a record to be able to distinguish between PUBLISH/SUBSCRIBE/LWT Topics?
+//type union MqttTopics
+//{
+//    UCHAR0_65535 publish_topic_name,
+//    UCHAR0_65535 subscribe_topic_name
+//}
+
+type record MqttClientContext
+{
+	integer connId,
+	charstring remoteHost,
+	integer remotePort,
+	charstring localHost,
+	integer localPort
+}   
+with { extension "done" }
+
+const MqttClientContext c_MqttClientContext_empty :=
+{
+	connId := -1,
+	remoteHost := "",
+	remotePort := -1,
+	localHost := "",
+	localPort := -1
+}
+
+type boolean ReturnBoolean
+with { extension "done"};
+
+type BIT1n EmptyResponse;
+
+// This union is used as return value for receiving from IPL4asp
+type union IPL4_Response
+{
+	MQTT_v3_1_1_Message receivedMsg,
+	ASP_Event aspEvent,
+	EmptyResponse empty
+	// TODO: extra event when max response time is exceeded
+	// TODO: extra event when non-mqtt message received
+}
+with { extension "done"}
+
+}
