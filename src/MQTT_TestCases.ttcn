@@ -143,7 +143,7 @@ group connectGroup
 
 		var template (value) MQTT_v3_1_1_ConnectFlags v_conFlags := t_connectFlags_reserved;
 		var template (value) MQTT_v3_1_1_ConnectPayload v_conPayload := t_connect_payload_empty(v_clientId);
-		var template (value) MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
+		var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
 		f_send(valueof(v_conMsg));
 
 		if(f_receiveNetworkClosedEvent())
@@ -182,7 +182,7 @@ group connectGroup
 		var template (value) MQTT_v3_1_1_ConnectFlags v_conFlags := t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag);
 		var template (value) MQTT_v3_1_1_ConnectPayload v_conPayload := t_connect_payload_credentials(v_clientId, v_username, v_password);
 
-		var template (value) MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
+		var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
 		f_send(valueof(v_conMsg));
 
 		if(f_receiveNetworkClosedEvent())
@@ -500,7 +500,7 @@ group connectGroup
 		var template (value) MQTT_v3_1_1_ConnectFlags v_conFlags := t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag);
 		var template (value) MQTT_v3_1_1_ConnectPayload v_conPayload := t_connect_payload_username(v_clientId, v_username);
 
-		var template (value) MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
+		var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
 		f_send(valueof(v_conMsg));
 
 		if(f_receiveNetworkClosedEvent())

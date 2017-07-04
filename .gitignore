@@ -10,6 +10,10 @@ local.properties
 .loadpath
 .recommenders
 
+# Titan 
+.TITAN_properties
+.project
+
 # External tool builders
 .externalToolBuilders/
 
@@ -22,7 +26,6 @@ local.properties
 # CDT-specific (C/C++ Development Tooling)
 .cproject
 
-
 # sbteclipse plugin
 .target
 
@@ -33,4 +36,5 @@ local.properties
 .texlipse
 
 # Code Recommenders
-.recommenders/Icon
+.recommenders/Icon
+
