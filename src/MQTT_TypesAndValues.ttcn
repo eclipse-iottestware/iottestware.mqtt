@@ -73,13 +73,16 @@ with { extension "done"};
 
 type BIT1n EmptyResponse;
 
+// TODO: extend if more information is required
+type float TimeoutEvent;
+
 // This union is used as return value for receiving from IPL4asp
 type union IPL4_Response
 {
 	MQTT_v3_1_1_Message receivedMsg,
 	ASP_Event aspEvent,
-	EmptyResponse empty
-	// TODO: extra event when max response time is exceeded
+	EmptyResponse empty,
+	TimeoutEvent timeoutEvent
 	// TODO: extra event when non-mqtt message received
 }
 with { extension "done"}

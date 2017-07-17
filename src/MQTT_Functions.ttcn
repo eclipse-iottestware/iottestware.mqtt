@@ -568,8 +568,7 @@ group MqttPTC_FunctionsGroup
 				}
 				[] t_Timeout.timeout
 				{
-					// TODO: extend IPL4_Response with TimeoutEvent ?
-					//					 v_response.receivedMsg := c_MQTTMessage_empty;
+					v_response.timeoutEvent := maxResponseTime;
 					log("Timeout while waiting for Message");
 				}
 			}

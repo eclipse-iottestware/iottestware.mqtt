@@ -85,6 +85,10 @@ group connectGroup
 			setverdict(pass, "IUT accepts incorrect Protocol Names");
 			f_disconnectMqtt();
 		}
+		else
+		{
+			setverdict(fail, v_response);
+		}
 
 
 
