@@ -51,7 +51,7 @@ group MqttMTC_FunctionsGroup
 		{
 			mqttClients[p_clientIdx].start(f_connectNetwork(p_serverId));
 			mqttClients[p_clientIdx].done;
-			
+
 			v_return := true;
 		}
 
@@ -160,7 +160,7 @@ group MqttMTC_FunctionsGroup
 			{
 				v_client.start(f_receive());
 				v_client.done;
-				
+
 				// TODO: get the received response from v_client
 				v_response := valueof(t_empty_response);
 			}
@@ -492,8 +492,7 @@ group MqttPTC_FunctionsGroup
 	{
 		function f_send(in MQTT_v3_1_1_Message p_msg) runs on MQTT_Client
 		{
-			//			var octetstring v_encoded := f_MQTT_encode(msg := p_msg);
-			var octetstring v_encoded := f_MQTT_enc(valueof(p_msg));
+			var octetstring v_encoded := f_MQTT_enc(p_msg);
 			v_encoded := f_adjustLength(f_calcRemLength(v_encoded));
 
 			var ASP_Send vl_send;
@@ -550,7 +549,8 @@ group MqttPTC_FunctionsGroup
 					log("Received: ", v_ipl4Recv);
 
 					var MQTT_v3_1_1_Message v_mqttMsg;
-					v_mqttMsg := f_MQTT_decode(v_ipl4Recv.msg);
+					// v_mqttMsg := f_MQTT_decode(v_ipl4Recv.msg);
+					f_MQTT_v3_1_1_dec(v_ipl4Recv.msg, v_mqttMsg);
 
 					if (ischosen(v_mqttMsg.msg)) {
 						v_response.receivedMsg := v_mqttMsg;
@@ -675,7 +675,7 @@ group Common_FunctionsGroup {
 		T_busywait.timeout;
 	}
 
-    // this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
+	// this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
 	function f_isRunningGuard(in MQTT_Client p_comp, in float p_timeout := 10.0)
 	{
 		timer T_wait;
@@ -715,7 +715,7 @@ group Common_FunctionsGroup {
 		}
 	}  
 
-    // this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
+	// this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
 	function f_lookupAddress(in charstring p_id, out NamedHostPort v_addr)
 	return boolean
 	{

@@ -97,13 +97,13 @@ group connectGroup
 			user_name := p_user_name,
 			password := p_password
 		}
-		
+
 		template MQTT_v3_1_1_ConnectPayload t_connect_payload_username(UTF8EncodedString p_client_id, UTF8EncodedString p_user_name)
 		modifies t_connect_payload_empty :=
 		{
-            user_name := p_user_name
+			user_name := p_user_name
 		}
-		
+
 		template MQTT_v3_1_1_ConnectPayload t_connect_payload_password(UTF8EncodedString p_client_id, OctStringWithLength p_password)
 		modifies t_connect_payload_empty :=
 		{
@@ -142,7 +142,7 @@ group connectGroup
 				}
 			}
 		} // template MQTT_v3_1_1_Message t_connect
-		
+
 		template MQTT_v3_1_1_Message t_connect_protocol_name(UTF8EncodedString p_client_id, UCHAR0_65535 p_protocol_name)
 		modifies t_connect := 
 		{
@@ -429,7 +429,7 @@ group pubackGroup
 			remLength := ?
 		}
 	}
-	
+
 	template MQTT_v3_1_1_Message tw_puback(integer p_packetId) :=
 	{
 		msg :=
@@ -689,8 +689,6 @@ group subscribeGroup
 		topic_filter := p_topic_filter,
 		requested_qos := p_qos
 	}
-
-
 }
 
 /*
@@ -784,6 +782,40 @@ group unsubscribeGroup
 			remLength := ?
 		}
 	}
+
+	template MQTT_v3_1_1_Message t_unsubscribe_topic(BIT4n p_flags := '0010'B, integer p_packet_id, UCHAR0_65535 p_topic_filter) :=
+	{
+		msg :=
+		{
+			unsubscribe :=
+			{
+				header := t_unsubscribeHeader(p_flags),
+				packet_identifier := p_packet_id,
+				payload := 
+				{
+					{
+						filterLength := 0,
+						topic_filter := p_topic_filter
+					}
+				}
+			}
+		}
+	}
+
+	template MQTT_v3_1_1_Message t_unsubscribe_emtpy_topic(integer p_packet_id) :=
+	{
+		msg :=
+		{
+			unsubscribe :=
+			{
+				header := t_unsubscribeHeader(-),
+				packet_identifier := p_packet_id,
+				payload := 
+				{
+				}
+			}
+		}
+	}
 }
 
 /*
@@ -806,6 +838,30 @@ group unsubackGroup
 		modifies t_unsubackHeader :=
 		{
 			remLength := ?
+		}
+	}
+	
+	template MQTT_v3_1_1_Message tw_unsuback_header_flags(BIT4n p_header_flags := '0000'B) :=
+	{
+		msg := 
+		{
+			unsuback :=
+			{
+				header := tw_unsubackHeader(p_header_flags),
+				packet_identifier := ?
+			}
+		}
+	}
+	
+	template MQTT_v3_1_1_Message tw_unsuback_packed_id(integer p_packet_id) :=
+	{
+		msg := 
+		{
+			unsuback :=
+			{
+				header := ?,
+				packet_identifier := p_packet_id
+			}
 		}
 	}
 }

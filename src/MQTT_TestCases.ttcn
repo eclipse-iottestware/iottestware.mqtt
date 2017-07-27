@@ -88,6 +88,7 @@ group connectGroup
 		else
 		{
 			setverdict(fail, v_response);
+			f_disconnectMqtt();
 		}
 
 
@@ -479,6 +480,8 @@ group connectGroup
 		else
 		{
 			setverdict(fail, "IUT MUST close the Network Connection");
+			// disconnect MQTT Session
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -514,6 +517,8 @@ group connectGroup
 		else
 		{
 			setverdict(fail, "IUT MUST close the Network Connection");
+			// disconnect MQTT Session
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -548,6 +553,8 @@ group connectGroup
 		else
 		{
 			setverdict(fail, "IUT MUST close the Network Connection");
+			// disconnect MQTT Session
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -583,6 +590,8 @@ group connectGroup
 		else
 		{
 			setverdict(fail, "IUT MUST close the Network Connection");
+			// disconnect MQTT Session
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -618,6 +627,8 @@ group connectGroup
 		else
 		{
 			setverdict(fail, "IUT MUST close the Network Connection");
+			// disconnect MQTT Session
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -656,6 +667,8 @@ group connectGroup
 		else
 		{
 			setverdict(pass, "IUT accepts clientIds longer than 23 Bytes");
+			// disconnect MQTT Session
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -694,6 +707,8 @@ group connectGroup
 		else
 		{
 			setverdict(pass, "IUT accepts clientIds with special characters");
+			// disconnect MQTT Session
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -732,15 +747,14 @@ group connectGroup
 		if(match(v_response, v_expected))
 		{
 			setverdict(pass, "IUT answered correctly with ACK and return code 0x00");
-
-			// disconnect MQTT Session
-			f_disconnectMqtt();
 		}
 		else
 		{
 			setverdict(fail, "IUT answered incorrectly with ", v_response);
 		}
 
+		// disconnect MQTT Session
+		f_disconnectMqtt();
 		f_disconnectNetwork();
 		f_cleanUp();
 	}
@@ -763,10 +777,13 @@ group connectGroup
 		var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
 
 		// prepare invalid client identifier
-		// TODO: uncomment when Titan Designer supports @update
+		// TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
+		var octetstring v_oCID := 'EDA080'O; // UTF-8 for U+D800 
+		var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
 		//		@update(t_connect_payload_credentials)
-		//		with { 
-		//			erroneous (client_identifier) "value(raw) := c_utf8_bom & 'D800DFFF'O";
+		//		with {
+		//			erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
+		//			erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
 		//		}
 
 		var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
@@ -806,11 +823,15 @@ group connectGroup
 		var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
 
 		// prepare invalid client identifier
-		// TODO: uncomment when Titan Designer supports @update
-		//@update(t_connect_payload_credentials)
-		//with { 
-		//  erroneous (client_identifier) "value(raw) := c_utf8_bom & '0000'O";
-		//}
+		// TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
+		//		var octetstring v_oCID := c_utf8_bom & unichar2oct(c_invalid_clientId.stringItem) & '00'O; 
+		//		var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
+		//
+		//		@update(t_connect_payload_credentials)
+		//		with { 
+		//			erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
+		//			erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
+		//		}
 
 		var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
 
@@ -859,10 +880,10 @@ group connectGroup
 
 		// prepare invalid will topic
 		// TODO: uncomment when Titan Designer supports @update
-		//@update(t_connect_payload_lwt)
-		//with { 
-		//  erroneous (will_topic) "value(raw) := c_utf8_bom & 'D800'O";
-		//}
+		//		@update(t_connect_payload_lwt)
+		//		with { 
+		//		  erroneous (will_topic) "value(raw) := c_utf8_bom & 'D800'O";
+		//		}
 
 		var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, c_willTopic, c_willMsg));
 
@@ -1211,7 +1232,7 @@ group connackGroup
 		var UTF8EncodedString v_username := f_getUsername();
 		var OctStringWithLength v_password := f_getPassword();
 
-		const integer c_protoLevel := 5;
+		const integer c_protoLevel := 255;
 		var template MQTT_v3_1_1_Message v_conMsg := t_connect_protocol_level(v_clientId, v_username, v_password, c_protoLevel);
 		f_send(valueof(v_conMsg));
 
@@ -1231,11 +1252,15 @@ group connackGroup
 			else
 			{
 				setverdict(fail, "IUT MUST close the Network Connection");
+				// disconnect MQTT Connection
+				f_disconnectMqtt();
 			}
 		}
 		else
 		{
 			setverdict(fail, "IUT send wrong response ", v_response);
+			// disconnect MQTT Connection
+			f_disconnectMqtt();
 		}
 
 		f_disconnectNetwork();
@@ -1279,6 +1304,8 @@ group connackGroup
 			else
 			{
 				setverdict(fail, "IUT MUST close the Network Connection after refusing connection");
+				// disconnect MQTT Connection
+				f_disconnectMqtt();
 			}
 		}
 		else
@@ -1336,6 +1363,8 @@ group connackGroup
 			else
 			{
 				setverdict(fail, "IUT MUST close the Network Connection after refusing connection");
+				// disconnect MQTT Connection
+				f_disconnectMqtt();
 			}
 		}
 		else
@@ -1426,6 +1455,18 @@ group subscribeGroup
 
 		f_disconnectNetwork();
 		f_cleanUp();
+	}
+
+	/*
+	* @purpose The upper 6 bits of the Requested QoS byte are reserved. Reserved bits for Requested
+	* QoS in the payload MUST be set to 0.
+	*
+	* @reference [MQTT-3.8.3-4]
+	*/
+	testcase tc_mqtt_broker_subscribe_006() runs on MQTT_Client
+	{
+		// NOTE: 6 reserved Bits in Requested QoS not available  
+		setverdict(fail, "NOT IMPLEMENTED YET");
 	}
 
 	/*
@@ -1706,8 +1747,9 @@ group subackGroup
 		f_cleanUp();
 	}
 
+
 	/*
-	* @purpose SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used
+	* @purpose The IUT responds with return code 0x80 to indicate a denial of access to this topic filter
 	*
 	* @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
 	*/
@@ -1717,9 +1759,15 @@ group subackGroup
 		f_connectNetwork("mqtt_server");
 		f_connectMqtt();
 
+		const charstring c_topicPrefix := "/prefix";
+
 		var integer v_pid := f_randomPacketId();
-		const QoS c_qos := EXACTLY_ONE_DELIVERY;
-		var UTF8EncodedString v_topic := f_getConcatenatedTopicName("#/data"); // TODO: which topic causes rc := 0x80?
+		const QoS c_qos := AT_MOST_ONCE_DELIVERY;
+		var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+
+		// this should ensure that the subscription goes to a valid but not accessable topic
+		v_topic.stringItem := c_topicPrefix & v_topic.stringItem;
+		v_topic.stringLength := v_topic.stringLength + lengthof(c_topicPrefix);
 
 		var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
 		f_send(v_subscribe);
@@ -1738,27 +1786,7 @@ group subackGroup
 		{
 			if(ispresent(v_response.receivedMsg.msg.suback))
 			{
-				// response was a SUBACK, check the payload
-				if(sizeof(v_response.receivedMsg.msg.suback.payload) == 1)
-				{
-					var integer v_rc := v_response.receivedMsg.msg.suback.payload.return_code[0];
-					if(v_rc > c_return_code)
-					{
-						setverdict(fail, "SUBACK return code is greater than requested");
-					}
-					else
-					{
-						// NOTE: SUBACK returns the maximum granted QoS not the requested!
-						var QoS v_qos_granted;
-						int2enum(v_rc, v_qos_granted);
-						setverdict(pass, "IUT granted QoS ", v_qos_granted, " although ", c_qos, " was requested");
-					}
-				}
-				else
-				{
-					// response SUBACK has more return codes than subscriptions
-					setverdict(fail, "SUBACK contains more return codes than subscriptions");
-				}
+				setverdict(inconc, "IUT seems not to implement Access restrictions for subscriptions");
 			}
 			else
 			{
@@ -1772,6 +1800,169 @@ group subackGroup
 		f_cleanUp();
 	}
 } // subackGroup
+
+group unsubscribeGroup
+{
+	/*
+	* @purpose The IUT closes the network connection if fixed header flags in UNSUBSCRIBE Control Packet are invalid
+	*
+	* @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.10.1-1]
+	*/
+	testcase tc_mqtt_broker_unsubscribe_001() runs on MQTT_Client
+	{
+		f_init("mqtt_client");
+		f_connectNetwork("mqtt_server");
+		f_connectMqtt();
+
+		var integer v_pid := f_randomPacketId();
+		var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+
+		var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic('1101'B, v_pid, v_topic.stringItem));
+		f_send(v_unsubscribe);
+
+		if(f_receiveNetworkClosedEvent())
+		{
+			setverdict(pass, "IUT closed the Network Connection correctly");
+		}
+		else
+		{
+			f_disconnectMqtt();
+			setverdict(fail, "IUT MUST close the Network Connection");
+		}
+
+		f_disconnectNetwork();
+		f_cleanUp();
+	}
+
+	/*
+	* @purpose UNSUBSCRIBE Control Packet MUST contain a non-zero 16-bit Packet Identifier
+	*
+	* @reference [MQTT-2.3.1-1]
+	*/
+	testcase tc_mqtt_broker_unsubscribe_002() runs on MQTT_Client
+	{
+		f_init("mqtt_client");
+		f_connectNetwork("mqtt_server");
+		f_connectMqtt();
+
+		var integer v_pid := 0;
+		var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+
+		var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
+		f_send(v_unsubscribe);
+
+		var IPL4_Response v_response := f_receive();
+
+		// The standard references in section 3.10.2 to section 2.3.1 which is not applicable to UNSUBSCRIBE
+		setverdict(inconc, "Standard inconclusive");
+
+		f_disconnectNetwork();
+		f_cleanUp();
+	}
+
+
+	/*
+	* @purpose The payload of an UNSUBSCRIBE Control Packet MUST contain at least one Topic Filter
+	*
+	* @reference [MQTT-3.10.3-2]
+	*/
+	testcase tc_mqtt_broker_unsubscribe_004() runs on MQTT_Client
+	{
+		f_init("mqtt_client");
+		f_connectNetwork("mqtt_server");
+		f_connectMqtt();
+
+		var integer v_pid := f_randomPacketId();
+
+		var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_emtpy_topic(v_pid));
+		f_send(v_unsubscribe);
+
+		if(f_receiveNetworkClosedEvent())
+		{
+			setverdict(pass, "IUT closed the Network Connection correctly");
+		}
+		else
+		{
+			f_disconnectMqtt();
+			setverdict(fail, "IUT MUST close the Network Connection");
+		}
+
+		f_disconnectNetwork();
+		f_cleanUp();
+	}
+} // unsubscribeGroup
+
+group unsubackGroup
+{
+	/*
+	* @purpose The IUT accepts only valid fixed header flags for UNSUBSCRIBE Control Packet and responds with UNSUBACK
+	*
+	* @reference [MQTT-2.2.2-1], [MQTT-3.10.1-1]
+	*/
+	testcase tc_mqtt_broker_unsuback_001() runs on MQTT_Client
+	{
+		f_init("mqtt_client");
+		f_connectNetwork("mqtt_server");
+		f_connectMqtt();
+
+		var integer v_pid := f_randomPacketId();
+		var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+
+		var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
+		f_send(v_unsubscribe);
+
+		var template IPL4_Response v_expected := { receivedMsg := tw_unsuback_header_flags };
+		var IPL4_Response v_response := f_receive();
+
+		if(match(v_response, v_expected))
+		{
+			setverdict(pass, "IUT answered correctly with UNSUBACK and correct header flags");
+		}
+		else
+		{
+			setverdict(fail, "IUT answered incorrectly with ", v_response);
+		}
+
+		f_disconnectMqtt();
+		f_disconnectNetwork();
+		f_cleanUp();
+	}
+
+	/*
+	* @purpose The IUT MUST respond to an UNSUBSCRIBE request by sending an UNSUBACK Control Packet. 
+	* The UNSUBACK Control Packet MUST have the same Packet Identifier as the UNSUBSCRIBE Control Packet
+	*
+	* @reference [MQTT-3.10.4-4], [MQTT-3.10.4-5]
+	*/
+	testcase tc_mqtt_broker_unsuback_002() runs on MQTT_Client
+	{
+		f_init("mqtt_client");
+		f_connectNetwork("mqtt_server");
+		f_connectMqtt();
+
+		var integer v_pid := f_randomPacketId();
+		var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+
+		var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
+		f_send(v_unsubscribe);
+
+		var template IPL4_Response v_expected := { receivedMsg := tw_unsuback_packed_id(v_pid) };
+		var IPL4_Response v_response := f_receive();
+
+		if(match(v_response, v_expected))
+		{
+			setverdict(pass, "IUT answered correctly with UNSUBACK and correct packet identifier");
+		}
+		else
+		{
+			setverdict(fail, "IUT answered incorrectly with ", v_response);
+		}
+
+		f_disconnectMqtt();
+		f_disconnectNetwork();
+		f_cleanUp();
+	}
+} // unsubackGroup
 
 testcase tc_mqtt_broker_095() runs on MQTT_Client
 {
