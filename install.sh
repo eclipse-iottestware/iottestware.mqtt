@@ -15,22 +15,56 @@
 # Having these modules in this structure allows you to import these Modules easily with 
 # the corresponding .tpd files into the Titan IDE.
 
-# set your base path for the titan protocol modules and test ports
-# !skip the slash at the end
+#################
+# CONFIGURATION #
+#################
+
+# base path for the titan protocol modules and test ports
 PATH_BASE=~/Titan
 
-# do not change these paths. These are prescribed in the tpd Files!
+# path where you can compile the Test Suite
+PATH_CLI_WORKSPACE=~/IoTTestware
+
+# Git flags
+GIT_QUIET=-q # remove this flag for complete Git output
+
+
+################
+# INSTALLATION # !! Do not change from here
+################
+# These are prescribed in the tpd Files!
 PATH_CORE=${PATH_BASE}/Core
 PATH_SOCKET_API=${PATH_BASE}/TestPorts/Common_Components/Socket_API_CNL113686/
 PATH_IPL4=${PATH_BASE}/TestPorts/IPL4asp/
-PATH_JSON=${PATH_BASE}/ProtocolModules/JSON_v07_2006/
-PATH_COAP=${PATH_BASE}/ProtocolModules/CoAP/
+
+#PATH_COAP=${PATH_BASE}/ProtocolModules/CoAP/
 PATH_MQTT=${PATH_BASE}/ProtocolModules/MQTT/
 PATH_COMMON=${PATH_BASE}/ProtocolModules/COMMON/
 PATH_TCC=${PATH_BASE}/Libraries/TCCUsefulFunctions_CNL113472/
 
-# Git flags
-GIT_QUIET=-q # remove this flag for complete Git output
+PATH_IOTTESTWARE=${PATH_BASE}/IoTTestware
+PATH_MQTT_TW=${PATH_IOTTESTWARE}/iottestware.mqtt/
+
+#####################
+# IoT-Testware.MQTT #
+#####################
+if [ -d "$PATH_MQTT_TW" ]; then
+  echo $PATH_MQTT_TW " already exists"
+
+  # goto the directory
+  cd $PATH_MQTT_TW
+
+  # make sure you have the latest codebase
+  git remote update
+  git checkout $GIT_QUIET master
+  git pull $GIT_QUIET
+
+  # return back to the last known folder
+  cd - > /dev/null
+else
+  git clone $GIT_QUIET https://github.com/eclipse/iottestware.mqtt.git $PATH_MQTT_TW
+fi
+
 
 ##############
 # Titan.Core #
@@ -92,40 +126,6 @@ fi
 ###################
 # ProtocolModules #
 ###################
-if [ -d "$PATH_JSON" ]; then
-  echo $PATH_JSON " already exists"
-
-  # goto the directory 
-  cd $PATH_JSON
-
-  # make sure you have the latest codebase
-  git remote update
-  git checkout  $GIT_QUIET master
-  git pull $GIT_QUIET
- 
-  # return back to the last known folder
-  cd - > /dev/null
-else
-  git clone https://github.com/eclipse/titan.ProtocolModules.JSON_v07_2006.git $PATH_JSON
-fi
-
-if [ -d "$PATH_COAP" ]; then
-  echo $PATH_COAP " already exists"
-
-  # goto the directory 
-  cd $PATH_COAP
-
-  # make sure you have the latest codebase
-  git remote update
-  git checkout  $GIT_QUIET master
-  git pull $GIT_QUIET
- 
-  # return back to the last known folder
-  cd - > /dev/null
-else
-  git clone git://git.eclipse.org/gitroot/titan/titan.ProtocolModules.CoAP.git $PATH_COAP
-fi
-
 if [ -d "$PATH_MQTT" ]; then
   echo $PATH_MQTT " already exists"
 
@@ -185,13 +185,14 @@ fi
 # create symbolic links #
 # and prepare workspace #
 #########################
-if [ -d "bin" ]; then
+if [ -d "${PATH_CLI_WORKSPACE}/iottestware.mqtt/bin" ]; then
   # clean the bin folder
-  rm ./bin/*
+  rm $PATH_CLI_WORKSPACE/iottestware.mqtt/bin/*
 else
-  mkdir bin
+  mkdir -p ${PATH_CLI_WORKSPACE}/iottestware.mqtt/bin
 fi
-cd bin
+
+cd ${PATH_CLI_WORKSPACE}/iottestware.mqtt/bin
 
 # link to MQTT ProtocolModule
 ln -s ${PATH_MQTT}/src/negative_testing/MQTT_v3_1_1_Types.ttcn
@@ -219,13 +220,13 @@ ln -s ${PATH_TCC}/src/TCCConversion_Functions.ttcn
 ln -s ${PATH_TCC}/src/TCCConversion.cc
 
 # link the MQTT TestSuite sources to bin
-ln -s ../src/MQTT_Functions.ttcn
-ln -s ../src/MQTT_Pixits.ttcn
-ln -s ../src/MQTT_Templates.ttcn
-ln -s ../src/MQTT_TestCases.ttcn
-ln -s ../src/MQTT_TestControl.ttcn
-ln -s ../src/MQTT_TestSystem.ttcn
-ln -s ../src/MQTT_TypesAndValues.ttcn
+ln -s ${PATH_MQTT_TW}/src/MQTT_Functions.ttcn
+ln -s ${PATH_MQTT_TW}/src/MQTT_Pixits.ttcn
+ln -s ${PATH_MQTT_TW}/src/MQTT_Templates.ttcn
+ln -s ${PATH_MQTT_TW}/src/MQTT_TestCases.ttcn
+ln -s ${PATH_MQTT_TW}/src/MQTT_TestControl.ttcn
+ln -s ${PATH_MQTT_TW}/src/MQTT_TestSystem.ttcn
+ln -s ${PATH_MQTT_TW}/src/MQTT_TypesAndValues.ttcn
 
 # build the makefile
-ttcn3_makefilegen -f -g -e MqttTestSuite *.ttcn *.hh *.cc
+ttcn3_makefilegen -f -g -c -m -e iottestware.mqtt *.ttcn *.hh *.cc

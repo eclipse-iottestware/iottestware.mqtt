@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TITAN_Project_File_Information version="1.0">
+  <ProjectName>iottestware.mqtt</ProjectName>
+  <ReferencedProjects>
+    <ReferencedProject name="IPL4asp_CNL113531" projectLocationURI="../../TestPorts/IPL4asp/IPL4asp_CNL113531.tpd"/>
+    <ReferencedProject name="Mqtt_v3.1.1_CNL113831" projectLocationURI="../../ProtocolModules/MQTT/MQTT_v3.1.1_CNL113831.tpd"/>
+  </ReferencedProjects>
+  <Folders>
+    <FolderResource projectRelativePath="cfg" relativeURI="cfg"/>
+    <FolderResource projectRelativePath="logs" relativeURI="logs"/>
+    <FolderResource projectRelativePath="src" relativeURI="src"/>
+  </Folders>
+  <Files>
+    <FileResource projectRelativePath="CONTRIBUTING.md" relativeURI="CONTRIBUTING.md"/>
+    <FileResource projectRelativePath="GUIDELINES.md" relativeURI="GUIDELINES.md"/>
+    <FileResource projectRelativePath="LICENSE" relativeURI="LICENSE"/>
+    <FileResource projectRelativePath="MQTT_Summary.pdf" relativeURI="MQTT_Summary.pdf"/>
+    <FileResource projectRelativePath="README.md" relativeURI="README.md"/>
+    <FileResource projectRelativePath="cfg/BasicConfig.cfg" relativeURI="cfg/BasicConfig.cfg"/>
+    <FileResource projectRelativePath="cloneTitanDependencies.sh" relativeURI="cloneTitanDependencies.sh"/>
+    <FileResource projectRelativePath="logs/iottestware.mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/iottestware.mqtt.alexander-VirtualBox-hc.log"/>
+    <FileResource projectRelativePath="logs/iottestware.mqtt.alexander-VirtualBox-hc_merged.log" relativeURI="logs/iottestware.mqtt.alexander-VirtualBox-hc_merged.log"/>
+    <FileResource projectRelativePath="logs/iottestware.mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/iottestware.mqtt.alexander-VirtualBox-mtc.log"/>
+    <FileResource projectRelativePath="mqtt.properties" relativeURI="mqtt.properties"/>
+    <FileResource projectRelativePath="report_template.ts" relativeURI="report_template.ts"/>
+    <FileResource projectRelativePath="src/MQTT_Functions.ttcn" relativeURI="src/MQTT_Functions.ttcn"/>
+    <FileResource projectRelativePath="src/MQTT_Pixits.ttcn" relativeURI="src/MQTT_Pixits.ttcn"/>
+    <FileResource projectRelativePath="src/MQTT_Templates.ttcn" relativeURI="src/MQTT_Templates.ttcn"/>
+    <FileResource projectRelativePath="src/MQTT_TestCases.ttcn" relativeURI="src/MQTT_TestCases.ttcn"/>
+    <FileResource projectRelativePath="src/MQTT_TestControl.ttcn" relativeURI="src/MQTT_TestControl.ttcn"/>
+    <FileResource projectRelativePath="src/MQTT_TestSystem.ttcn" relativeURI="src/MQTT_TestSystem.ttcn"/>
+    <FileResource projectRelativePath="src/MQTT_TypesAndValues.ttcn" relativeURI="src/MQTT_TypesAndValues.ttcn"/>
+  </Files>
+  <ActiveConfiguration>Default</ActiveConfiguration>
+  <Configurations>
+    <Configuration name="Default">
+      <ProjectProperties>
+        <MakefileSettings>
+          <functiontestRuntime>true</functiontestRuntime>
+          <targetExecutable>bin/iottestware.mqtt</targetExecutable>
+          <CxxCompiler>clang++-3.8</CxxCompiler>
+        </MakefileSettings>
+        <LocalBuildSettings>
+          <workingDirectory>bin</workingDirectory>
+        </LocalBuildSettings>
+      </ProjectProperties>
+      <FileProperties>
+        <FileResource>
+          <FilePath>CONTRIBUTING.md</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>LICENSE</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>MQTT_Summary.pdf</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>README.md</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>cloneTitanDependencies.sh</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>mqtt.properties</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>report_template.ts</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+      </FileProperties>
+    </Configuration>
+  </Configurations>
+</TITAN_Project_File_Information>
