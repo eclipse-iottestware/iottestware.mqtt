@@ -16,7 +16,7 @@ import from MQTT_TypesAndValues all;
 import from MQTT_Templates all;
 import from MQTT_Pixits all;
 
-import from Mqtt_v3_1_1_IPL4SizeFunction all;
+import from MQTT_v3_1_1_IPL4SizeFunction all;
 import from MQTT_v3_1_1_Types all;
 
 import from IPL4asp_PortType all;
