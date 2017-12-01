@@ -7,7 +7,7 @@
  *
  * Contributors:
  *   Alexander Kaiser
- * 	 Sascha Kretzschmann
+ *    Sascha Kretzschmann
  *******************************************************************************/
 module MQTT_TypesAndValues {
 
@@ -18,28 +18,28 @@ type record of NamedHostPort Address_List;
 
 type record NamedHostPort
 {
-	charstring id,
-	charstring hostName,
-	integer portNumber,
+  charstring id,
+  charstring hostName,
+  integer portNumber,
 
-	MqttClientCredentials credentials optional
+  MqttClientCredentials credentials optional
 }
 
 type record MqttClientCredentials
 {
-	UCHAR0_65535 clientId,
-	UCHAR0_65535 username,
-	UCHAR0_65535 password,
-	UCHAR0_65535 topicName
+  UCHAR0_65535 clientId,
+  UCHAR0_65535 username,
+  UCHAR0_65535 password,
+  UCHAR0_65535 topicName
 }
 with { extension "done" }
 
 const MqttClientCredentials c_MqttClientCredentials_empty :=
 {
-	clientId := "",
-	username := "",
-	password := "",
-	topicName := "/topic"
+  clientId := "",
+  username := "",
+  password := "",
+  topicName := "/topic"
 }
 
 // TODO:
@@ -52,21 +52,21 @@ const MqttClientCredentials c_MqttClientCredentials_empty :=
 
 type record MqttClientContext
 {
-	integer connId,
-	charstring remoteHost,
-	integer remotePort,
-	charstring localHost,
-	integer localPort
+  integer connId,
+  charstring remoteHost,
+  integer remotePort,
+  charstring localHost,
+  integer localPort
 }   
 with { extension "done" }
 
 const MqttClientContext c_MqttClientContext_empty :=
 {
-	connId := -1,
-	remoteHost := "",
-	remotePort := -1,
-	localHost := "",
-	localPort := -1
+  connId := -1,
+  remoteHost := "",
+  remotePort := -1,
+  localHost := "",
+  localPort := -1
 }
 
 type boolean ReturnBoolean
@@ -80,11 +80,11 @@ type float TimeoutEvent;
 // This union is used as return value for receiving from IPL4asp
 type union IPL4_Response
 {
-	MQTT_v3_1_1_Message receivedMsg,
-	ASP_Event aspEvent,
-	EmptyResponse empty,
-	TimeoutEvent timeoutEvent
-	// TODO: extra event when non-mqtt message received
+  MQTT_v3_1_1_Message receivedMsg,
+  ASP_Event aspEvent,
+  EmptyResponse empty,
+  TimeoutEvent timeoutEvent
+  // TODO: extra event when non-mqtt message received
 }
 with { extension "done"}
 

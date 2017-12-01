@@ -16,6 +16,6 @@ import from MQTT_TestCases all;
 
 control
 {
-    // not used yet: see BasicConfig.cfg in [EXECUTE] section for active test cases
+  // not used yet: see BasicConfig.cfg in [EXECUTE] section for active test cases
 }
 }

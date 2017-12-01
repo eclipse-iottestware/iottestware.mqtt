@@ -7,7 +7,7 @@
 *
 * Contributors:
 *   Alexander Kaiser
-* 	Sascha Kretzschmann
+*   Sascha Kretzschmann
 *******************************************************************************/
 module MQTT_Templates {
 
@@ -21,211 +21,211 @@ import from IPL4asp_Types all;
 *
 * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180841
 */
-group connectGroup 
+group connectGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_connectHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '0001'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_connectHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '0001'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_connectHeader(BIT4n p_flags := '0000'B) 
-		modifies t_connectHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_connectHeader(BIT4n p_flags := '0000'B) 
+    modifies t_connectHeader :=
+    {
+      remLength := ?
+    }
+  }
 
 
-	group connectFlagsGroup 
-	{
-		template MQTT_v3_1_1_ConnectFlags t_connectFlags_base := 
-		{
-			user_name_flag := '0'B,
-			password_flag := '0'B,
-			will_retain := '0'B,
-			will_qos := AT_MOST_ONCE_DELIVERY,
-			will_flag := '0'B,
-			clean_session := '1'B, 
-			reserved := '0'B
-		} // template MQTT_v3_1_1_ConnectFlags t_connect_flags_base
+  group connectFlagsGroup 
+  {
+    template MQTT_v3_1_1_ConnectFlags t_connectFlags_base := 
+    {
+      user_name_flag := '0'B,
+      password_flag := '0'B,
+      will_retain := '0'B,
+      will_qos := AT_MOST_ONCE_DELIVERY,
+      will_flag := '0'B,
+      clean_session := '1'B, 
+      reserved := '0'B
+    } // template MQTT_v3_1_1_ConnectFlags t_connect_flags_base
 
-		template MQTT_v3_1_1_ConnectFlags t_connectFlags_credentials(BIT1n p_user_name_flag := '1'B, BIT1n p_password_flag := '1'B, BIT1n p_clean_session := '1'B) 
-		modifies t_connectFlags_base := 
-		{
-			user_name_flag := p_user_name_flag,
-			password_flag := p_password_flag,
-			clean_session := p_clean_session
-		} // template MQTT_v3_1_1_ConnectFlags t_connect_flags_credentials
+    template MQTT_v3_1_1_ConnectFlags t_connectFlags_credentials(BIT1n p_user_name_flag := '1'B, BIT1n p_password_flag := '1'B, BIT1n p_clean_session := '1'B) 
+    modifies t_connectFlags_base := 
+    {
+      user_name_flag := p_user_name_flag,
+      password_flag := p_password_flag,
+      clean_session := p_clean_session
+    } // template MQTT_v3_1_1_ConnectFlags t_connect_flags_credentials
 
-		template MQTT_v3_1_1_ConnectFlags t_connectFlags_lwt(BIT1n p_user_name_flag := '1'B, BIT1n p_password_flag := '1'B, BIT1n p_clean_session := '1'B, BIT1n p_will_retain, QoS p_will_qos, BIT1n p_will_flag)
-		modifies t_connectFlags_credentials := 
-		{
-			will_retain := p_will_retain,
-			will_qos := p_will_qos,
-			will_flag := p_will_flag
-		} // template MQTT_v3_1_1_ConnectFlags t_connect_flags_lwt
+    template MQTT_v3_1_1_ConnectFlags t_connectFlags_lwt(BIT1n p_user_name_flag := '1'B, BIT1n p_password_flag := '1'B, BIT1n p_clean_session := '1'B, BIT1n p_will_retain, QoS p_will_qos, BIT1n p_will_flag)
+    modifies t_connectFlags_credentials := 
+    {
+      will_retain := p_will_retain,
+      will_qos := p_will_qos,
+      will_flag := p_will_flag
+    } // template MQTT_v3_1_1_ConnectFlags t_connect_flags_lwt
 
-		template MQTT_v3_1_1_ConnectFlags t_connectFlags_reserved(BIT1n p_reserved := '1'B) :=
-		{
-			user_name_flag := '0'B,
-			password_flag := '0'B,
-			will_retain := '0'B,
-			will_qos := AT_MOST_ONCE_DELIVERY,
-			will_flag := '0'B,
-			clean_session := '1'B, 
-			reserved := p_reserved
-		} // template MQTT_v3_1_1_ConnectFlags t_connect_flags_reserved
-	}
+    template MQTT_v3_1_1_ConnectFlags t_connectFlags_reserved(BIT1n p_reserved := '1'B) :=
+    {
+      user_name_flag := '0'B,
+      password_flag := '0'B,
+      will_retain := '0'B,
+      will_qos := AT_MOST_ONCE_DELIVERY,
+      will_flag := '0'B,
+      clean_session := '1'B, 
+      reserved := p_reserved
+    } // template MQTT_v3_1_1_ConnectFlags t_connect_flags_reserved
+  }
 
-	group connectPayloadGroup
-	{
-		template MQTT_v3_1_1_ConnectPayload t_connect_payload_empty(UTF8EncodedString p_client_id) :=
-		{
-			client_identifier := p_client_id,
-			will_topic := omit,
-			will_message := omit,
-			user_name := omit,
-			password := omit
-		}
+  group connectPayloadGroup
+  {
+    template MQTT_v3_1_1_ConnectPayload t_connect_payload_empty(UTF8EncodedString p_client_id) :=
+    {
+      client_identifier := p_client_id,
+      will_topic := omit,
+      will_message := omit,
+      user_name := omit,
+      password := omit
+    }
 
-		template MQTT_v3_1_1_ConnectPayload t_connect_payload_credentials(UTF8EncodedString p_client_id, UTF8EncodedString p_user_name, OctStringWithLength p_password)
-		modifies t_connect_payload_empty :=
-		{
-			user_name := p_user_name,
-			password := p_password
-		}
+    template MQTT_v3_1_1_ConnectPayload t_connect_payload_credentials(UTF8EncodedString p_client_id, UTF8EncodedString p_user_name, OctStringWithLength p_password)
+    modifies t_connect_payload_empty :=
+    {
+      user_name := p_user_name,
+      password := p_password
+    }
 
-		template MQTT_v3_1_1_ConnectPayload t_connect_payload_username(UTF8EncodedString p_client_id, UTF8EncodedString p_user_name)
-		modifies t_connect_payload_empty :=
-		{
-			user_name := p_user_name
-		}
+    template MQTT_v3_1_1_ConnectPayload t_connect_payload_username(UTF8EncodedString p_client_id, UTF8EncodedString p_user_name)
+    modifies t_connect_payload_empty :=
+    {
+      user_name := p_user_name
+    }
 
-		template MQTT_v3_1_1_ConnectPayload t_connect_payload_password(UTF8EncodedString p_client_id, OctStringWithLength p_password)
-		modifies t_connect_payload_empty :=
-		{
-			password := p_password
-		}
+    template MQTT_v3_1_1_ConnectPayload t_connect_payload_password(UTF8EncodedString p_client_id, OctStringWithLength p_password)
+    modifies t_connect_payload_empty :=
+    {
+      password := p_password
+    }
 
-		template MQTT_v3_1_1_ConnectPayload t_connect_payload_lwt(UTF8EncodedString p_client_id, UTF8EncodedString p_user_name, OctStringWithLength p_password, UTF8EncodedString p_will_topic, OctStringWithLength p_will_msg)
-		modifies t_connect_payload_credentials :=
-		{
-			will_topic := p_will_topic,
-			will_message := p_will_msg
-		}
-	}
+    template MQTT_v3_1_1_ConnectPayload t_connect_payload_lwt(UTF8EncodedString p_client_id, UTF8EncodedString p_user_name, OctStringWithLength p_password, UTF8EncodedString p_will_topic, OctStringWithLength p_will_msg)
+    modifies t_connect_payload_credentials :=
+    {
+      will_topic := p_will_topic,
+      will_message := p_will_msg
+    }
+  }
 
-	group connectMessageGroup 
-	{
-		template MQTT_v3_1_1_Message t_connect(UTF8EncodedString p_client_id) := 
-		{
-			msg :=
-			{
-				connect_msg := 
-				{
-					header := t_connectHeader,
-					nameLength := 4,
-					name := "MQTT",
-					protocol_level := 4,
-					flags := t_connectFlags_base,
-					keep_alive := 20,
-					payload := {        
-						client_identifier := p_client_id,
-						will_topic := omit,
-						will_message := omit,
-						user_name := omit,
-						password := omit
-					}
-				}
-			}
-		} // template MQTT_v3_1_1_Message t_connect
+  group connectMessageGroup 
+  {
+    template MQTT_v3_1_1_Message t_connect(UTF8EncodedString p_client_id) := 
+    {
+      msg :=
+      {
+        connect_msg := 
+        {
+          header := t_connectHeader,
+          nameLength := 4,
+          name := "MQTT",
+          protocol_level := 4,
+          flags := t_connectFlags_base,
+          keep_alive := 20,
+          payload := {        
+            client_identifier := p_client_id,
+            will_topic := omit,
+            will_message := omit,
+            user_name := omit,
+            password := omit
+          }
+        }
+      }
+    } // template MQTT_v3_1_1_Message t_connect
 
-		template MQTT_v3_1_1_Message t_connect_protocol_name(UTF8EncodedString p_client_id, UCHAR0_65535 p_protocol_name)
-		modifies t_connect := 
-		{
-			msg :=
-			{
-				connect_msg :=
-				{
-					name := p_protocol_name
-				}
-			}
-		} // template MQTT_v3_1_1_Message t_connect_protocol_name
+    template MQTT_v3_1_1_Message t_connect_protocol_name(UTF8EncodedString p_client_id, UCHAR0_65535 p_protocol_name)
+    modifies t_connect := 
+    {
+      msg :=
+      {
+        connect_msg :=
+        {
+          name := p_protocol_name
+        }
+      }
+    } // template MQTT_v3_1_1_Message t_connect_protocol_name
 
-		template MQTT_v3_1_1_Message t_connect_flags(UTF8EncodedString p_client_id, BIT4n p_flags) 
-		modifies t_connect := 
-		{
-			msg := 
-			{
-				connect_msg :=
-				{
-					header := t_connectHeader(p_flags)
-				}
-			}
-		}
+    template MQTT_v3_1_1_Message t_connect_flags(UTF8EncodedString p_client_id, BIT4n p_flags) 
+    modifies t_connect := 
+    {
+      msg := 
+      {
+        connect_msg :=
+        {
+          header := t_connectHeader(p_flags)
+        }
+      }
+    }
 
-		template MQTT_v3_1_1_Message t_connect_credentials(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password) 
-		modifies t_connect :=
-		{
-			msg :=
-			{
-				connect_msg := 
-				{
-					flags := t_connectFlags_credentials,
-					payload := {        
-						client_identifier := p_client_id,
-						user_name := p_username,
-						password := p_password
-					}
-				}
-			}
-		}
+    template MQTT_v3_1_1_Message t_connect_credentials(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password) 
+    modifies t_connect :=
+    {
+      msg :=
+      {
+        connect_msg := 
+        {
+          flags := t_connectFlags_credentials,
+          payload := {        
+            client_identifier := p_client_id,
+            user_name := p_username,
+            password := p_password
+          }
+        }
+      }
+    }
 
-		template MQTT_v3_1_1_Message t_connect_session(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, BIT1n p_clean_session) 
-		modifies t_connect_credentials :=
-		{
-			msg :=
-			{
-				connect_msg :=
-				{
-					flags := t_connectFlags_credentials(p_clean_session := p_clean_session)
-				}
-			}
-		}
+    template MQTT_v3_1_1_Message t_connect_session(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, BIT1n p_clean_session) 
+    modifies t_connect_credentials :=
+    {
+      msg :=
+      {
+        connect_msg :=
+        {
+          flags := t_connectFlags_credentials(p_clean_session := p_clean_session)
+        }
+      }
+    }
 
-		template MQTT_v3_1_1_Message t_connect_protocol_level(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, integer p_protocol_level) 
-		modifies t_connect_credentials :=
-		{
-			msg :=
-			{
-				connect_msg :=
-				{
-					protocol_level := p_protocol_level
-				}
-			}
-		}
+    template MQTT_v3_1_1_Message t_connect_protocol_level(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, integer p_protocol_level) 
+    modifies t_connect_credentials :=
+    {
+      msg :=
+      {
+        connect_msg :=
+        {
+          protocol_level := p_protocol_level
+        }
+      }
+    }
 
-		template MQTT_v3_1_1_Message t_connect_with_payload(in template MQTT_v3_1_1_ConnectFlags p_con_flags, in template MQTT_v3_1_1_ConnectPayload p_payload) :=
-		{
-			msg :=
-			{
-				connect_msg := 
-				{
-					header := t_connectHeader,
-					nameLength := 4,
-					name := "MQTT",
-					protocol_level := 4,
-					flags := p_con_flags,
-					keep_alive := 20,
-					payload := p_payload
-				}
-			}
-		}
-	}
+    template MQTT_v3_1_1_Message t_connect_with_payload(in template MQTT_v3_1_1_ConnectFlags p_con_flags, in template MQTT_v3_1_1_ConnectPayload p_payload) :=
+    {
+      msg :=
+      {
+        connect_msg := 
+        {
+          header := t_connectHeader,
+          nameLength := 4,
+          name := "MQTT",
+          protocol_level := 4,
+          flags := p_con_flags,
+          keep_alive := 20,
+          payload := p_payload
+        }
+      }
+    }
+  }
 
 }
 
@@ -236,83 +236,83 @@ group connectGroup
 */
 group connackGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_connackHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '0010'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_connackHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '0010'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_connackHeader(BIT4n p_flags := '0000'B)
-		modifies t_connackHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_connackHeader(BIT4n p_flags := '0000'B)
+    modifies t_connackHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_connack :=
-	{
-		msg :=
-		{
-			connack := 
-			{
-				header := t_connackHeader,
-				session_present_flag := '0'B,
-				connect_return_code := 0
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_connack :=
+  {
+    msg :=
+    {
+      connack := 
+      {
+        header := t_connackHeader,
+        session_present_flag := '0'B,
+        connect_return_code := 0
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_connack(BIT1n p_session_present := '0'B)
-	modifies t_connack :=
-	{
-		msg :=
-		{
-			connack :=
-			{
-				header := tw_connackHeader,
-				session_present_flag := p_session_present
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_connack(BIT1n p_session_present := '0'B)
+  modifies t_connack :=
+  {
+    msg :=
+    {
+      connack :=
+      {
+        header := tw_connackHeader,
+        session_present_flag := p_session_present
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_connack_unacceptable_version(BIT1n p_session_present := '0'B)
-	modifies tw_connack :=
-	{
-		msg :=
-		{
-			connack :=
-			{
-				connect_return_code := 1
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_connack_unacceptable_version(BIT1n p_session_present := '0'B)
+  modifies tw_connack :=
+  {
+    msg :=
+    {
+      connack :=
+      {
+        connect_return_code := 1
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_connack_id_rejected(BIT1n p_session_present := '0'B)
-	modifies tw_connack :=
-	{
-		msg :=
-		{
-			connack := 
-			{
-				connect_return_code := 2
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_connack_id_rejected(BIT1n p_session_present := '0'B)
+  modifies tw_connack :=
+  {
+    msg :=
+    {
+      connack := 
+      {
+        connect_return_code := 2
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_connack_bad_credentials(BIT1n p_session_present := '0'B)
-	modifies tw_connack :=
-	{
-		msg :=
-		{
-			connack :=
-			{
-				connect_return_code := 4
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_connack_bad_credentials(BIT1n p_session_present := '0'B)
+  modifies tw_connack :=
+  {
+    msg :=
+    {
+      connack :=
+      {
+        connect_return_code := 4
+      }
+    }
+  }
 }
 
 /*
@@ -322,90 +322,90 @@ group connackGroup
 */
 group publishGroup
 {
-	group fixedHeaderGroup
-	{
-		template MQTT_v3_1_1_PublishHeader t_publishHeader(BIT1n p_dup_flag := '0'B, QoS p_qos := AT_MOST_ONCE_DELIVERY, BIT1n p_retain_flag := '0'B) :=
-		{
-			packetType := '0011'B,
-			dup_flag := p_dup_flag,
-			qos_level := p_qos,
-			retain_flag := p_retain_flag,
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template MQTT_v3_1_1_PublishHeader t_publishHeader(BIT1n p_dup_flag := '0'B, QoS p_qos := AT_MOST_ONCE_DELIVERY, BIT1n p_retain_flag := '0'B) :=
+    {
+      packetType := '0011'B,
+      dup_flag := p_dup_flag,
+      qos_level := p_qos,
+      retain_flag := p_retain_flag,
+      remLength := '00000000'O
+    }
 
-		template MQTT_v3_1_1_PublishHeader tw_publishHeader :=
-		{
-			packetType := '0011'B,
-			dup_flag := ?,
-			qos_level := ?,
-			retain_flag := ?,
-			remLength := ?
-		}
+    template MQTT_v3_1_1_PublishHeader tw_publishHeader :=
+    {
+      packetType := '0011'B,
+      dup_flag := ?,
+      qos_level := ?,
+      retain_flag := ?,
+      remLength := ?
+    }
 
-		template MQTT_v3_1_1_PublishHeader tw_publish_header_qos(QoS p_qos) 
-		modifies tw_publishHeader :=
-		{
-			qos_level := p_qos
-		}
-	}
+    template MQTT_v3_1_1_PublishHeader tw_publish_header_qos(QoS p_qos) 
+    modifies tw_publishHeader :=
+    {
+      qos_level := p_qos
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_publish(MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, integer p_packet_id, octetstring p_payload) :=
-	{
-		msg :=
-		{
-			publish := 
-			{
-				header := p_header,
-				nameLength := 0,
-				topic_name := p_topic_name,
-				packet_identifier := p_packet_id,
-				payload := p_payload
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_publish(MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, integer p_packet_id, octetstring p_payload) :=
+  {
+    msg :=
+    {
+      publish := 
+      {
+        header := p_header,
+        nameLength := 0,
+        topic_name := p_topic_name,
+        packet_identifier := p_packet_id,
+        payload := p_payload
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_publish_base(UCHAR0_65535 p_topic_name, octetstring p_payload) :=
-	{
-		msg :=
-		{
-			publish := 
-			{
-				header := t_publishHeader,
-				nameLength := 0,
-				topic_name := p_topic_name,
-				packet_identifier := omit,
-				payload := p_payload
-			}
-		}
-	} 
+  template MQTT_v3_1_1_Message t_publish_base(UCHAR0_65535 p_topic_name, octetstring p_payload) :=
+  {
+    msg :=
+    {
+      publish := 
+      {
+        header := t_publishHeader,
+        nameLength := 0,
+        topic_name := p_topic_name,
+        packet_identifier := omit,
+        payload := p_payload
+      }
+    }
+  } 
 
-	template MQTT_v3_1_1_Message t_publish_qos(UCHAR0_65535 p_topic_name, octetstring p_payload, QoS p_qos, integer p_packet_id)
-	modifies t_publish_base := 
-	{
-		msg :=
-		{
-			publish := 
-			{
-				header := t_publishHeader(p_qos := p_qos),
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_publish_qos(UCHAR0_65535 p_topic_name, octetstring p_payload, QoS p_qos, integer p_packet_id)
+  modifies t_publish_base := 
+  {
+    msg :=
+    {
+      publish := 
+      {
+        header := t_publishHeader(p_qos := p_qos),
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_publish_receive(template MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, octetstring p_payload) :=
-	{
-		msg :=
-		{
-			publish := 
-			{
-				header := p_header,
-				nameLength := ?,
-				topic_name := p_topic_name,
-				packet_identifier := ?,
-				payload := p_payload
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_publish_receive(template MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, octetstring p_payload) :=
+  {
+    msg :=
+    {
+      publish := 
+      {
+        header := p_header,
+        nameLength := ?,
+        topic_name := p_topic_name,
+        packet_identifier := ?,
+        payload := p_payload
+      }
+    }
+  }
 }
 
 /*
@@ -415,33 +415,33 @@ group publishGroup
 */
 group pubackGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_pubackHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType:='0100'B , 
-			flags := p_flags, 
-			remLength:='00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_pubackHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType:='0100'B , 
+      flags := p_flags, 
+      remLength:='00000000'O
+    }
 
-		template Header tw_pubackHeader(BIT4n p_flags := '0000'B) 
-		modifies t_pubackHeader :=
-		{ 
-			remLength := ?
-		}
-	}
+    template Header tw_pubackHeader(BIT4n p_flags := '0000'B) 
+    modifies t_pubackHeader :=
+    { 
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_puback(integer p_packetId) :=
-	{
-		msg :=
-		{
-			puback := 
-			{
-				header := tw_pubackHeader,
-				packet_identifier := p_packetId
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_puback(integer p_packetId) :=
+  {
+    msg :=
+    {
+      puback := 
+      {
+        header := tw_pubackHeader,
+        packet_identifier := p_packetId
+      }
+    }
+  }
 }
 
 /*
@@ -451,45 +451,45 @@ group pubackGroup
 */
 group pubrecGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_pubrecHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '0101'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_pubrecHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '0101'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_pubrecHeader(BIT4n p_flags := '0000'B) 
-		modifies t_pubrecHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_pubrecHeader(BIT4n p_flags := '0000'B) 
+    modifies t_pubrecHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_pubrec(integer p_packet_id) :=
-	{
-		msg :=
-		{
-			pubrec :=
-			{
-				header := t_pubrecHeader,
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_pubrec(integer p_packet_id) :=
+  {
+    msg :=
+    {
+      pubrec :=
+      {
+        header := t_pubrecHeader,
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_pubrec(integer p_packet_id) := 
-	{
-		msg :=
-		{
-			pubrec :=
-			{
-				header := tw_pubrecHeader,
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_pubrec(integer p_packet_id) := 
+  {
+    msg :=
+    {
+      pubrec :=
+      {
+        header := tw_pubrecHeader,
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 }
 
 /*
@@ -499,45 +499,45 @@ group pubrecGroup
 */
 group pubrelGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_pubrelHeader(BIT4n p_flags := '0010'B) :=
-		{
-			packetType := '0110'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_pubrelHeader(BIT4n p_flags := '0010'B) :=
+    {
+      packetType := '0110'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_pubrelHeader(BIT4n p_flags := '0010'B)
-		modifies t_pubrelHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_pubrelHeader(BIT4n p_flags := '0010'B)
+    modifies t_pubrelHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_pubrel(integer p_packet_id) :=
-	{
-		msg := 
-		{
-			pubrel :=
-			{
-				header := t_pubrelHeader,
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_pubrel(integer p_packet_id) :=
+  {
+    msg := 
+    {
+      pubrel :=
+      {
+        header := t_pubrelHeader,
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_pubrel(integer p_packet_id) :=
-	{
-		msg := 
-		{
-			pubrel :=
-			{
-				header := tw_pubrelHeader,
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_pubrel(integer p_packet_id) :=
+  {
+    msg := 
+    {
+      pubrel :=
+      {
+        header := tw_pubrelHeader,
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 }
 
 /*
@@ -547,45 +547,45 @@ group pubrelGroup
 */
 group pubcompGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_pubcompHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '0111'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_pubcompHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '0111'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_pubcompHeader(BIT4n p_flags := '0000'B)
-		modifies t_pubcompHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_pubcompHeader(BIT4n p_flags := '0000'B)
+    modifies t_pubcompHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_pubcomp(integer p_packet_id) :=
-	{
-		msg := 
-		{
-			pubcomp :=
-			{
-				header := t_pubcompHeader,
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_pubcomp(integer p_packet_id) :=
+  {
+    msg := 
+    {
+      pubcomp :=
+      {
+        header := t_pubcompHeader,
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_pubcomp(integer p_packet_id) :=
-	{
-		msg := 
-		{
-			pubcomp :=
-			{
-				header := tw_pubcompHeader,
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_pubcomp(integer p_packet_id) :=
+  {
+    msg := 
+    {
+      pubcomp :=
+      {
+        header := tw_pubcompHeader,
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 }
 
 /*
@@ -595,101 +595,101 @@ group pubcompGroup
 */
 group subscribeGroup 
 {
-	group fixedHeaderGroup
-	{
-		template Header t_subscribeHeader(BIT4n p_flags := '0010'B) :=
-		{
-			packetType := '1000'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_subscribeHeader(BIT4n p_flags := '0010'B) :=
+    {
+      packetType := '1000'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_subscribeHeader(BIT4n p_flags := '0010'B)
-		modifies t_subscribeHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_subscribeHeader(BIT4n p_flags := '0010'B)
+    modifies t_subscribeHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_subscribe_base(BIT4n p_header_flags) :=
-	{
-		msg :=
-		{
-			subscribe := 
-			{
-				header := t_subscribeHeader(p_header_flags),
-				packet_identifier := 0,
-				payload := {
-					{
-						filterLength := 0,
-						topic_filter := "test",
-						requested_qos := AT_MOST_ONCE_DELIVERY
-					}
-				}
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_subscribe_base(BIT4n p_header_flags) :=
+  {
+    msg :=
+    {
+      subscribe := 
+      {
+        header := t_subscribeHeader(p_header_flags),
+        packet_identifier := 0,
+        payload := {
+          {
+            filterLength := 0,
+            topic_filter := "test",
+            requested_qos := AT_MOST_ONCE_DELIVERY
+          }
+        }
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_subscribe_id(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234) 
-	modifies t_subscribe_base :=
-	{
-		msg :=
-		{
-			subscribe := 
-			{
-				packet_identifier := p_packet_id
-			} 
-		}
-	}
+  template MQTT_v3_1_1_Message t_subscribe_id(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234) 
+  modifies t_subscribe_base :=
+  {
+    msg :=
+    {
+      subscribe := 
+      {
+        packet_identifier := p_packet_id
+      } 
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_subscribe_topic(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, UCHAR0_65535 p_topic_filter, QoS p_qos) 
-	modifies t_subscribe_id :=
-	{
-		msg :=
-		{
-			subscribe := 
-			{
-				payload := 
-				{
-					{
-						filterLength := 0,
-						topic_filter := p_topic_filter,
-						requested_qos := p_qos
-					}
-				}
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_subscribe_topic(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, UCHAR0_65535 p_topic_filter, QoS p_qos) 
+  modifies t_subscribe_id :=
+  {
+    msg :=
+    {
+      subscribe := 
+      {
+        payload := 
+        {
+          {
+            filterLength := 0,
+            topic_filter := p_topic_filter,
+            requested_qos := p_qos
+          }
+        }
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_subscribe_empty_payload(BIT4n p_header_flags := '0010'B, integer p_packet_id)
-	modifies t_subscribe_id := 
-	{
-		msg :=
-		{
-			subscribe := 
-			{
-				payload := { }
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_subscribe_empty_payload(BIT4n p_header_flags := '0010'B, integer p_packet_id)
+  modifies t_subscribe_id := 
+  {
+    msg :=
+    {
+      subscribe := 
+      {
+        payload := { }
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_subscribe_topiclist(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, MQTT_v3_1_1_SubscribePayloadList p_topic_list) 
-	modifies t_subscribe_id:=
-	{
-		msg :=
-		{
-			subscribe := {
-				payload := p_topic_list
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_subscribe_topiclist(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, MQTT_v3_1_1_SubscribePayloadList p_topic_list) 
+  modifies t_subscribe_id:=
+  {
+    msg :=
+    {
+      subscribe := {
+        payload := p_topic_list
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_SubscribePayload t_subscribe_payload(UCHAR0_65535 p_topic_filter, QoS p_qos := AT_MOST_ONCE_DELIVERY) := 
-	{
-		filterLength := 0,
-		topic_filter := p_topic_filter,
-		requested_qos := p_qos
-	}
+  template MQTT_v3_1_1_SubscribePayload t_subscribe_payload(UCHAR0_65535 p_topic_filter, QoS p_qos := AT_MOST_ONCE_DELIVERY) := 
+  {
+    filterLength := 0,
+    topic_filter := p_topic_filter,
+    requested_qos := p_qos
+  }
 }
 
 /*
@@ -699,66 +699,66 @@ group subscribeGroup
 */
 group subackGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_subackHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '1001'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_subackHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '1001'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_subackHeader(BIT4n p_flags := '0000'B)
-		modifies t_subackHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_subackHeader(BIT4n p_flags := '0000'B)
+    modifies t_subackHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_suback_header_flags(BIT4n p_header_flags := '0000'B) :=
-	{
-		msg :=
-		{
-			suback :=
-			{
-				header := tw_subackHeader(p_header_flags),
-				packet_identifier := ?,
-				payload := ?
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_suback_header_flags(BIT4n p_header_flags := '0000'B) :=
+  {
+    msg :=
+    {
+      suback :=
+      {
+        header := tw_subackHeader(p_header_flags),
+        packet_identifier := ?,
+        payload := ?
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_suback_packet_id(integer p_packet_id) :=
-	{
-		msg :=
-		{
-			suback :=
-			{
-				header := ?,
-				packet_identifier := p_packet_id,
-				payload := ?
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_suback_packet_id(integer p_packet_id) :=
+  {
+    msg :=
+    {
+      suback :=
+      {
+        header := ?,
+        packet_identifier := p_packet_id,
+        payload := ?
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message tw_suback(integer p_packet_id, MQTT_v3_1_1_SubackPayload p_payload) 
-	modifies tw_suback_packet_id:=
-	{
-		msg :=
-		{
-			suback :=
-			{
-				header := tw_subackHeader,
-				packet_identifier := p_packet_id,
-				payload := p_payload
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message tw_suback(integer p_packet_id, MQTT_v3_1_1_SubackPayload p_payload) 
+  modifies tw_suback_packet_id:=
+  {
+    msg :=
+    {
+      suback :=
+      {
+        header := tw_subackHeader,
+        packet_identifier := p_packet_id,
+        payload := p_payload
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_SubackPayload t_subackPayload(IntegerList p_return_code) :=
-	{
-		return_code := p_return_code
-	}
+  template MQTT_v3_1_1_SubackPayload t_subackPayload(IntegerList p_return_code) :=
+  {
+    return_code := p_return_code
+  }
 }
 
 /*
@@ -768,55 +768,55 @@ group subackGroup
 */
 group unsubscribeGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_unsubscribeHeader(BIT4n p_flags := '0010'B) :=
-		{
-			packetType := '1010'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_unsubscribeHeader(BIT4n p_flags := '0010'B) :=
+    {
+      packetType := '1010'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_unsubscribeHeader(BIT4n p_flags := '0010'B)
-		modifies t_unsubscribeHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_unsubscribeHeader(BIT4n p_flags := '0010'B)
+    modifies t_unsubscribeHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_unsubscribe_topic(BIT4n p_flags := '0010'B, integer p_packet_id, UCHAR0_65535 p_topic_filter) :=
-	{
-		msg :=
-		{
-			unsubscribe :=
-			{
-				header := t_unsubscribeHeader(p_flags),
-				packet_identifier := p_packet_id,
-				payload := 
-				{
-					{
-						filterLength := 0,
-						topic_filter := p_topic_filter
-					}
-				}
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_unsubscribe_topic(BIT4n p_flags := '0010'B, integer p_packet_id, UCHAR0_65535 p_topic_filter) :=
+  {
+    msg :=
+    {
+      unsubscribe :=
+      {
+        header := t_unsubscribeHeader(p_flags),
+        packet_identifier := p_packet_id,
+        payload := 
+        {
+          {
+            filterLength := 0,
+            topic_filter := p_topic_filter
+          }
+        }
+      }
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_unsubscribe_emtpy_topic(integer p_packet_id) :=
-	{
-		msg :=
-		{
-			unsubscribe :=
-			{
-				header := t_unsubscribeHeader(-),
-				packet_identifier := p_packet_id,
-				payload := 
-				{
-				}
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_unsubscribe_emtpy_topic(integer p_packet_id) :=
+  {
+    msg :=
+    {
+      unsubscribe :=
+      {
+        header := t_unsubscribeHeader(-),
+        packet_identifier := p_packet_id,
+        payload := 
+        {
+        }
+      }
+    }
+  }
 }
 
 /*
@@ -826,45 +826,45 @@ group unsubscribeGroup
 */
 group unsubackGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_unsubackHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '1011'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_unsubackHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '1011'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_unsubackHeader(BIT4n p_flags := '0000'B)
-		modifies t_unsubackHeader :=
-		{
-			remLength := ?
-		}
-	}
-	
-	template MQTT_v3_1_1_Message tw_unsuback_header_flags(BIT4n p_header_flags := '0000'B) :=
-	{
-		msg := 
-		{
-			unsuback :=
-			{
-				header := tw_unsubackHeader(p_header_flags),
-				packet_identifier := ?
-			}
-		}
-	}
-	
-	template MQTT_v3_1_1_Message tw_unsuback_packed_id(integer p_packet_id) :=
-	{
-		msg := 
-		{
-			unsuback :=
-			{
-				header := ?,
-				packet_identifier := p_packet_id
-			}
-		}
-	}
+    template Header tw_unsubackHeader(BIT4n p_flags := '0000'B)
+    modifies t_unsubackHeader :=
+    {
+      remLength := ?
+    }
+  }
+  
+  template MQTT_v3_1_1_Message tw_unsuback_header_flags(BIT4n p_header_flags := '0000'B) :=
+  {
+    msg := 
+    {
+      unsuback :=
+      {
+        header := tw_unsubackHeader(p_header_flags),
+        packet_identifier := ?
+      }
+    }
+  }
+  
+  template MQTT_v3_1_1_Message tw_unsuback_packed_id(integer p_packet_id) :=
+  {
+    msg := 
+    {
+      unsuback :=
+      {
+        header := ?,
+        packet_identifier := p_packet_id
+      }
+    }
+  }
 }
 
 /*
@@ -874,32 +874,32 @@ group unsubackGroup
 */
 group pingreqGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_pingreqHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '1100'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_pingreqHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '1100'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_pingreqHeader(BIT4n p_flags := '0000'B)
-		modifies t_pingreqHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_pingreqHeader(BIT4n p_flags := '0000'B)
+    modifies t_pingreqHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_ping_req(BIT4n p_flags := '0000'B) :=
-	{
-		msg :=
-		{
-			pingreq := 
-			{
-				header := t_pingreqHeader(p_flags)
-			}
-		}
-	}
+  template MQTT_v3_1_1_Message t_ping_req(BIT4n p_flags := '0000'B) :=
+  {
+    msg :=
+    {
+      pingreq := 
+      {
+        header := t_pingreqHeader(p_flags)
+      }
+    }
+  }
 }
 
 /*
@@ -909,21 +909,21 @@ group pingreqGroup
 */
 group pingrespGroup
 {
-	group fixedHeaderGroup
-	{
-		template Header t_pingrespHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '1101'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_pingrespHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '1101'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_pingrespHeader(BIT4n p_flags := '0000'B)
-		modifies t_pingrespHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_pingrespHeader(BIT4n p_flags := '0000'B)
+    modifies t_pingrespHeader :=
+    {
+      remLength := ?
+    }
+  }
 }
 
 /*
@@ -933,59 +933,59 @@ group pingrespGroup
 */
 group disconnectGroup 
 {
-	group fixedHeaderGroup
-	{
-		template Header t_disconnectHeader(BIT4n p_flags := '0000'B) :=
-		{
-			packetType := '1110'B , 
-			flags := p_flags, 
-			remLength := '00000000'O
-		}
+  group fixedHeaderGroup
+  {
+    template Header t_disconnectHeader(BIT4n p_flags := '0000'B) :=
+    {
+      packetType := '1110'B , 
+      flags := p_flags, 
+      remLength := '00000000'O
+    }
 
-		template Header tw_disconnectHeader(BIT4n p_flags := '0000'B)
-		modifies t_disconnectHeader :=
-		{
-			remLength := ?
-		}
-	}
+    template Header tw_disconnectHeader(BIT4n p_flags := '0000'B)
+    modifies t_disconnectHeader :=
+    {
+      remLength := ?
+    }
+  }
 
-	template MQTT_v3_1_1_Message t_disconnect(BIT4n p_flags := '0000'B) := 
-	{
-		msg := {
+  template MQTT_v3_1_1_Message t_disconnect(BIT4n p_flags := '0000'B) := 
+  {
+    msg := {
 
-			disconnect_msg := 
-			{
-				header := t_disconnectHeader(p_flags)
-			}
-		}
-	} 
+      disconnect_msg := 
+      {
+        header := t_disconnectHeader(p_flags)
+      }
+    }
+  } 
 }
 
 
 
 group socketAPIGroup
 {
-	template IPL4_Response t_connection_closed := 
-	{
-		aspEvent := t_close
-	}
+  template IPL4_Response t_connection_closed := 
+  {
+    aspEvent := t_close
+  }
 
-	template IPL4_Response t_empty_response :=
-	{
-		empty := '0'B 
-	}
+  template IPL4_Response t_empty_response :=
+  {
+    empty := '0'B 
+  }
 
-	template ASP_Event t_close := {
-		connClosed := ?
-	}
+  template ASP_Event t_close := {
+    connClosed := ?
+  }
 
-	template ASP_Event t_res := {
-		result := ?
-	}
+  template ASP_Event t_res := {
+    result := ?
+  }
 
-	template ASP_Event t_open := {
-		connOpened := ?
-	}
+  template ASP_Event t_open := {
+    connOpened := ?
+  }
 }
 
 }
