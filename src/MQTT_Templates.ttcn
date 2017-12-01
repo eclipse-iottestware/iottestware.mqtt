@@ -924,6 +924,17 @@ group pingrespGroup
       remLength := ?
     }
   }
+  
+  template MQTT_v3_1_1_Message tw_ping_resp(BIT4n p_flags := '0000'B) :=
+  {
+    msg := 
+    {
+      pingresp := 
+      {
+        header := tw_pingrespHeader(p_flags)
+      }
+    }
+  }
 }
 
 /*

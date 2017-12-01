@@ -1968,11 +1968,124 @@ group unsubackGroup
 group pingreqGroup {
   /*
   * @purpose The IUT closes the network connection if fixed header flags in PINGREQ Control Packet are invalid
+  * 
+  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
   testcase tc_mqtt_broker_pingreq_001() runs on MQTT_Client {
+    f_init("mqtt_client");
+    f_connectNetwork("mqtt_server");
+    f_connectMqtt();
     
+    var MQTT_v3_1_1_Message v_pingReq := valueof(t_ping_req('1111'B));
+    f_send(v_pingReq);
+    
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+    
+    f_disconnectNetwork();
+    f_cleanUp();
   }
 } // pingreqGroup
+
+group pingrespGroup {
+  
+  /*
+  * @purpose The IUT accepts only valid fixed header flags for PINGREQ Control Packet and responds with a PINGRESP
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-3.12.4-1]
+  */
+  testcase tc_mqtt_broker_pingresp_001() runs on MQTT_Client {
+    f_init("mqtt_client");
+    f_connectNetwork("mqtt_server");
+    f_connectMqtt();
+    
+    var MQTT_v3_1_1_Message v_pingReq := valueof(t_ping_req('0000'B));
+    f_send(v_pingReq);
+    
+    var template MQTT_v3_1_1_Message v_pingResp := tw_ping_resp('0000'B);
+    var IPL4_Response v_response := f_receive();
+    
+    if(match(v_response.receivedMsg, v_pingResp))
+    {
+      setverdict(pass, "IUT answered correctly to PINGREQ with ", v_response.receivedMsg);
+    }
+    else
+    {
+      setverdict(fail, "IUT answered incorrectly to PINGREQ with ", v_response.receivedMsg);
+    }
+    
+    f_disconnectMqtt();
+    f_disconnectNetwork();
+    f_cleanUp();
+  }
+} // pingrespGroup
+
+group disconnectGroup {
+  /*
+  * @purpose The IUT MUST validate that reserved bits are set to zero and disconnect the Client if they are not zero.
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-3.14.1-1]
+  */
+  testcase tc_mqtt_broker_disconnect_001() runs on MQTT_Client 
+  {
+    f_init("mqtt_client");
+    f_connectNetwork("mqtt_server");
+    f_connectMqtt();
+    
+    var MQTT_v3_1_1_Message v_disconnect := valueof(t_disconnect('0000'B));
+    f_send(v_disconnect);
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      // Note: this case should/will never occure!
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+
+    f_disconnectNetwork();
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The IUT MUST validate that reserved bits are set to zero and disconnect the Client if they are not zero.
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-3.14.1-1]
+  */
+  testcase tc_mqtt_broker_disconnect_002() runs on MQTT_Client 
+  {
+    f_init("mqtt_client");
+    f_connectNetwork("mqtt_server");
+    f_connectMqtt();
+    
+    var MQTT_v3_1_1_Message v_disconnect := valueof(t_disconnect('1111'B));
+    f_send(v_disconnect);
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      // Note: this case should/will never occure!
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+
+    f_disconnectNetwork();
+    f_cleanUp();
+  }
+} // disconnectGroup
 
 testcase tc_mqtt_broker_095() runs on MQTT_Client
 {
