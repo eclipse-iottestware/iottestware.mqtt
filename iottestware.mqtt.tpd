@@ -3,7 +3,7 @@
   <ProjectName>iottestware.mqtt</ProjectName>
   <ReferencedProjects>
     <ReferencedProject name="IPL4asp_CNL113531" projectLocationURI="../../TestPorts/IPL4asp/IPL4asp_CNL113531.tpd"/>
-    <ReferencedProject name="Mqtt_v3.1.1_CNL113831" projectLocationURI="../../ProtocolModules/MQTT/MQTT_v3.1.1_CNL113831.tpd"/>
+    <ReferencedProject name="MQTT_v3.1.1_CNL113831" projectLocationURI="../../ProtocolModules/MQTT/MQTT_v3.1.1_CNL113831.tpd"/>
   </ReferencedProjects>
   <Folders>
     <FolderResource projectRelativePath="cfg" relativeURI="cfg"/>
