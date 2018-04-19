@@ -781,11 +781,11 @@ group connectGroup
     // TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
     var octetstring v_oCID := 'EDA080'O; // UTF-8 for U+D800 
     var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
-//    @update(t_connect_payload_credentials)
-//    with {
-//      erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
-//      erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
-//    }
+    @update(t_connect_payload_credentials)
+    with {
+      erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
+      erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
+    }
 
     var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
 
@@ -825,14 +825,14 @@ group connectGroup
 
     // prepare invalid client identifier
     // TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
-//    var octetstring v_oCID := c_utf8_bom & unichar2oct(c_invalid_clientId.stringItem) & '00'O; 
-//    var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
+    var octetstring v_oCID := c_utf8_bom & unichar2oct(c_invalid_clientId.stringItem) & '00'O; 
+    var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
 
-//    @update(t_connect_payload_credentials)
-//    with { 
-//      erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
-//      erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
-//    }
+    @update(t_connect_payload_credentials)
+    with { 
+      erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
+      erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
+    }
 
     var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
 
@@ -881,10 +881,10 @@ group connectGroup
 
     // prepare invalid will topic
     // TODO: uncomment when Titan Designer supports @update
-//    @update(t_connect_payload_lwt)
-//    with { 
-//      erroneous (will_topic) "value(raw) := c_utf8_bom & 'D800'O";
-//    }
+    @update(t_connect_payload_lwt)
+    with { 
+      erroneous (will_topic) "value(raw) := c_utf8_bom & 'D800'O";
+    }
 
     var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, c_willTopic, c_willMsg));
 
@@ -933,10 +933,10 @@ group connectGroup
 
     // prepare invalid will topic
     // TODO: uncomment when Titan Designer supports @update
-//    @update(t_connect_payload_lwt)
-//    with { 
-//      erroneous (will_topic) "value(raw) := c_utf8_bom & '0000'O";
-//    }
+    @update(t_connect_payload_lwt)
+    with { 
+      erroneous (will_topic) "value(raw) := c_utf8_bom & '0000'O";
+    }
 
     var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, c_willTopic, c_willMsg));
 
@@ -977,10 +977,10 @@ group connectGroup
 
     // prepare invalid will topic
     // TODO: uncomment when Titan Designer supports @update
-//    @update(t_connect_payload_credentials)
-//    with { 
-//      erroneous (user_name) "value(raw) := c_utf8_bom & 'D800'O";
-//    }
+    @update(t_connect_payload_credentials)
+    with { 
+      erroneous (user_name) "value(raw) := c_utf8_bom & 'D800'O";
+    }
 
     var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
 
@@ -1021,10 +1021,10 @@ group connectGroup
 
     // prepare invalid will topic
     // TODO: uncomment when Titan Designer supports @update
-//    @update(t_connect_payload_credentials)
-//    with { 
-//      erroneous (user_name) "value(raw) := c_utf8_bom & '0000'O";
-//    }
+    @update(t_connect_payload_credentials)
+    with { 
+      erroneous (user_name) "value(raw) := c_utf8_bom & '0000'O";
+    }
 
     var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
 
@@ -2009,16 +2009,16 @@ group pingrespGroup {
     var MQTT_v3_1_1_Message v_pingReq := valueof(t_ping_req('0000'B));
     f_send(v_pingReq);
     
-    var template MQTT_v3_1_1_Message v_pingResp := tw_ping_resp('0000'B);
+    var template IPL4_Response v_expected := { receivedMsg := tw_ping_resp('0000'B) };
     var IPL4_Response v_response := f_receive();
     
-    if(match(v_response.receivedMsg, v_pingResp))
+    if(match(v_response, v_expected))
     {
       setverdict(pass, "IUT answered correctly to PINGREQ with ", v_response.receivedMsg);
     }
     else
     {
-      setverdict(fail, "IUT answered incorrectly to PINGREQ with ", v_response.receivedMsg);
+      setverdict(fail, "IUT answered incorrectly with ", v_response);
     }
     
     f_disconnectMqtt();
