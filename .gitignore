@@ -1,16 +1,18 @@
 .metadata
 bin/
 tmp/
+logs/
 *.tmp
+*.ts
 *.bak
 *.swp
 *~.nib
-local.properties
+*.properties
 .settings/
 .loadpath
 .recommenders
 
-# Titan 
+# Titan
 .TITAN_properties
 .project
 
@@ -37,4 +39,3 @@ local.properties
 
 # Code Recommenders
 .recommenders/Icon
-

@@ -47,12 +47,6 @@
           </FileProperties>
         </FileResource>
         <FileResource>
-          <FilePath>install.sh</FilePath>
-          <FileProperties>
-            <ExcludeFromBuild>true</ExcludeFromBuild>
-          </FileProperties>
-        </FileResource>
-        <FileResource>
           <FilePath>report_template.ts</FilePath>
           <FileProperties>
             <ExcludeFromBuild>true</ExcludeFromBuild>
