@@ -265,8 +265,12 @@ group MqttPTC_FunctionsGroup
     {
       vl_result := f_IPL4_close(IPL4_PCO, ctx.connId);
 
-      // TODO: wait until IPL4 is closed (??)
-      f_sleep(0.5);
+      /*
+       * NOTE: In previous releases IPL4 seemed to need time for closing the connection here.
+       *       The sleep_timer is set to 0.0 by default as modulepar and can be still configured.
+       * TODO: can be removed as soon as IPL4 is proven to function properly without this sleep  
+       */
+      if(sleep_timer >= 0.0) { f_sleep(sleep_timer) }
 
       if(ispresent(vl_result.errorCode))
       {

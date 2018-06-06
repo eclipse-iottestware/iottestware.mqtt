@@ -13,8 +13,6 @@ module MQTT_Pixits {
 
 import from MQTT_TypesAndValues all;
 
-  modulepar
-  {
-    Address_List tsp_addresses := {};
-  }
+    modulepar Address_List tsp_addresses := {};
+    modulepar float sleep_timer := 0.0;
 }
