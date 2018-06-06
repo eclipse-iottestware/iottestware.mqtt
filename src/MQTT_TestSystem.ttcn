@@ -14,7 +14,6 @@ module MQTT_TestSystem {
 import from IPL4asp_PortType all;
 import from MQTT_TypesAndValues all;
 
-
 group portDefinitionsGroup
 {
   // TODO:
@@ -73,9 +72,6 @@ group testComponentsGroup
   {
     var MqttClientContext ctx := c_MqttClientContext_empty; 
     var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
-
-    // TODO: obtain maxResponseTime from PIXITS
-    var float maxResponseTime := 5.0;
   }
 
   /*

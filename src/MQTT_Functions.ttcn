@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2017 Relayr GmbH
+* Copyright (c) 2018 Relayr GmbH
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
@@ -27,13 +27,13 @@ import from IPL4asp_Types all;
 */
 group MqttMTC_FunctionsGroup
 {
-  function f_clientInit(in charstring p_clientId) runs on MQTT_MTC 
+  function f_clientInit(in charstring p_clientId, in charstring p_serverId) runs on MQTT_MTC 
   return integer
   {
     var integer v_clientIdx := -1;
     v_clientIdx := f_clientCreate(p_clientId);
     
-    mqttClients[v_clientIdx].start(f_init(p_clientId));
+    mqttClients[v_clientIdx].start(f_init(p_clientId, p_serverId));
     mqttClients[v_clientIdx].done;
 
     return v_clientIdx;
@@ -77,7 +77,7 @@ group MqttMTC_FunctionsGroup
     if (v_client == null) { log("No mqtt client found"); return false; }   
     f_isRunningGuard(v_client);
 
-    v_client.start(f_disconnectNetwork());
+    v_client.start(f_disconnectIPL4());
     v_client.done;
 
     return true;
@@ -196,7 +196,7 @@ group MqttMTC_FunctionsGroup
 group MqttPTC_FunctionsGroup
 {
 
-  function f_init(in charstring p_clientId) runs on MQTT_Client
+  function f_init(in charstring p_clientId, in charstring p_serverId) runs on MQTT_Client
   {
     log("started for ", p_clientId);
 
@@ -216,6 +216,8 @@ group MqttPTC_FunctionsGroup
       }
 
       map(self:IPL4_PCO, system:IPL4_PCO);
+      
+      f_connectNetwork(p_serverId);
     }
     else
     {
@@ -256,7 +258,7 @@ group MqttPTC_FunctionsGroup
   }
 
 
-  function f_disconnectNetwork() runs on MQTT_Client
+  function f_disconnectIPL4() runs on MQTT_Client
   {
     var Result vl_result;
 
@@ -295,6 +297,9 @@ group MqttPTC_FunctionsGroup
 
   function f_cleanUp() runs on MQTT_Client
   {
+    // disconnect IPL4 connection first
+    f_disconnectIPL4();
+    
     log("Cleanup started");
 
     unmap(self:IPL4_PCO, system:IPL4_PCO);
@@ -588,7 +593,7 @@ group MqttPTC_FunctionsGroup
 
       if(ischosen(v_response.aspEvent))
       {
-        // TODO:
+        // Note:
         // connection closed is sometimes signalised with connClosed 
         // and sometimes with Result.ERROR_SOCKET
         if(ischosen(v_response.aspEvent.connClosed))

@@ -1,9 +1,9 @@
 /*******************************************************************************
-* Copyright (c) 2017 Relayr GmbH
+* Copyright (c) 2018 Relayr GmbH
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html 
+* http://www.eclipse.org/legal/epl-v10.html
 *
 * Contributors:
 *   Alexander Kaiser
@@ -15,6 +15,7 @@ import from MQTT_TestSystem all;
 import from MQTT_TypesAndValues all;
 import from MQTT_Functions all;
 import from MQTT_Templates all;
+import from MQTT_Testcase_Functions all;
 
 import from MQTT_v3_1_1_Types all;
 
@@ -23,30 +24,15 @@ group connectGroup
 
   /*
   * @purpose The IUT MUST close the network connection if fixed header flags in CONNECT Control Packet are invalid
-  * 
+  *
   * @reference [MQTT-2.2.2-2], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
-  testcase tc_mqtt_broker_connect_001() runs on MQTT_Client
-  {  
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+  testcase TC_MQTT_BROKER_CONNECT_001() runs on MQTT_Client
+  {
+    f_init("mqtt_client", "mqtt_server");
 
-    var UTF8EncodedString v_clientId := f_getClientId();
+    f_TC_MQTT_BROKER_CONNECT_001();
 
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_flags(p_client_id := v_clientId, p_flags := '1111'B);
-    f_send(valueof(v_conMsg));
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -56,45 +42,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-1]
   */
-  testcase tc_mqtt_broker_connect_002() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_002() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const UCHAR0_65535 c_protocolName := "TTQM";
-    var UTF8EncodedString v_clientId := f_getClientId();
+    f_TC_MQTT_BROKER_CONNECT_002();
 
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_protocol_name(v_clientId, c_protocolName);
-    f_send(valueof(v_conMsg));
-
-    var IPL4_Response v_response := f_receive();
-    var template IPL4_Response v_connack := { receivedMsg :=  tw_connack };
-
-    if(ischosen(v_response.aspEvent))
-    {
-      if(ischosen(v_response.aspEvent.connClosed))
-      {
-        setverdict(pass, "IUT does not accept incorrect Protocol Names");
-      }
-      else
-      {
-        setverdict(inconc, "IUT responds with ", v_response.aspEvent)
-      }
-    }
-    else if(match(v_response, v_connack))
-    {
-      setverdict(pass, "IUT accepts incorrect Protocol Names");
-      f_disconnectMqtt();
-    }
-    else
-    {
-      setverdict(fail, v_response);
-      f_disconnectMqtt();
-    }
-
-
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -103,104 +56,43 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-2], [MQTT-3.1.4-4]
   */
-  testcase tc_mqtt_broker_connect_003() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_003() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
+    f_TC_MQTT_BROKER_CONNECT_003();
 
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_credentials(v_clientId, v_username, v_password);
-    f_send(valueof(v_conMsg));
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and return code 0x00");
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
 
   /*
-  * @purpose The IUT MUST validate that the reserved flag in the CONNECT Control Packet is set to zero and disconnect the client 
+  * @purpose The IUT MUST validate that the reserved flag in the CONNECT Control Packet is set to zero and disconnect the client
   * if it is not zero
   *
   * @reference [MQTT-3.1.2-3], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
-  testcase tc_mqtt_broker_connect_004() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_004() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    var UTF8EncodedString v_clientId := f_getClientId();
+    f_TC_MQTT_BROKER_CONNECT_004();
 
-    var template (value) MQTT_v3_1_1_ConnectFlags v_conFlags := t_connectFlags_reserved;
-    var template (value) MQTT_v3_1_1_ConnectPayload v_conPayload := t_connect_payload_empty(v_clientId);
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
-    f_send(valueof(v_conMsg));
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
   /*
   * @purpose If the will_flag is set to 1, the will_qos and will_retain fields in the connect flags
   * will be used by the IUT, and the will_topic and will_message fields MUST be present in the payload
-  * 
+  *
   * @reference [MQTT-3.1.2-9], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
-  testcase tc_mqtt_broker_connect_005() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_005() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_will_flag := '1'B;
-    const BIT1n c_will_retain := '0'B;
-    const QoS c_qos := AT_MOST_ONCE_DELIVERY;
+    f_TC_MQTT_BROKER_CONNECT_005();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var template (value) MQTT_v3_1_1_ConnectFlags v_conFlags := t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag);
-    var template (value) MQTT_v3_1_1_ConnectPayload v_conPayload := t_connect_payload_credentials(v_clientId, v_username, v_password);
-
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
-    f_send(valueof(v_conMsg));
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -210,38 +102,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-11], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
-  testcase tc_mqtt_broker_connect_006() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_006() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const universal charstring c_wm := "Will Message";
-    const BIT1n c_will_flag := '0'B;
-    const BIT1n c_will_retain := '1'B;
-    const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
-    const OctStringWithLength c_will_msg := { stringLength := lengthof(c_wm), stringItem := unichar2oct(c_wm) };
+    f_TC_MQTT_BROKER_CONNECT_006();
 
-    var UTF8EncodedString v_will_topic := f_getConcatenatedTopicName("LWT");
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, v_will_topic, c_will_msg));
-
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
-    f_send(valueof(v_conMsg));
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -250,76 +116,27 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-13], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
-  testcase tc_mqtt_broker_connect_007() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_007() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_will_flag := '0'B;
-    const BIT1n c_will_retain := '0'B;
-    const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
+    f_TC_MQTT_BROKER_CONNECT_007();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
-    f_send(valueof(v_conMsg));
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
   /*
-  * @purpose If the will_flag is set to 1, the value of will_qos can be 0, 1 or 2. 
+  * @purpose If the will_flag is set to 1, the value of will_qos can be 0, 1 or 2.
   * It MUST NOT be 3
   *
   * @reference [MQTT-3.1.2-14], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
-  testcase tc_mqtt_broker_connect_008() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_008() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const universal charstring c_wm := "Will Message";
-    const BIT1n c_will_flag := '1'B;
-    const BIT1n c_will_retain := '0'B;
-    const QoS c_qos :=  RESERVED;
-    const OctStringWithLength c_will_msg := { stringLength := lengthof(c_wm), stringItem := unichar2oct(c_wm) };
+    f_TC_MQTT_BROKER_CONNECT_008();
 
-    var UTF8EncodedString v_will_topic := f_getConcatenatedTopicName("LWT");
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, v_will_topic, c_will_msg));
-
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
-    f_send(valueof(v_conMsg));
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -328,45 +145,12 @@ group connectGroup
   *
   * @references [MQTT-3.1.2-14], [MQTT-3.1.4-4]
   */
-  testcase tc_mqtt_broker_connect_009() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_009() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const universal charstring c_wm := "Will Message";
-    const BIT1n c_will_flag := '1'B;
-    const BIT1n c_will_retain := '0'B;
-    const QoS c_qos :=  AT_MOST_ONCE_DELIVERY;
-    const OctStringWithLength c_will_msg := { stringLength := lengthof(c_wm), stringItem := unichar2oct(c_wm) };
+    f_TC_MQTT_BROKER_CONNECT_009();
 
-    var UTF8EncodedString v_will_topic := f_getConcatenatedTopicName("LWT");
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, v_will_topic, c_will_msg));
-
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
-    f_send(valueof(v_conMsg));
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and return code 0x00");
-
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -375,35 +159,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-15], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
-  testcase tc_mqtt_broker_connect_010() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_010() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_will_flag := '0'B;
-    const BIT1n c_will_retain := '1'B;
-    const QoS c_qos :=  AT_MOST_ONCE_DELIVERY;
+    f_TC_MQTT_BROKER_CONNECT_010();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -412,42 +173,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-15], [MQTT-3.1.4-4]
   */
-  testcase tc_mqtt_broker_connect_011() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_011() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_will_flag := '0'B;
-    const BIT1n c_will_retain := '0'B;
-    const QoS c_qos :=  AT_MOST_ONCE_DELIVERY;
+    f_TC_MQTT_BROKER_CONNECT_011();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_will_retain, p_will_qos := c_qos, p_will_flag := c_will_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and return code 0x00");
-
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -456,36 +187,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-22]
   */
-  testcase tc_mqtt_broker_connect_012() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_012() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '0'B;
-    const BIT1n c_password_flag := '1'B;
+    f_TC_MQTT_BROKER_CONNECT_012();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -494,35 +201,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-18]
   */
-  testcase tc_mqtt_broker_connect_013() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_013() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '0'B;
-    const BIT1n c_password_flag := '0'B;
+    f_TC_MQTT_BROKER_CONNECT_013();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-
-    var template (value) MQTT_v3_1_1_ConnectFlags v_conFlags := t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag);
-    var template (value) MQTT_v3_1_1_ConnectPayload v_conPayload := t_connect_payload_username(v_clientId, v_username);
-
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_with_payload(v_conFlags, v_conPayload);
-    f_send(valueof(v_conMsg));
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -531,35 +215,13 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-19]
   */
-  testcase tc_mqtt_broker_connect_014() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_014() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '1'B;
-    const BIT1n c_password_flag := '0'B;
+    f_TC_MQTT_BROKER_CONNECT_014();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_empty(v_clientId));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp();  
+    f_cleanUp();
   }
 
   /*
@@ -567,35 +229,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-20]
   */
-  testcase tc_mqtt_broker_connect_015() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_015() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '0'B;
-    const BIT1n c_password_flag := '0'B;
+    f_TC_MQTT_BROKER_CONNECT_015();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_password(v_clientId, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -604,35 +243,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-21]
   */
-  testcase tc_mqtt_broker_connect_016() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_016() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '1'B;
-    const BIT1n c_password_flag := '1'B;
+    f_TC_MQTT_BROKER_CONNECT_016();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_username(v_clientId, v_username));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -641,38 +257,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.3-5]
   */
-  testcase tc_mqtt_broker_connect_017() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_017() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '1'B;
-    const BIT1n c_password_flag := '1'B;
+    f_TC_MQTT_BROKER_CONNECT_017();
 
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var UTF8EncodedString v_clientId := { stringLength := 24, stringItem := "01234567abcdefghABCDEFGH" };
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    // TODO: only pass verdicts?
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT accepts only clientIds up to 23 Bytes");
-    }
-    else
-    {
-      setverdict(pass, "IUT accepts clientIds longer than 23 Bytes");
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -681,82 +271,28 @@ group connectGroup
   *
   * @reference [MQTT-3.1.3-5]
   */
-  testcase tc_mqtt_broker_connect_018() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_018() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '1'B;
-    const BIT1n c_password_flag := '1'B;
+    f_TC_MQTT_BROKER_CONNECT_018();
 
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var UTF8EncodedString v_clientId := { stringLength := 23, stringItem := "<([^°+-_!§$%&/=?ß@üäö.," };
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    // TODO: only pass verdicts?
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT does not accept clientIds with special characters");
-    }
-    else
-    {
-      setverdict(pass, "IUT accepts clientIds with special characters");
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
   /*
-  * @purpose The IUT MAY allow a client to supply a client identifier that has a length of zero bytes, 
+  * @purpose The IUT MAY allow a client to supply a client identifier that has a length of zero bytes,
   * however if it does so the IUT MUST treat this as a special case and assign a unique client identifier
-  * to that client 
+  * to that client
   *
   * @reference [MQTT-3.1.3-6], [MQTT-3.1.3-7], [MQTT-3.1.4-4]
   */
-  testcase tc_mqtt_broker_connect_019() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_019() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const BIT1n c_user_name_flag := '1'B;
-    const BIT1n c_password_flag := '1'B;
+    f_TC_MQTT_BROKER_CONNECT_019();
 
-    const UTF8EncodedString c_zero_byte_clientid := {stringLength := 0, stringItem := ""};
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials(p_user_name_flag := c_user_name_flag, p_password_flag := c_password_flag));
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_zero_byte_clientid, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and return code 0x00");
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    // disconnect MQTT Session
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -765,45 +301,13 @@ group connectGroup
   *
   * @reference [MQTT-1.5.3-1]
   */
-  testcase tc_mqtt_broker_connect_020() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_020() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const octetstring c_utf8_bom := 'EFBBBF'O;
-    const UTF8EncodedString c_invalid_clientId := {stringLength := 0, stringItem := "MyClientId" };
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
+    f_TC_MQTT_BROKER_CONNECT_020();
 
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
-
-    // prepare invalid client identifier
-    // TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
-    var octetstring v_oCID := 'EDA080'O; // UTF-8 for U+D800 
-    var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
-    @update(t_connect_payload_credentials)
-    with {
-      erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
-      erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
-    }
-
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -811,46 +315,13 @@ group connectGroup
   *
   * @reference [MQTT-1.5.3-2]
   */
-  testcase tc_mqtt_broker_connect_021() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_021() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const octetstring c_utf8_bom := 'EFBBBF'O;
-    const UTF8EncodedString c_invalid_clientId := {stringLength := 0, stringItem := "MyClientId" };
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
+    f_TC_MQTT_BROKER_CONNECT_021();
 
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
-
-    // prepare invalid client identifier
-    // TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
-    var octetstring v_oCID := c_utf8_bom & unichar2oct(c_invalid_clientId.stringItem) & '00'O; 
-    var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
-
-    @update(t_connect_payload_credentials)
-    with { 
-      erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
-      erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
-    }
-
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -858,51 +329,13 @@ group connectGroup
   *
   * @reference [MQTT-1.5.3-1], [MQTT-3.1.3-10]
   */
-  testcase tc_mqtt_broker_connect_022() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_022() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const octetstring c_utf8_bom := 'EFBBBF'O;
+    f_TC_MQTT_BROKER_CONNECT_022();
 
-    const BIT1n c_wr := '0'B;                     // Will Retain Flag
-    const QoS c_qos := AT_MOST_ONCE_DELIVERY;     // Will QoS
-    const BIT1n c_wf := '1'B;                     // Will Flag
-
-    const universal charstring c_wm := "Will Message";
-    const octetstring c_os_wm := unichar2oct(c_wm);
-    const UTF8EncodedString c_willTopic := { stringLength := 0, stringItem := "dummyTopic"};
-    const OctStringWithLength c_willMsg := { stringLength := lengthof(c_os_wm), stringItem := c_os_wm};
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_wr, p_will_qos := c_qos, p_will_flag := c_wf));
-
-    // prepare invalid will topic
-    // TODO: uncomment when Titan Designer supports @update
-    @update(t_connect_payload_lwt)
-    with { 
-      erroneous (will_topic) "value(raw) := c_utf8_bom & 'D800'O";
-    }
-
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, c_willTopic, c_willMsg));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -910,51 +343,13 @@ group connectGroup
   *
   * @reference [MQTT-1.5.3-2], [MQTT-3.1.3-10]
   */
-  testcase tc_mqtt_broker_connect_023() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_023() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const octetstring c_utf8_bom := 'EFBBBF'O;
+    f_TC_MQTT_BROKER_CONNECT_023();
 
-    const BIT1n c_wr := '0'B;                     // Will Retain Flag
-    const QoS c_qos := AT_MOST_ONCE_DELIVERY;     // Will QoS
-    const BIT1n c_wf := '1'B;                     // Will Flag
-
-    const universal charstring c_wm := "Will Message";
-    const octetstring c_os_wm := unichar2oct(c_wm);
-    const UTF8EncodedString c_willTopic := { stringLength := 0, stringItem := "dummyTopic"};
-    const OctStringWithLength c_willMsg := { stringLength := lengthof(c_os_wm), stringItem := c_os_wm};
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_wr, p_will_qos := c_qos, p_will_flag := c_wf));
-
-    // prepare invalid will topic
-    // TODO: uncomment when Titan Designer supports @update
-    @update(t_connect_payload_lwt)
-    with { 
-      erroneous (will_topic) "value(raw) := c_utf8_bom & '0000'O";
-    }
-
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, c_willTopic, c_willMsg));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -962,43 +357,13 @@ group connectGroup
   *
   * @reference [MQTT-1.5.3-1], [MQTT-3.1.3-11]
   */
-  testcase tc_mqtt_broker_connect_024() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_024() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const octetstring c_utf8_bom := 'EFBBBF'O;
+    f_TC_MQTT_BROKER_CONNECT_024();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
-
-    // prepare invalid will topic
-    // TODO: uncomment when Titan Designer supports @update
-    @update(t_connect_payload_credentials)
-    with { 
-      erroneous (user_name) "value(raw) := c_utf8_bom & 'D800'O";
-    }
-
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -1006,84 +371,31 @@ group connectGroup
   *
   * @reference [MQTT-1.5.3-2], [MQTT-3.1.3-11]
   */
-  testcase tc_mqtt_broker_connect_025() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNECT_025() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    const octetstring c_utf8_bom := 'EFBBBF'O;
+    f_TC_MQTT_BROKER_CONNECT_025();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
-
-    // prepare invalid will topic
-    // TODO: uncomment when Titan Designer supports @update
-    @update(t_connect_payload_credentials)
-    with { 
-      erroneous (user_name) "value(raw) := c_utf8_bom & '0000'O";
-    }
-
-    var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
-    f_send(v_conMsg);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 } // connectGroup
 
 group connackGroup
 {
   /*
-  * @purpose The IUT accepts only valid fixed header flags for CONNECT Control Packet and 
+  * @purpose The IUT accepts only valid fixed header flags for CONNECT Control Packet and
   * responds with CONNACK
   *
   * @reference [MQTT-2.2.2-1], [MQTT-3.1.4-4]
   */
-  testcase tc_mqtt_broker_connack_001() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNACK_001() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
+    f_TC_MQTT_BROKER_CONNACK_001();
 
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_credentials(v_clientId, v_username, v_password));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and return code 0x00");
-
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -1092,36 +404,13 @@ group connackGroup
   *
   * @reference [MQTT-3.2.2-1]
   */
-  testcase tc_mqtt_broker_connack_002() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNACK_002() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
+    f_TC_MQTT_BROKER_CONNACK_002();
 
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_credentials(v_clientId, v_username, v_password));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT accepted connection with clean session set to 1");
-
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -1129,46 +418,13 @@ group connackGroup
   *
   * @reference [MQTT-3.2.2-2]
   */
-  testcase tc_mqtt_broker_connack_003() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNACK_003() runs on MQTT_Client
   {
-    f_init("mqtt_client");
+    f_init("mqtt_client", "mqtt_server");
 
-    /* Initial Condition */
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt(p_cleanSession := '0'B);
-    f_disconnectMqtt();
-    f_disconnectNetwork();
+    f_TC_MQTT_BROKER_CONNACK_003();
 
-    /* Test Purpose */
-    f_connectNetwork("mqtt_server");
-
-    const BIT1n c_cleanSession := '0'B;
-    const BIT1n c_sessionPresent := '1'B;
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_session(v_clientId, v_username, v_password, c_cleanSession));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack(c_sessionPresent) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT restored present session");
-
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -1177,46 +433,13 @@ group connackGroup
   *
   * @reference [MQTT-3.2.2-3]
   */
-  testcase tc_mqtt_broker_connack_004() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNACK_004() runs on MQTT_Client
   {
-    f_init("mqtt_client");
+    f_init("mqtt_client", "mqtt_server");
 
-    /* Initial Condition */
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt(p_cleanSession := '1'B);
-    f_disconnectMqtt();
-    f_disconnectNetwork();
+    f_TC_MQTT_BROKER_CONNACK_004();
 
-    /* Test Purpose */
-    f_connectNetwork("mqtt_server");
-
-    const BIT1n c_cleanSession := '0'B;
-    const BIT1n c_sessionPresent := '0'B;
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_session(v_clientId, v_username, v_password, c_cleanSession));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack(c_sessionPresent) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT had no present session to restore");
-
-      // disconnect MQTT Session
-      f_disconnectMqtt();
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectNetwork();
-    f_cleanUp(); 
+    f_cleanUp();
   }
 
   /*
@@ -1224,104 +447,37 @@ group connackGroup
   *
   * @reference [MQTT-3.1.2-2], [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
-  testcase tc_mqtt_broker_connack_005() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNACK_005() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
+    f_TC_MQTT_BROKER_CONNACK_005();
 
-    const integer c_protoLevel := 255;
-    var template MQTT_v3_1_1_Message v_conMsg := t_connect_protocol_level(v_clientId, v_username, v_password, c_protoLevel);
-    f_send(valueof(v_conMsg));
-
-    // wait for CONNACK with return_code := 0
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_unacceptable_version };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and Return Code 0x01");
-
-      // wait for Network Disconnect
-      if(f_receiveNetworkClosedEvent())
-      {
-        setverdict(pass, "IUT closed the Network Connection correctly");
-      }
-      else
-      {
-        setverdict(fail, "IUT MUST close the Network Connection");
-        // disconnect MQTT Connection
-        f_disconnectMqtt();
-      }
-    }
-    else
-    {
-      setverdict(fail, "IUT send wrong response ", v_response);
-      // disconnect MQTT Connection
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
   /*
-  * @purpose If the client supplies a zero-byte client identifier with clean session set to 0, 
+  * @purpose If the client supplies a zero-byte client identifier with clean session set to 0,
   * the IUT MUST respond to the CONNECT with a CONNACK and return code 0x02 and then close the
   * network connection.
   *
   * @reference [MQTT-3.1.3-8], [MQTT-3.1.3-9], [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
-  testcase tc_mqtt_broker_connack_006() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNACK_006() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    var UTF8EncodedString v_username := f_getUsername();
-    var OctStringWithLength v_password := f_getPassword();
+    f_TC_MQTT_BROKER_CONNACK_006();
 
-    const BIT1n c_clean_session := '0'B;
-    const UTF8EncodedString c_zero_byte_clientid := {stringLength := 0, stringItem := ""};
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_session(c_zero_byte_clientid, v_username, v_password, c_clean_session));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0x02
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_id_rejected };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and return code 0x02");
-
-      // wait IUT to close the Network Connection
-      if(f_receiveNetworkClosedEvent())
-      {
-        setverdict(pass, "IUT closed the Network Connection correctly after refusing connection");
-      }
-      else
-      {
-        setverdict(fail, "IUT MUST close the Network Connection after refusing connection");
-        // disconnect MQTT Connection
-        f_disconnectMqtt();
-      }
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-
-      // disconnect MQTT Connection
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
-  testcase tc_mqtt_broker_connack_007() runs on MQTT_Client
+  /*
+   * @purpose The Network Connection has been made but the MQTT service is unavailable
+   *
+   * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
+   */
+  testcase TC_MQTT_BROKER_CONNACK_007() runs on MQTT_Client
   {
     // TODO:
     setverdict(fail, "NO IMPLEMENTED YET");
@@ -1332,60 +488,12 @@ group connackGroup
   *
   * @reference [MQTT-3.1.2-19], [MQTT-3.1.2-21], [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
-  testcase tc_mqtt_broker_connack_008() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_CONNACK_008() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
+    f_init("mqtt_client", "mqtt_server");
 
-    // build invalid credentials
-    const universal charstring c_uc_invalid_username := "invalid_username";
-    const octetstring c_invalid_password_string := '113355'O;
+    f_TC_MQTT_BROKER_CONNACK_008();
 
-    var UTF8EncodedString v_clientId := f_getClientId();
-    const UTF8EncodedString c_invalid_username := { stringLength := lengthof(c_uc_invalid_username), stringItem := c_uc_invalid_username};
-    const OctStringWithLength c_invalid_password := { stringLength := lengthof(c_invalid_password_string), stringItem := c_invalid_password_string };
-
-    var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_credentials(v_clientId, c_invalid_username, c_invalid_password));
-    f_send(v_conMsg);
-
-    // wait for CONNACK with return_code := 0x04
-    var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_bad_credentials };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with ACK and return code 0x04");
-
-      // wait IUT to close the Network Connection
-      if(f_receiveNetworkClosedEvent())
-      {
-        setverdict(pass, "IUT closed the Network Connection correctly after refusing connection");
-      }
-      else
-      {
-        setverdict(fail, "IUT MUST close the Network Connection after refusing connection");
-        // disconnect MQTT Connection
-        f_disconnectMqtt();
-      }
-    }
-    else
-    {
-      // TODO: how to handle brokers which don't require credentials??
-      v_expected := { receivedMsg :=  tw_connack };
-      if(match(v_response, v_expected))
-      {
-        setverdict(inconc, "IUT does not require credentials");
-      }
-      else
-      {
-        setverdict(fail, "IUT answered incorrectly with ", v_response);
-      }
-
-      // disconnect MQTT Connection
-      f_disconnectMqtt();
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 } // connackGroup
@@ -1393,38 +501,17 @@ group connackGroup
 group subscribeGroup
 {
   /*
-  * @purpose The IUT MUST close the network connection if the fixed header flags in the SUBSCRIBE control 
+  * @purpose The IUT MUST close the network connection if the fixed header flags in the SUBSCRIBE control
   * packet are invalid
   *
   * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.8.1-1]
   */
-  testcase tc_mqtt_broker_subscribe_001() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBSCRIBE_001() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := AT_MOST_ONCE_DELIVERY;
-    const BIT4n c_header_flags := '1101'B;
+    f_TC_MQTT_BROKER_SUBSCRIBE_001();
 
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
-
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_header_flags := c_header_flags, p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1433,28 +520,12 @@ group subscribeGroup
   *
   * @reference [MQTT-3.8.3-3], [MQTT-4.8.0-1]
   */
-  testcase tc_mqtt_broker_subscribe_005() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBSCRIBE_005() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
+    f_TC_MQTT_BROKER_SUBSCRIBE_005();
 
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_empty_payload(p_packet_id := v_pid));
-    f_send(v_subscribe);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1464,9 +535,9 @@ group subscribeGroup
   *
   * @reference [MQTT-3.8.3-4]
   */
-  testcase tc_mqtt_broker_subscribe_006() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBSCRIBE_006() runs on MQTT_Client
   {
-    // NOTE: 6 reserved Bits in Requested QoS not available  
+    // NOTE: 6 reserved Bits in Requested QoS not available
     setverdict(fail, "NOT IMPLEMENTED YET");
   }
 
@@ -1475,30 +546,12 @@ group subscribeGroup
   *
   * @reference [MQTT-3.8.3-4]
   */
-  testcase tc_mqtt_broker_subscribe_007() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBSCRIBE_007() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := RESERVED;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_SUBSCRIBE_007();
 
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 } // subscribeGroup
@@ -1506,73 +559,31 @@ group subscribeGroup
 group subackGroup
 {
   /*
-  * @purpose The IUT accepts only valid fixed header flags for SUBSCRIBE control packet and 
+  * @purpose The IUT accepts only valid fixed header flags for SUBSCRIBE control packet and
   * responds with SUBACK
   *
   */
-  testcase tc_mqtt_broker_suback_001() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBACK_001() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_SUBACK_001();
 
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    var template IPL4_Response v_expected := { receivedMsg := tw_suback_header_flags };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with SUBACK and correct header flags");
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
   /*
-  * @purpose SUBSCRIBE control packet (in case where QoS > 0) MUST contain a non-zero 16-bit 
+  * @purpose SUBSCRIBE control packet (in case where QoS > 0) MUST contain a non-zero 16-bit
   * packet identifier
   *
   * @reference [MQTT-2.3.1-1], [MQTT-2.3.1-7], [MQTT-3.8.4-1], [MQTT-3.8.4-2]
   */
-  testcase tc_mqtt_broker_suback_002() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBACK_002() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_SUBACK_002();
 
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    var template IPL4_Response v_expected := { receivedMsg := tw_suback_packet_id(v_pid) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with SUBACK and correct packet_identifier ", v_pid);
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1582,36 +593,12 @@ group subackGroup
   *
   * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
-  testcase tc_mqtt_broker_suback_003() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBACK_003() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := AT_MOST_ONCE_DELIVERY;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_SUBACK_003();
 
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    // wait for SUBACK with return_code := 0x00
-    const integer c_return_code := enum2int(c_qos);
-    var MQTT_v3_1_1_SubackPayload v_payload := valueof(t_subackPayload({c_return_code}));
-    var template IPL4_Response v_expected := { receivedMsg := tw_suback(v_pid, v_payload) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with SUBACK and return code ", c_return_code);
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1620,64 +607,12 @@ group subackGroup
   *
   * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
-  testcase tc_mqtt_broker_suback_004() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBACK_004() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_SUBACK_004();
 
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    // wait for SUBACK with return_code := 0x01
-    const integer c_return_code := enum2int(c_qos);
-    var MQTT_v3_1_1_SubackPayload v_payload := valueof(t_subackPayload({c_return_code}));
-    var template IPL4_Response v_expected := { receivedMsg := tw_suback(v_pid, v_payload) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with SUBACK and return code ", c_return_code);
-    }
-    else
-    {
-      if(ispresent(v_response.receivedMsg.msg.suback))
-      {
-        // response was a SUBACK, check the payload
-        if(sizeof(v_response.receivedMsg.msg.suback.payload) == 1)
-        {
-          var integer v_rc := v_response.receivedMsg.msg.suback.payload.return_code[0];
-          if(v_rc > c_return_code)
-          {
-            setverdict(fail, "SUBACK return code ", v_rc, " is greater than requested ");
-          }
-          else
-          {
-            // NOTE: SUBACK returns the maximum granted QoS not the requested!
-            var QoS v_qos_granted;
-            int2enum(v_rc, v_qos_granted);
-            setverdict(pass, "IUT granted QoS ", v_qos_granted, " although ", c_qos, " was requested");
-          }
-        }
-        else
-        {
-          // response SUBACK has more return codes than subscriptions
-          setverdict(fail, "SUBACK contains more return codes than subscriptions");
-        }
-      }
-      else
-      {
-        // response was not a SUBACK
-        setverdict(fail, "IUT answered incorrectly with ", v_response);
-      }
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1687,64 +622,12 @@ group subackGroup
   *
   * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
-  testcase tc_mqtt_broker_suback_005() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBACK_005() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := EXACTLY_ONE_DELIVERY;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_SUBACK_005();
 
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    // wait for SUBACK with return_code := 0x02
-    const integer c_return_code := enum2int(c_qos);
-    var MQTT_v3_1_1_SubackPayload v_payload := valueof(t_subackPayload({c_return_code}));
-    var template IPL4_Response v_expected := { receivedMsg := tw_suback(v_pid, v_payload) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with SUBACK and return code ", c_return_code);
-    }
-    else
-    {
-      if(ispresent(v_response.receivedMsg.msg.suback))
-      {
-        // response was a SUBACK, check the payload
-        if(sizeof(v_response.receivedMsg.msg.suback.payload) == 1)
-        {
-          var integer v_rc := v_response.receivedMsg.msg.suback.payload.return_code[0];
-          if(v_rc > c_return_code)
-          {
-            setverdict(fail, "SUBACK return code ", v_rc, " is greater than requested ");
-          }
-          else
-          {
-            // NOTE: SUBACK returns the maximum granted QoS not the requested!
-            var QoS v_qos_granted;
-            int2enum(v_rc, v_qos_granted);
-            setverdict(pass, "IUT granted QoS ", v_qos_granted, " although ", c_qos, " was requested");
-          }
-        }
-        else
-        {
-          // response SUBACK has more return codes than subscriptions
-          setverdict(fail, "SUBACK contains more return codes than subscriptions");
-        }
-      }
-      else
-      {
-        // response was not a SUBACK
-        setverdict(fail, "IUT answered incorrectly with ", v_response);
-      }
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1754,50 +637,12 @@ group subackGroup
   *
   * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
-  testcase tc_mqtt_broker_suback_006() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_SUBACK_006() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    const charstring c_topicPrefix := "/prefix";
+    f_TC_MQTT_BROKER_SUBACK_006();
 
-    var integer v_pid := f_randomPacketId();
-    const QoS c_qos := AT_MOST_ONCE_DELIVERY;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
-
-    // this should ensure that the subscription goes to a valid but not accessable topic
-    v_topic.stringItem := c_topicPrefix & v_topic.stringItem;
-    v_topic.stringLength := v_topic.stringLength + lengthof(c_topicPrefix);
-
-    var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
-    f_send(v_subscribe);
-
-    // wait for SUBACK with return_code := 0x80
-    const integer c_return_code := hex2int('80'H);
-    var MQTT_v3_1_1_SubackPayload v_payload := valueof(t_subackPayload({c_return_code}));
-    var template IPL4_Response v_expected := { receivedMsg := tw_suback(v_pid, v_payload) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with SUBACK and return code ", c_return_code);
-    }
-    else
-    {
-      if(ispresent(v_response.receivedMsg.msg.suback))
-      {
-        setverdict(inconc, "IUT seems not to implement Access restrictions for subscriptions");
-      }
-      else
-      {
-        // response was not a SUBACK
-        setverdict(fail, "IUT answered not with SUBACK ", v_response);
-      }
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 } // subackGroup
@@ -1809,29 +654,12 @@ group unsubscribeGroup
   *
   * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.10.1-1]
   */
-  testcase tc_mqtt_broker_unsubscribe_001() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_UNSUBSCRIBE_001() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_UNSUBSCRIBE_001();
 
-    var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic('1101'B, v_pid, v_topic.stringItem));
-    f_send(v_unsubscribe);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1840,24 +668,12 @@ group unsubscribeGroup
   *
   * @reference [MQTT-2.3.1-1]
   */
-  testcase tc_mqtt_broker_unsubscribe_002() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_UNSUBSCRIBE_002() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := 0;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_UNSUBSCRIBE_002();
 
-    var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
-    f_send(v_unsubscribe);
-
-    var IPL4_Response v_response := f_receive();
-
-    // The standard references in section 3.10.2 to section 2.3.1 which is not applicable to UNSUBSCRIBE
-    setverdict(inconc, "Standard inconclusive");
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -1867,28 +683,12 @@ group unsubscribeGroup
   *
   * @reference [MQTT-3.10.3-2]
   */
-  testcase tc_mqtt_broker_unsubscribe_004() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_UNSUBSCRIBE_004() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
+    f_TC_MQTT_BROKER_UNSUBSCRIBE_004();
 
-    var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_emtpy_topic(v_pid));
-    f_send(v_unsubscribe);
-
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      f_disconnectMqtt();
-      setverdict(fail, "IUT MUST close the Network Connection");
-    }
-
-    f_disconnectNetwork();
     f_cleanUp();
   }
 } // unsubscribeGroup
@@ -1900,67 +700,27 @@ group unsubackGroup
   *
   * @reference [MQTT-2.2.2-1], [MQTT-3.10.1-1]
   */
-  testcase tc_mqtt_broker_unsuback_001() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_UNSUBACK_001() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_UNSUBACK_001();
 
-    var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
-    f_send(v_unsubscribe);
-
-    var template IPL4_Response v_expected := { receivedMsg := tw_unsuback_header_flags };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with UNSUBACK and correct header flags");
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
   /*
-  * @purpose The IUT MUST respond to an UNSUBSCRIBE request by sending an UNSUBACK Control Packet. 
+  * @purpose The IUT MUST respond to an UNSUBSCRIBE request by sending an UNSUBACK Control Packet.
   * The UNSUBACK Control Packet MUST have the same Packet Identifier as the UNSUBSCRIBE Control Packet
   *
   * @reference [MQTT-3.10.4-4], [MQTT-3.10.4-5]
   */
-  testcase tc_mqtt_broker_unsuback_002() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_UNSUBACK_002() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
+    f_init("mqtt_client", "mqtt_server");
 
-    var integer v_pid := f_randomPacketId();
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+    f_TC_MQTT_BROKER_UNSUBACK_002();
 
-    var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
-    f_send(v_unsubscribe);
-
-    var template IPL4_Response v_expected := { receivedMsg := tw_unsuback_packed_id(v_pid) };
-    var IPL4_Response v_response := f_receive();
-
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly with UNSUBACK and correct packet identifier");
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-
-    f_disconnectMqtt();
-    f_disconnectNetwork();
     f_cleanUp();
   }
 } // unsubackGroup
@@ -1968,61 +728,32 @@ group unsubackGroup
 group pingreqGroup {
   /*
   * @purpose The IUT closes the network connection if fixed header flags in PINGREQ Control Packet are invalid
-  * 
+  *
   * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
-  testcase tc_mqtt_broker_pingreq_001() runs on MQTT_Client {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
-    
-    var MQTT_v3_1_1_Message v_pingReq := valueof(t_ping_req('1111'B));
-    f_send(v_pingReq);
-    
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      f_disconnectMqtt();
-    }
-    
-    f_disconnectNetwork();
+  testcase TC_MQTT_BROKER_PINGREQ_001() runs on MQTT_Client 
+  {
+    f_init("mqtt_client", "mqtt_server");
+
+    f_TC_MQTT_BROKER_PINGREQ_001();
+
     f_cleanUp();
   }
 } // pingreqGroup
 
 group pingrespGroup {
-  
+
   /*
   * @purpose The IUT accepts only valid fixed header flags for PINGREQ Control Packet and responds with a PINGRESP
   *
   * @reference [MQTT-2.2.2-1], [MQTT-3.12.4-1]
   */
-  testcase tc_mqtt_broker_pingresp_001() runs on MQTT_Client {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
-    
-    var MQTT_v3_1_1_Message v_pingReq := valueof(t_ping_req('0000'B));
-    f_send(v_pingReq);
-    
-    var template IPL4_Response v_expected := { receivedMsg := tw_ping_resp('0000'B) };
-    var IPL4_Response v_response := f_receive();
-    
-    if(match(v_response, v_expected))
-    {
-      setverdict(pass, "IUT answered correctly to PINGREQ with ", v_response.receivedMsg);
-    }
-    else
-    {
-      setverdict(fail, "IUT answered incorrectly with ", v_response);
-    }
-    
-    f_disconnectMqtt();
-    f_disconnectNetwork();
+  testcase TC_MQTT_BROKER_PINGRESP_001() runs on MQTT_Client 
+  {
+    f_init("mqtt_client", "mqtt_server");
+
+    f_TC_MQTT_BROKER_PINGRESP_001();
+
     f_cleanUp();
   }
 } // pingrespGroup
@@ -2033,27 +764,12 @@ group disconnectGroup {
   *
   * @reference [MQTT-2.2.2-1], [MQTT-3.14.1-1]
   */
-  testcase tc_mqtt_broker_disconnect_001() runs on MQTT_Client 
+  testcase TC_MQTT_BROKER_DISCONNECT_001() runs on MQTT_Client 
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
-    
-    var MQTT_v3_1_1_Message v_disconnect := valueof(t_disconnect('0000'B));
-    f_send(v_disconnect);
+    f_init("mqtt_client", "mqtt_server");
 
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      // Note: this case should/will never occure!
-      setverdict(fail, "IUT MUST close the Network Connection");
-      f_disconnectMqtt();
-    }
+    f_TC_MQTT_BROKER_DISCONNECT_001();
 
-    f_disconnectNetwork();
     f_cleanUp();
   }
 
@@ -2062,35 +778,20 @@ group disconnectGroup {
   *
   * @reference [MQTT-2.2.2-1], [MQTT-3.14.1-1]
   */
-  testcase tc_mqtt_broker_disconnect_002() runs on MQTT_Client 
+  testcase TC_MQTT_BROKER_DISCONNECT_002() runs on MQTT_Client
   {
-    f_init("mqtt_client");
-    f_connectNetwork("mqtt_server");
-    f_connectMqtt();
-    
-    var MQTT_v3_1_1_Message v_disconnect := valueof(t_disconnect('1111'B));
-    f_send(v_disconnect);
+    f_init("mqtt_client", "mqtt_server");
 
-    if(f_receiveNetworkClosedEvent())
-    {
-      setverdict(pass, "IUT closed the Network Connection correctly");
-    }
-    else
-    {
-      // Note: this case should/will never occure!
-      setverdict(fail, "IUT MUST close the Network Connection");
-      f_disconnectMqtt();
-    }
+    f_TC_MQTT_BROKER_DISCONNECT_002();
 
-    f_disconnectNetwork();
     f_cleanUp();
   }
 } // disconnectGroup
 
+// @deprecated
 testcase tc_mqtt_broker_095() runs on MQTT_Client
 {
-  f_init("mqtt_client");
-  f_connectNetwork("mqtt_server");
+  f_init("mqtt_client", "mqtt_server");
 
   /* constant values */
   const universal charstring c_payload_text := "PAYLOAD";
@@ -2118,7 +819,7 @@ testcase tc_mqtt_broker_095() runs on MQTT_Client
   f_subscribe(v_topic.stringItem, EXACTLY_ONE_DELIVERY);
 
 
-  /* Test Purpose */    
+  /* Test Purpose */
   v_pub := t_publish_qos(v_topic.stringItem, c_payload, EXACTLY_ONE_DELIVERY, v_packet_id);
   f_send(valueof(v_pub));
 
@@ -2210,7 +911,6 @@ testcase tc_mqtt_broker_095() runs on MQTT_Client
   }
 
   f_disconnectMqtt();
-  f_disconnectNetwork();
-  f_cleanUp();   
+  f_cleanUp();
 }
 }
