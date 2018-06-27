@@ -1,6 +1,6 @@
 # Eclipse MQTT test suite
 
-A Conformance Test Suite for the IoT protocol MQTT written in TTCN-3.
+A Conformance Test Suite for the IoT protocol MQTT written in TTCN-3. You may find initial test purposes in https://github.com/eclipse/iottestware/tree/master/docs/MQTT. The work is related to the ETSI standardization project https://portal.etsi.org/webapp/WorkProgram/Report_WorkItem.asp?WKI_ID=54401.
 
 ## Getting Started
 
