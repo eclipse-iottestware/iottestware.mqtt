@@ -88,7 +88,7 @@ import from MQTT_Pixits all;
               execute(TC_MQTT_BROKER_CONNACK_002());
               execute(TC_MQTT_BROKER_CONNACK_004());
               execute(TC_MQTT_BROKER_CONNACK_005());
-              execute(TC_MQTT_BROKER_CONNACK_007());
+              //execute(TC_MQTT_BROKER_CONNACK_007());
               execute(TC_MQTT_BROKER_CONNACK_008());
               execute(TC_MQTT_BROKER_SUBSCRIBE_001());
 //              execute(TC_MQTT_BROKER_SUBSCRIBE_002());

@@ -49,16 +49,9 @@ group connectFunctionsGroup
         var IPL4_Response v_response := f_receive();
         var template IPL4_Response v_connack := { receivedMsg :=  tw_connack };
     
-        if(ischosen(v_response.aspEvent))
+        if(f_checkNetworkClosedEvent(v_response))
         {
-          if(ischosen(v_response.aspEvent.connClosed))
-          {
-            setverdict(pass, "IUT does not accept incorrect Protocol Names");
-          }
-          else
-          {
-            setverdict(inconc, "IUT responds with ", v_response.aspEvent)
-          }
+          setverdict(pass, "IUT does not accept incorrect Protocol Names");
         }
         else if(match(v_response, v_connack))
         {
@@ -529,6 +522,10 @@ group connectFunctionsGroup
         {
           setverdict(pass, "IUT answered correctly with ACK and return code 0x00");
         }
+        else if(f_checkNetworkClosedEvent(v_response))
+        {
+          setverdict(pass, "IUT does not allow a client to supply a client identifier that has a length of zero bytes")
+        }
         else
         {
           setverdict(fail, "IUT answered incorrectly with ", v_response);
@@ -838,10 +835,29 @@ group connackFunctionsGroup
         // disconnect MQTT Session
         f_disconnectMqtt();
       }
+      else if(f_checkNetworkClosedEvent(v_response))
+      {
+        setverdict(fail, "IUT does not restore present sessions and rejects such sessions")
+      }
       else
       {
-        setverdict(fail, "IUT answered incorrectly with ", v_response);
-        // TODO: check if MQTT Connection needs to be closed!
+        // figure out the reason of the wrong response
+        if(ispresent(v_response.receivedMsg.msg.connack)) 
+        {
+          if(v_response.receivedMsg.msg.connack.session_present_flag != c_sessionPresent)
+          {
+            setverdict(fail, "IUT does not restore present sessions")
+          }
+          else
+          {
+            setverdict(fail, "IUT answered incorrectly with ", v_response.receivedMsg.msg.connack);
+          }
+        }
+        else
+        {
+          setverdict(fail, "IUT answered incorrectly with ", v_response);
+        }
+        f_disconnectMqtt();
       }
     }
     
@@ -874,6 +890,10 @@ group connackFunctionsGroup
         // disconnect MQTT Session
         f_disconnectMqtt();
       }
+      else if(f_checkNetworkClosedEvent(v_response))
+      {
+        setverdict(fail, "IUT rejects connections with CleanSession Flag set to 0")
+      }
       else
       {
         setverdict(fail, "IUT answered incorrectly with ", v_response);
@@ -902,18 +922,29 @@ group connackFunctionsGroup
         // wait for Network Disconnect
         if(f_receiveNetworkClosedEvent())
         {
-          setverdict(pass, "IUT closed the Network Connection correctly");
+          setverdict(pass, "IUT closed the Network Connection correctly after ACK and Return Code 0x01");
         }
         else
         {
-          setverdict(fail, "IUT MUST close the Network Connection");
+          setverdict(fail, "IUT MUST close the Network Connection after ACK and Return Code 0x01");
           f_disconnectMqtt();
         }
       }
       else
       {
-        setverdict(fail, "IUT send wrong response ", v_response);
-        f_disconnectMqtt();
+        if(ispresent(v_response.timeoutEvent))
+        {
+          setverdict(fail, "IUT timed out after ", v_response.timeoutEvent, "s without any response")
+        }
+        else if(f_checkNetworkClosedEvent(v_response))
+        {
+          setverdict(fail, "IUT closed the connection without preceding ACK with Return Code 0x01")
+        }
+        else
+        {
+          setverdict(fail, "IUT send wrong response ", v_response);
+          f_disconnectMqtt();
+        }
       }
     }
     
@@ -949,8 +980,19 @@ group connackFunctionsGroup
       }
       else
       {
-        setverdict(fail, "IUT answered incorrectly with ", v_response);
-        f_disconnectMqtt();
+        if(ispresent(v_response.timeoutEvent))
+        {
+          setverdict(fail, "IUT timed out after ", v_response.timeoutEvent, "s without any response")
+        }
+        else if(f_checkNetworkClosedEvent(v_response))
+        {
+          setverdict(fail, "IUT closed the connection without preceding ACK with Return Code 0x02")
+        }
+        else
+        {
+          setverdict(fail, "IUT must reject the client ID with ACK and Return Code 0x02");
+          f_disconnectMqtt();
+        }
       }
     }
     
@@ -1472,7 +1514,7 @@ group pingrespFunctionsGroup
   
       if(match(v_response, v_expected))
       {
-        setverdict(pass, "IUT answered correctly to PINGREQ with ", v_response.receivedMsg);
+        setverdict(pass, "IUT answered correctly to PINGREQ with PINGRESP");
       }
       else
       {

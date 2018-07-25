@@ -591,20 +591,28 @@ group MqttPTC_FunctionsGroup
       var boolean v_ret := false;
       var IPL4_Response v_response := f_receive();
 
-      if(ischosen(v_response.aspEvent))
+      return f_checkNetworkClosedEvent(v_response)
+    }
+  
+  function f_checkNetworkClosedEvent(IPL4_Response p_response) runs on MQTT_Client
+    return boolean
+    {
+      var boolean v_ret := false;
+
+      if(ischosen(p_response.aspEvent))
       {
         // Note:
         // connection closed is sometimes signalised with connClosed 
         // and sometimes with Result.ERROR_SOCKET
-        if(ischosen(v_response.aspEvent.connClosed))
+        if(ischosen(p_response.aspEvent.connClosed))
         {
           v_ret := true;
-          log("NetworkClosed Event connection closed with ", v_response.aspEvent.connClosed);
+          log("NetworkClosed Event connection closed with ", p_response.aspEvent.connClosed);
         }
-        else if(ischosen(v_response.aspEvent.result))
+        else if(ischosen(p_response.aspEvent.result))
         {
           v_ret := true;
-          log("NetworkClosed Event connection closed with ", v_response.aspEvent.result)
+          log("NetworkClosed Event connection closed with ", p_response.aspEvent.result)
         }
       }
       else
