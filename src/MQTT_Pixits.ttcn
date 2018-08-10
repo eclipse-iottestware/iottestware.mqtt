@@ -14,5 +14,27 @@ module MQTT_Pixits {
 import from MQTT_TypesAndValues all;
 
     modulepar Address_List tsp_addresses := {};
+    modulepar float maxResponseTime := 5.0;
     modulepar float sleep_timer := 0.0;
+    
+    // PICS selection
+    type enumerated PICS 
+    {
+      PICS_BROKER_BASIC(0),
+      PICS_BROKER_QOS_1(1),
+      PICS_BROKER_QOS_2(2),
+      PICS_BROKER_LWT(3),
+      PICS_BROKER_RTND(4),
+      PICS_BROKER_AUTH(5)
+    }
+    
+    type record of PICS PICS_Selection_Type;
+    modulepar PICS_Selection_Type PICS_Selection := {
+      PICS_BROKER_BASIC,
+      PICS_BROKER_QOS_1,
+      PICS_BROKER_QOS_2,
+      PICS_BROKER_LWT,
+      PICS_BROKER_RTND,
+      PICS_BROKER_AUTH
+    }; 
 }
