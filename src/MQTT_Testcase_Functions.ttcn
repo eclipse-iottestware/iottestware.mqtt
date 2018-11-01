@@ -536,24 +536,18 @@ group connectFunctionsGroup
       
       function f_TC_MQTT_BROKER_CONNECT_020() runs on MQTT_Client
       {
-        const octetstring c_utf8_bom := 'EFBBBF'O;
-        const UTF8EncodedString c_invalid_clientId := {stringLength := 0, stringItem := "MyClientId" };
+        // Note: No BOM required/specified by the spec.
+        //const octetstring c_utf8_bom := 'EFBBBF'O;
+        const octetstring c_oCId := 'EDA080'O; // UTF-8 for U+D800
+        const UCHAR0_65535 c_ucId := oct2unichar(c_oCId);
+        var UTF8EncodedString v_invalid_clientId := f_getClientId();
+        v_invalid_clientId.stringItem := v_invalid_clientId.stringItem & c_ucId;
+        
         var UTF8EncodedString v_username := f_getUsername();
         var OctStringWithLength v_password := f_getPassword();
     
         var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
-    
-        // prepare invalid client identifier
-        // TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
-        var octetstring v_oCID := 'EDA080'O; // UTF-8 for U+D800
-        var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
-        @update(t_connect_payload_credentials)
-        with {
-          erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
-          erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
-        }
-    
-        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
+        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_invalid_clientId, v_username, v_password));
     
         var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
         f_send(v_conMsg);
@@ -571,25 +565,17 @@ group connectFunctionsGroup
       
       function f_TC_MQTT_BROKER_CONNECT_021() runs on MQTT_Client
       {
-        const octetstring c_utf8_bom := 'EFBBBF'O;
-        const UTF8EncodedString c_invalid_clientId := {stringLength := 0, stringItem := "MyClientId" };
+        const octetstring c_oCId := '00'O; // UTF-8 for U+0000
+        const UCHAR0_65535 c_ucId := oct2unichar(c_oCId);
+        var UTF8EncodedString v_invalid_clientId := f_getClientId();
+        v_invalid_clientId.stringItem := v_invalid_clientId.stringItem & c_ucId;
+        
         var UTF8EncodedString v_username := f_getUsername();
         var OctStringWithLength v_password := f_getPassword();
     
         var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
     
-        // prepare invalid client identifier
-        // TODO: uncomment when Titan Designer supports @update or a standard complient solution is found
-        var octetstring v_oCID := c_utf8_bom & unichar2oct(c_invalid_clientId.stringItem) & '00'O;
-        var octetstring v_oLen := int2oct(lengthof(v_oCID), 2);
-    
-        @update(t_connect_payload_credentials)
-        with {
-          erroneous (client_identifier.stringItem) "value(raw) := v_oCID";
-          erroneous (client_identifier.stringLength) "value(raw) := v_oLen";
-        }
-    
-        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(c_invalid_clientId, v_username, v_password));
+        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_invalid_clientId, v_username, v_password));
     
         var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
         f_send(v_conMsg);
@@ -607,30 +593,26 @@ group connectFunctionsGroup
       
       function f_TC_MQTT_BROKER_CONNECT_022() runs on MQTT_Client
       {
-        const octetstring c_utf8_bom := 'EFBBBF'O;
-    
         const BIT1n c_wr := '0'B;                     // Will Retain Flag
         const QoS c_qos := AT_MOST_ONCE_DELIVERY;     // Will QoS
         const BIT1n c_wf := '1'B;                     // Will Flag
     
         const universal charstring c_wm := "Will Message";
         const octetstring c_os_wm := unichar2oct(c_wm);
-        const UTF8EncodedString c_willTopic := { stringLength := 0, stringItem := "dummyTopic"};
-        const OctStringWithLength c_willMsg := { stringLength := lengthof(c_os_wm), stringItem := c_os_wm};
+        const OctStringWithLength c_willMsg := { stringLength := lengthof(c_os_wm), stringItem := c_os_wm };
+        
+        const octetstring c_oWT := 'EDA080'O; // UTF-8 for U+D800
+        const UCHAR0_65535 c_ucWT := oct2unichar(c_oWT);
+        var UTF8EncodedString v_willTopic := f_getBaseTopicName();
+        v_willTopic.stringItem := v_willTopic.stringItem & c_ucWT;
+        
         var UTF8EncodedString v_clientId := f_getClientId();
         var UTF8EncodedString v_username := f_getUsername();
         var OctStringWithLength v_password := f_getPassword();
     
         var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_wr, p_will_qos := c_qos, p_will_flag := c_wf));
     
-        // prepare invalid will topic
-        // TODO: uncomment when Titan Designer supports @update
-        @update(t_connect_payload_lwt)
-        with {
-          erroneous (will_topic) "value(raw) := c_utf8_bom & 'D800'O";
-        }
-    
-        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, c_willTopic, c_willMsg));
+        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, v_willTopic, c_willMsg));
     
         var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
         f_send(v_conMsg);
@@ -648,30 +630,26 @@ group connectFunctionsGroup
       
       function f_TC_MQTT_BROKER_CONNECT_023() runs on MQTT_Client
       {
-        const octetstring c_utf8_bom := 'EFBBBF'O;
-    
         const BIT1n c_wr := '0'B;                     // Will Retain Flag
         const QoS c_qos := AT_MOST_ONCE_DELIVERY;     // Will QoS
         const BIT1n c_wf := '1'B;                     // Will Flag
     
         const universal charstring c_wm := "Will Message";
         const octetstring c_os_wm := unichar2oct(c_wm);
-        const UTF8EncodedString c_willTopic := { stringLength := 0, stringItem := "dummyTopic"};
         const OctStringWithLength c_willMsg := { stringLength := lengthof(c_os_wm), stringItem := c_os_wm};
+        
+        const octetstring c_oWT := '00'O; // UTF-8 for U+0000
+        const UCHAR0_65535 c_ucWT := oct2unichar(c_oWT);
+        var UTF8EncodedString v_willTopic := f_getBaseTopicName();
+        v_willTopic.stringItem := v_willTopic.stringItem & c_ucWT;
+        
         var UTF8EncodedString v_clientId := f_getClientId();
         var UTF8EncodedString v_username := f_getUsername();
         var OctStringWithLength v_password := f_getPassword();
     
         var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_wr, p_will_qos := c_qos, p_will_flag := c_wf));
     
-        // prepare invalid will topic
-        // TODO: uncomment when Titan Designer supports @update
-        @update(t_connect_payload_lwt)
-        with {
-          erroneous (will_topic) "value(raw) := c_utf8_bom & '0000'O";
-        }
-    
-        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, c_willTopic, c_willMsg));
+        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, v_willTopic, c_willMsg));
     
         var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
         f_send(v_conMsg);
@@ -689,20 +667,16 @@ group connectFunctionsGroup
       
       function f_TC_MQTT_BROKER_CONNECT_024() runs on MQTT_Client
       {
-        const octetstring c_utf8_bom := 'EFBBBF'O;
-    
         var UTF8EncodedString v_clientId := f_getClientId();
+        
+        const octetstring c_oUN := 'EDA080'O; // UTF-8 for U+D800
+        const UCHAR0_65535 c_ucUN := oct2unichar(c_oUN);
         var UTF8EncodedString v_username := f_getUsername();
+        v_username.stringItem := v_username.stringItem & c_ucUN;
+
         var OctStringWithLength v_password := f_getPassword();
     
         var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
-    
-        // prepare invalid will topic
-        // TODO: uncomment when Titan Designer supports @update
-        @update(t_connect_payload_credentials)
-        with {
-          erroneous (user_name) "value(raw) := c_utf8_bom & 'D800'O";
-        }
     
         var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
     
@@ -722,21 +696,17 @@ group connectFunctionsGroup
       
       function f_TC_MQTT_BROKER_CONNECT_025() runs on MQTT_Client
       {
-        const octetstring c_utf8_bom := 'EFBBBF'O;
-    
         var UTF8EncodedString v_clientId := f_getClientId();
+        
+        const octetstring c_oUN := '00'O; // UTF-8 for U+0000
+        const UCHAR0_65535 c_ucUN := oct2unichar(c_oUN);
         var UTF8EncodedString v_username := f_getUsername();
+        v_username.stringItem := v_username.stringItem & c_ucUN;
+
         var OctStringWithLength v_password := f_getPassword();
     
         var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_credentials);
-    
-        // prepare invalid will topic
-        // TODO: uncomment when Titan Designer supports @update
-        @update(t_connect_payload_credentials)
-        with {
-          erroneous (user_name) "value(raw) := c_utf8_bom & '0000'O";
-        }
-    
+
         var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_credentials(v_clientId, v_username, v_password));
     
         var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
