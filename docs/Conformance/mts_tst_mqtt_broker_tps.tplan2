@@ -162,7 +162,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                will_topic corresponding to TOPIC,
+                will_topic corresponding to PIXIT_TOPIC,
                 will_message corresponding to WILL_MESSAGE;
             ;
         }
@@ -390,7 +390,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                user_name corresponding to MQTT_USER_NAME,
+                user_name corresponding to PIXIT_MQTT_USER_NAME,
                 password indicating value omit;
             ;
         }
@@ -463,7 +463,7 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 user_name indicating value omit,
-                password corresponding to MQTT_PASSWORD;
+                password corresponding to PIXIT_MQTT_PASSWORD;
             ;
         }
         then {
@@ -498,7 +498,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                user_name corresponding to MQTT_USER_NAME,
+                user_name corresponding to PIXIT_MQTT_USER_NAME,
                 password indicating value omit;
             ;
         }
@@ -792,7 +792,7 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 user_name corresponding to MQTT_USER_NAME_INVALID_UTF8,
-                password corresponding to MQTT_PASSWORD;
+                password corresponding to PIXIT_MQTT_PASSWORD;
             ;
         }
         then {
@@ -830,7 +830,7 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 user_name corresponding to MQTT_USER_NAME_INVALID_UTF8,
-                password corresponding to MQTT_PASSWORD;
+                password corresponding to PIXIT_MQTT_PASSWORD;
             ;
         }
         then {
@@ -945,7 +945,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PIXIT_CLIENT_ID;
             ;
         }
         then {
@@ -991,7 +991,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PIXIT_CLIENT_ID;
             ;
         }
         then {
@@ -1031,7 +1031,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PIXIT_CLIENT_ID;
             ;
         }
         then {
@@ -1119,7 +1119,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PIXIT_CLIENT_ID;
             ;
         }
         then {
@@ -1161,7 +1161,7 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID,
+                client_identifier corresponding to PIXIT_CLIENT_ID,
                 user_name corresponding to MQTT_USER_NAME_INVALID,
                 password corresponding to MQTT_PASSWORD_INVALID;
             ;
@@ -1956,7 +1956,7 @@ Package mts_tst_mqtt {
             the IUT entity receives a SUBSCRIBE message containing
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC,
+                topic_filter corresponding to PIXIT_TOPIC,
                 requested_qos corresponding to AT_MOST_ONCE;
             ;
         }
@@ -1965,7 +1965,7 @@ Package mts_tst_mqtt {
             return_code indicating value 0x00;
 
             and the IUT entity sends a PUBLISH message containing
-            topic_name corresponding to TOPIC,
+            topic_name corresponding to PIXIT_TOPIC,
             payload corresponding to RETAINED_MESSAGE;
         }
     }
@@ -2007,9 +2007,9 @@ Package mts_tst_mqtt {
     with {
            the CLIENT_1 entity published a Message containing
                dup_flag indicating value '0'B,
-               qos_level indicating value '1'B,
+               qos_level corresponding to AT_LEAST_ONCE,
                retain_flag indicating value '1'B,
-               topic_name corresponding to TOPIC,
+               topic_name corresponding to PIXIT_TOPIC,
             packet_identifier corresponding to PACKET_ID_1,
             payload corresponding to PAYLOAD;
            to the IUT entity and
@@ -2022,7 +2022,7 @@ Package mts_tst_mqtt {
             the IUT entity receives a SUBSCRIBE message containing
             packet_identifier corresponding to PACKET_ID_2,
             payload containing
-                topic_filter corresponding to TOPIC,
+                topic_filter corresponding to PIXIT_TOPIC,
                 requested_qos corresponding to AT_MOST_ONCE;
             ;
             from the CLIENT_2 entity
@@ -2038,9 +2038,9 @@ Package mts_tst_mqtt {
             and the IUT entity sends a PUBLISH message containing
             publish_header containing
                 dup_flag indicating value '0'B,
-                qos_level indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
                 retain_flag indicating value '1'B,
-            topic_name corresponding to TOPIC,
+            topic_name corresponding to PIXIT_TOPIC,
             packet_identifier corresponding to PACKET_ID_3,
             payload corresponding to PAYLOAD;
             ;
@@ -2064,7 +2064,7 @@ Package mts_tst_mqtt {
     with {
         the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity and
         the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity and
-        the CLIENT_2 entity subscribed the TOPIC containing
+        the CLIENT_2 entity subscribed the PIXIT_TOPIC containing
             qos_level corresponding to AT_MOST_ONCE;
     }
 
@@ -2076,7 +2076,7 @@ Package mts_tst_mqtt {
                 dup_flag indicating value '0'B,
                 qos_level corresponding to AT_LEAST_ONCE,
                 retain_flag indicating value '1'B,
-            topic_name corresponding to TOPIC,
+            topic_name corresponding to PIXIT_TOPIC,
             packet_identifier corresponding to PACKET_ID_1,
             payload corresponding to PAYLOAD;
             ;
@@ -2092,7 +2092,7 @@ Package mts_tst_mqtt {
                 dup_flag indicating value '0'B,
                 qos_level corresponding to AT_MOST_ONCE,
                 retain_flag indicating value '0'B,
-            topic_name corresponding to TOPIC,
+            topic_name corresponding to PIXIT_TOPIC,
             packet_identifier corresponding to PACKET_ID_2,
             payload corresponding to PAYLOAD;
             ;

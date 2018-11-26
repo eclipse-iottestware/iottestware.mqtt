@@ -1,0 +1,445 @@
+Package mts_tst {
+
+    import all from mts_mqtt_commons;
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_01
+
+        Test objective
+        "Header flags in CONNECT Control Packet are reserved for future use"
+        Reference
+        "[MQTT-2.2.2-1]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              header_flags indicating value '0000'B;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_02
+
+        Test objective
+        "The protocol name representing the protocol is a UTF-8 encoded 'MQTT' string"
+        Reference
+        "[MQTT-2.2.2-1]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              protocol_name corresponding to PROTOCOL_NAME;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_03
+
+        Test objective
+        "The 8 bit unsigned value that represents the revision level of the protocol used by the Client. The value of the the Protocol
+        Level field for the version 3.1.1 of the protocol is 4 (0x04)"
+        Reference
+        "[MQTT-3.1.2-2]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              protocol_level indicating value 0x04;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_04
+
+        Test objective
+        "The Connect Flags byte contains a number of parameters specifying the behavior of the MQTT connection. It also indicates the
+        presence of absence of fields in the payload"
+        Reference
+        "[MQTT-3.1.2-3]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                reserved_field indicating value '0'B;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_05
+
+        Test objective
+        "If the Will Flag is set to 1, the Will QoS and Will Retain fields in the Connect Flags will be used by the Server,
+        and the Will Topic and Will Message fields MUST be present in the payload"
+        Reference
+        "[MQTT-3.1.2-9], [MQTT-3.1.2-14]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                will_flag indicating value '1'B;
+              ;
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                will_flag indicating value '1'B,
+                will_qos corresponding to VALID_QOS;
+                ,
+              payload containing
+                will_topic indicating value not omit,
+                will_message indicating value not omit;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_06
+
+        Test objective
+        "If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be 
+        set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload"
+        Reference
+        "[MQTT-3.1.2-11], [MQTT-3.1.2-13], [MQTT-3.1.2-15]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                will_flag indicating value '0'B;
+              ;
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                will_flag indicating value '0'B,
+                will_qos corresponding to AT_MOST_ONCE,
+                will_retain indicating value '0'B;
+                ,
+              payload containing
+                will_topic indicating value omit,
+                will_message indicating value omit;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_07
+
+        Test objective
+        "The User Name Flag and Password Flag control the payload containing the user name and password"
+        Reference
+        "[MQTT-3.1.2-18], [MQTT-3.1.2-20], [MQTT-3.1.2-22]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '0'B;
+              ;
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '0'B,
+                password_flag indicating value '0'B;
+                ,
+              payload containing
+                user_name indicating value omit,
+                password indicating value omit;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_08
+
+        Test objective
+        "If the User Name Flag is set to 1, a user name MUST be present in the payload"
+        Reference
+        "[MQTT-3.1.2-19]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '1'B;
+              ;
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '1'B;
+              ,
+              payload containing
+                user_name indicating value not omit;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_09
+
+        Test objective
+        "If the Password Flag is set to 1, a password MUST be present in the payload"
+        Reference
+        "[MQTT-3.1.2-21]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                password_flag indicating value '1'B;
+              ;
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                password_flag indicating value '1'B;
+              ,
+              payload containing
+                password indicating value not omit;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_10
+
+        Test objective
+        "These fields, if present, MUST appear in the order Client Identifier, Will Topic, Will Message, User Name, Password"
+        Reference
+        "[MQTT-3.1.3-1]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '1'B,
+                password_flag indicating value '1'B,
+                will_flag indicating value '1'B,
+                will_qos corresponding to AT_MOST_ONCE;
+              ,
+              payload containing
+                client_identifier corresponding to VALID_CLIENT_ID,
+                will_topic corresponding to WILL_TOPIC,
+                will_message corresponding to WILL_MESSAGE,
+                user_name corresponding to PIXIT_MQTT_USER_NAME,
+                password corresponding to PIXIT_MQTT_PASSWORD;
+              ;
+          } then {
+              // Assumption: by comparing each field with the sent values, the order is checked implicitly. 
+              // Wrong order would silently swap the fields during decoding
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '1'B,
+                password_flag indicating value '1'B,
+                will_flag indicating value '1'B,
+                will_qos corresponding to AT_MOST_ONCE;
+              ,
+              payload containing
+                client_identifier corresponding to VALID_CLIENT_ID,
+                will_topic corresponding to WILL_TOPIC,
+                will_message corresponding to WILL_MESSAGE,
+                user_name corresponding to PIXIT_MQTT_USER_NAME,
+                password corresponding to PIXIT_MQTT_PASSWORD;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_11
+
+        Test objective
+        "The ClientId MUST be a UTF-8 encoded string"
+        Reference
+        "[MQTT-3.1.3-4], [MQTT-1.5.3-1]" //, [MQTT-1.5.3-2], [MQTT-1.5.3-3] // TODO: how to test 3-2 and 3-3?
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              payload containing
+                client_identifier corresponding to VALID_CLIENT_ID;
+              ;
+          } then {
+              // TODO: sufficient for [MQTT-3.1.3-4] ?
+              the TS entity checks_that the received CONNECT message containing
+              payload containing
+                client_identifier corresponding to VALID_CLIENT_ID;
+              ;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_12
+
+        Test objective
+        "If the Client supplies a zero-byte ClientId, the Client MUST also set CleanSession to 1"
+        Reference
+        "[MQTT-3.1.3-7]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              payload containing
+                client_identifier corresponding to CLIENT_ID_ZERO_BYTES;
+              ;
+          } then {
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                clean_session indicating value '1'B;
+              ,
+              payload containing
+                client_identifier corresponding to CLIENT_ID_ZERO_BYTES;
+              ;
+          }
+        }
+    }
+    
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_13
+
+        Test objective
+        "The Will Topic MUST be a UTF-8 encoded string"
+        Reference
+        "[MQTT-3.1.3-10]" //, [MQTT-1.5.3-2], [MQTT-1.5.3-3] // TODO: how to test 3-2 and 3-3?
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                will_flag indicating value '1'B;
+              ,
+              payload containing
+                will_topic corresponding to WILL_TOPIC_NON_ASCII;
+              ;
+          } then {
+              // TODO: sufficient for [MQTT-3.1.3-10] ?
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                will_flag indicating value '1'B;
+              ,
+              payload containing
+                will_topic corresponding to WILL_TOPIC_NON_ASCII;
+              ;
+          }
+        }
+    }
+    
+    Test Purpose {
+        TP Id TP_MQTT_Client_CONNECT_14
+
+        Test objective
+        "The User name MUST be a UTF-8 encoded string"
+        Reference
+        "[MQTT-3.1.3-11]" //, [MQTT-1.5.3-2], [MQTT-1.5.3-3] // TODO: how to test 3-2 and 3-3?
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends a CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '1'B;
+              ,
+              payload containing
+                user_name corresponding to MQTT_USER_NAME_NON_ASCII;
+              ;
+          } then {
+              // TODO: sufficient for [MQTT-3.1.3-11] ?
+              the TS entity checks_that the received CONNECT message containing
+              connect_flags containing
+                user_name_flag indicating value '1'B;
+              ,
+              payload containing
+                user_name corresponding to MQTT_USER_NAME_NON_ASCII;
+              ;
+          }
+        }
+    }
+
+/*
+    Test Purpose {
+        TP Id TP_MQTT_Client_PINGREQ_01
+
+        Test objective
+        "It is the responsibility of the Client to ensure that the interval between Control Packets being sent does not exceed the Keep Alive value."
+        Reference
+        "[MQTT-3.1.2-23]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Initial conditions
+        with {
+            the IUT entity having a present MQTT_CONNECTION to the TS entity
+            // TODO: the CONNECT Packet must contain keep_alive > 0
+        }
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity sends no messages actively
+          } then {
+              the TS entity receives a PINGREQ message within "keep alive interval" // TODO: how to formulate the timing aspect?
+          }
+        }
+    }
+    * Note: MQTT Spec defines more behaviors for PINGREQ / PINGRESP on Page 27 without conformance statements
+    */
+}
