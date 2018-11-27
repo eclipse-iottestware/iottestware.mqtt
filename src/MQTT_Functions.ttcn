@@ -219,7 +219,17 @@ group MqttPTC_FunctionsGroup
 
       map(self:IPL4_PCO, system:IPL4_PCO);
       
-      v_initState := f_connectNetwork(p_serverId);
+      var boolean v_connect_state := f_connectNetwork(p_serverId);
+      var integer v_current_retries := 0;
+      
+      // if connection failed wait and retry
+      while (not(v_connect_state) and (v_current_retries < connect_retries)) {
+        v_current_retries := v_current_retries + 1;
+        log("Connection failed: retry ", v_current_retries, " of ", connect_retries, " in ", retry_delay, "s");
+        f_sleep(retry_delay);
+        v_connect_state := f_connectNetwork(p_serverId);
+      }
+      v_initState := v_connect_state;
     }
     else
     {
@@ -253,7 +263,6 @@ group MqttPTC_FunctionsGroup
 
     if (not(ispresent(vl_result.connId)))
     {
-      log("Connect Network to ", p_serverId, "(", ctx.remoteHost, ":", ctx.remotePort, ") not possible");
       ctx.connId := -1;
       v_connectState := false;
     } else {
@@ -271,7 +280,7 @@ group MqttPTC_FunctionsGroup
    * call this function if connection to SUT failed and set verdict of MQTT_Client to inconclusive
    */
   private function f_noConnection() runs on MQTT_Client {
-    setverdict(inconc, "Connection to SUT(", ctx.remoteHost, ":", ctx.remotePort, ") not possible")
+    setverdict(inconc, "Connection to SUT [", ctx.remoteHost, ":", ctx.remotePort, "] not possible")
   }
 
   function f_disconnectIPL4() runs on MQTT_Client
@@ -282,13 +291,6 @@ group MqttPTC_FunctionsGroup
     if (ctx.connId >= 0)
     {
       vl_result := f_IPL4_close(IPL4_PCO, ctx.connId);
-
-      /*
-       * NOTE: In previous releases IPL4 seemed to need time for closing the connection here.
-       *       The sleep_timer is set to 0.0 by default as modulepar and can be still configured.
-       * TODO: can be removed as soon as IPL4 is proven to function properly without this sleep  
-       */
-      if(sleep_timer >= 0.0) { f_sleep(sleep_timer) }
 
       if(ispresent(vl_result.errorCode))
       {

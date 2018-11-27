@@ -15,7 +15,10 @@ import from MQTT_TypesAndValues all;
 
     modulepar Address_List tsp_addresses := {};
     modulepar float maxResponseTime := 5.0;
-    modulepar float sleep_timer := 0.0;
+    
+    //modulepar float sleep_timer := 0.0;
+    modulepar integer connect_retries := 3;
+    modulepar float retry_delay := 1.0;
     
     // PICS selection
     type enumerated PICS 
