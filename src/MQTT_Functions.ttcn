@@ -197,9 +197,11 @@ group MqttPTC_FunctionsGroup
 {
 
   function f_init(in charstring p_clientId, in charstring p_serverId) runs on MQTT_Client
+  return boolean
   {
     log("started for ", p_clientId);
 
+    var boolean v_initState := true;
     var NamedHostPort v_clientAddr;
 
     //set the local Host
@@ -217,21 +219,26 @@ group MqttPTC_FunctionsGroup
 
       map(self:IPL4_PCO, system:IPL4_PCO);
       
-      f_connectNetwork(p_serverId);
+      v_initState := f_connectNetwork(p_serverId);
     }
     else
     {
       log("PTC ", p_clientId, " could not be initialized");
-      self.stop;
+      v_initState := false;
     }
 
+    if (not v_initState) { f_noConnection() }
+
+    return v_initState;
   }
 
   function f_connectNetwork(in charstring p_serverId) runs on MQTT_Client
+  return boolean 
   {
     log("started for ", ctx.localHost, ":", ctx.localPort);
 
     const boolean c_reuseAddress := true;
+    var boolean v_connectState := true;
 
     var NamedHostPort v_serverAddr;
 
@@ -247,16 +254,25 @@ group MqttPTC_FunctionsGroup
     if (not(ispresent(vl_result.connId)))
     {
       log("Connect Network to ", p_serverId, "(", ctx.remoteHost, ":", ctx.remotePort, ") not possible");
-      stop;
-    } 
-
-    var integer v_cid := vl_result.connId 
-    var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
-    f_IPL4_setGetMsgLen(IPL4_PCO, v_cid, getMsg_Func, {});
-
-    ctx.connId := vl_result.connId;
+      ctx.connId := -1;
+      v_connectState := false;
+    } else {
+      var integer v_cid := vl_result.connId 
+      var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
+      f_IPL4_setGetMsgLen(IPL4_PCO, v_cid, getMsg_Func, {});
+  
+      ctx.connId := vl_result.connId;
+    }
+    
+    return v_connectState;
   }
 
+  /*
+   * call this function if connection to SUT failed and set verdict of MQTT_Client to inconclusive
+   */
+  private function f_noConnection() runs on MQTT_Client {
+    setverdict(inconc, "Connection to SUT(", ctx.remoteHost, ":", ctx.remotePort, ") not possible")
+  }
 
   function f_disconnectIPL4() runs on MQTT_Client
   {

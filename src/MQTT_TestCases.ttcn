@@ -29,10 +29,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_001() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_001();
+    }
     f_cleanUp();
   }
 
@@ -44,10 +44,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_002() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_002();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_002();
+    }
     f_cleanUp();
   }
 
@@ -58,10 +58,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_003() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_003();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_003();
+    }
     f_cleanUp();
   }
 
@@ -74,10 +74,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_004() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_004();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_004();
+    }
     f_cleanUp();
   }
 
@@ -89,10 +89,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_005() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_005();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_005();
+    }
     f_cleanUp();
   }
 
@@ -104,10 +104,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_006() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_006();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_006();
+    }
     f_cleanUp();
   }
 
@@ -118,10 +118,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_007() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_007();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_007();
+    }
     f_cleanUp();
   }
 
@@ -133,10 +133,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_008() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_008();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_008();
+    }
     f_cleanUp();
   }
 
@@ -147,10 +147,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_009() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_009();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_009();
+    }
     f_cleanUp();
   }
 
@@ -161,10 +161,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_010() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_010();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_010();
+    }
     f_cleanUp();
   }
 
@@ -175,10 +175,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_011() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_011();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_011();
+    }
     f_cleanUp();
   }
 
@@ -189,10 +189,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_012() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_012();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_012();
+    }
     f_cleanUp();
   }
 
@@ -203,10 +203,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_013() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_013();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_013();
+    }
     f_cleanUp();
   }
 
@@ -217,10 +217,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_014() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_014();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_014();
+    }
     f_cleanUp();
   }
 
@@ -231,10 +231,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_015() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_015();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_015();
+    }
     f_cleanUp();
   }
 
@@ -245,10 +245,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_016() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_016();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_016();
+    }
     f_cleanUp();
   }
 
@@ -259,10 +259,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_017() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_017();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_017();
+    }
     f_cleanUp();
   }
 
@@ -273,10 +273,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_018() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_018();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_018();
+    }
     f_cleanUp();
   }
 
@@ -289,10 +289,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_019() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_019();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_019();
+    }
     f_cleanUp();
   }
 
@@ -303,10 +303,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_020() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_020();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_020();
+    }
     f_cleanUp();
   }
 
@@ -317,10 +317,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_021() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_021();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_021();
+    }
     f_cleanUp();
   }
 
@@ -331,10 +331,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_022() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_022();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_022();
+    }
     f_cleanUp();
   }
 
@@ -345,10 +345,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_023() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_023();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_023();
+    }
     f_cleanUp();
   }
 
@@ -359,10 +359,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_024() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_024();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_024();
+    }
     f_cleanUp();
   }
 
@@ -373,10 +373,10 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_025() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNECT_025();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNECT_025();
+    }
     f_cleanUp();
   }
 } // connectGroup
@@ -391,10 +391,10 @@ group connackGroup
   */
   testcase TC_MQTT_BROKER_CONNACK_001() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNACK_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNACK_001();
+    }
     f_cleanUp();
   }
 
@@ -406,10 +406,10 @@ group connackGroup
   */
   testcase TC_MQTT_BROKER_CONNACK_002() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNACK_002();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNACK_002();
+    }
     f_cleanUp();
   }
 
@@ -420,10 +420,10 @@ group connackGroup
   */
   testcase TC_MQTT_BROKER_CONNACK_003() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNACK_003();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNACK_003();
+    }
     f_cleanUp();
   }
 
@@ -435,10 +435,10 @@ group connackGroup
   */
   testcase TC_MQTT_BROKER_CONNACK_004() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNACK_004();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNACK_004();
+    }
     f_cleanUp();
   }
 
@@ -449,10 +449,10 @@ group connackGroup
   */
   testcase TC_MQTT_BROKER_CONNACK_005() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNACK_005();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNACK_005();
+    }
     f_cleanUp();
   }
 
@@ -465,10 +465,10 @@ group connackGroup
   */
   testcase TC_MQTT_BROKER_CONNACK_006() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNACK_006();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNACK_006();
+    }
     f_cleanUp();
   }
 
@@ -490,10 +490,10 @@ group connackGroup
   */
   testcase TC_MQTT_BROKER_CONNACK_008() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_CONNACK_008();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_CONNACK_008();
+    }
     f_cleanUp();
   }
 } // connackGroup
@@ -508,10 +508,10 @@ group subscribeGroup
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_001() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBSCRIBE_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_001();
+    }
     f_cleanUp();
   }
 
@@ -522,10 +522,10 @@ group subscribeGroup
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_005() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBSCRIBE_005();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_005();
+    }
     f_cleanUp();
   }
 
@@ -548,10 +548,10 @@ group subscribeGroup
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_007() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBSCRIBE_007();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_007();
+    }
     f_cleanUp();
   }
 } // subscribeGroup
@@ -565,10 +565,10 @@ group subackGroup
   */
   testcase TC_MQTT_BROKER_SUBACK_001() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBACK_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBACK_001();
+    }
     f_cleanUp();
   }
 
@@ -580,10 +580,10 @@ group subackGroup
   */
   testcase TC_MQTT_BROKER_SUBACK_002() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBACK_002();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBACK_002();
+    }
     f_cleanUp();
   }
 
@@ -595,10 +595,10 @@ group subackGroup
   */
   testcase TC_MQTT_BROKER_SUBACK_003() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBACK_003();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBACK_003();
+    }
     f_cleanUp();
   }
 
@@ -609,10 +609,10 @@ group subackGroup
   */
   testcase TC_MQTT_BROKER_SUBACK_004() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBACK_004();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBACK_004();
+    }
     f_cleanUp();
   }
 
@@ -624,10 +624,10 @@ group subackGroup
   */
   testcase TC_MQTT_BROKER_SUBACK_005() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBACK_005();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBACK_005();
+    }
     f_cleanUp();
   }
 
@@ -639,10 +639,10 @@ group subackGroup
   */
   testcase TC_MQTT_BROKER_SUBACK_006() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_SUBACK_006();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_SUBACK_006();
+    }
     f_cleanUp();
   }
 } // subackGroup
@@ -656,10 +656,10 @@ group unsubscribeGroup
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_001() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_UNSUBSCRIBE_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_UNSUBSCRIBE_001();
+    }
     f_cleanUp();
   }
 
@@ -670,10 +670,10 @@ group unsubscribeGroup
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_002() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_UNSUBSCRIBE_002();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_UNSUBSCRIBE_002();
+    }
     f_cleanUp();
   }
 
@@ -685,10 +685,10 @@ group unsubscribeGroup
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_004() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_UNSUBSCRIBE_004();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_UNSUBSCRIBE_004();
+    }
     f_cleanUp();
   }
 } // unsubscribeGroup
@@ -702,10 +702,10 @@ group unsubackGroup
   */
   testcase TC_MQTT_BROKER_UNSUBACK_001() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_UNSUBACK_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_UNSUBACK_001();
+    }
     f_cleanUp();
   }
 
@@ -717,10 +717,10 @@ group unsubackGroup
   */
   testcase TC_MQTT_BROKER_UNSUBACK_002() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_UNSUBACK_002();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_UNSUBACK_002();
+    }
     f_cleanUp();
   }
 } // unsubackGroup
@@ -733,10 +733,10 @@ group pingreqGroup {
   */
   testcase TC_MQTT_BROKER_PINGREQ_001() runs on MQTT_Client 
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_PINGREQ_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_PINGREQ_001();
+    }
     f_cleanUp();
   }
 } // pingreqGroup
@@ -750,10 +750,10 @@ group pingrespGroup {
   */
   testcase TC_MQTT_BROKER_PINGRESP_001() runs on MQTT_Client 
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_PINGRESP_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_PINGRESP_001();
+    }
     f_cleanUp();
   }
 } // pingrespGroup
@@ -766,10 +766,10 @@ group disconnectGroup {
   */
   testcase TC_MQTT_BROKER_DISCONNECT_001() runs on MQTT_Client 
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_DISCONNECT_001();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_DISCONNECT_001();
+    }
     f_cleanUp();
   }
 
@@ -780,137 +780,12 @@ group disconnectGroup {
   */
   testcase TC_MQTT_BROKER_DISCONNECT_002() runs on MQTT_Client
   {
-    f_init("mqtt_client", "mqtt_server");
-
-    f_TC_MQTT_BROKER_DISCONNECT_002();
-
+    if(f_init("mqtt_client", "mqtt_server")) 
+    {
+      f_TC_MQTT_BROKER_DISCONNECT_002();
+    }
     f_cleanUp();
   }
 } // disconnectGroup
 
-// @deprecated
-testcase tc_mqtt_broker_095() runs on MQTT_Client
-{
-  f_init("mqtt_client", "mqtt_server");
-
-  /* constant values */
-  const universal charstring c_payload_text := "PAYLOAD";
-  const octetstring c_payload := unichar2oct(c_payload_text, "UTF-8");
-
-  /* variables definition*/
-  var integer v_packet_id := f_randomPacketId();
-  var integer v_packet_id2 := -1;
-  var IPL4_Response v_response;
-  var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
-
-  /* templates definition*/
-  var template MQTT_v3_1_1_Message v_pub;
-  var template MQTT_v3_1_1_Message v_pub_exp;
-  var template MQTT_v3_1_1_Message v_pubrec;
-  var template MQTT_v3_1_1_Message v_pubrec_exp;
-  var template MQTT_v3_1_1_Message v_pubrel;
-  var template MQTT_v3_1_1_Message v_pubrel_exp;
-  var template MQTT_v3_1_1_Message v_pubcomp;
-  var template MQTT_v3_1_1_Message v_pubcomp_exp;
-  var template MQTT_v3_1_1_PublishHeader v_pub_header;
-
-  /* Initial Condition */
-  f_connectMqtt();
-  f_subscribe(v_topic.stringItem, EXACTLY_ONE_DELIVERY);
-
-
-  /* Test Purpose */
-  v_pub := t_publish_qos(v_topic.stringItem, c_payload, EXACTLY_ONE_DELIVERY, v_packet_id);
-  f_send(valueof(v_pub));
-
-  v_pubrec_exp := tw_pubrec(v_packet_id);
-  v_response := f_receive();
-
-
-  if(ischosen(v_response.receivedMsg))
-  {
-    if(match(v_response.receivedMsg, v_pubrec_exp))
-    {
-      f_send(valueof(t_pubrel(v_packet_id)));
-
-      v_response := f_receive();
-      if(ischosen(v_response.receivedMsg))
-      {
-        v_pubcomp_exp := tw_pubcomp(v_packet_id);
-        if(not match(v_response.receivedMsg, v_pubcomp_exp))
-        {
-          setverdict(fail, "The IUT answered incorrectly to PUBREL with ", v_response.receivedMsg);
-        }
-      }
-      else
-      {
-        setverdict(fail, "The IUT answered incorrectly to PUBREL with ", v_response);
-      }
-    }
-    else
-    {
-      setverdict(fail, "The IUT answered incorrectly to PUBLISH with ", v_response.receivedMsg);
-    }
-  }
-  else
-  {
-    setverdict(fail, "The IUT answered incorrectly to PUBLISH with ", v_response);
-  }
-
-
-  /* Broker to Client */
-  v_pub_header := tw_publish_header_qos(EXACTLY_ONE_DELIVERY);
-  v_pub_exp := tw_publish_receive(v_pub_header, v_topic.stringItem, c_payload);
-  v_response := f_receive();
-
-
-  if(ischosen(v_response.receivedMsg))
-  {
-    if(match(v_response.receivedMsg, v_pub_exp))
-    {
-      v_packet_id2 := v_response.receivedMsg.msg.publish.packet_identifier;
-    }
-    else
-    {
-      setverdict(fail, "The IUT forwarded incorrect Packet ", v_response.receivedMsg);
-    }
-  }
-  else
-  {
-    setverdict(fail, "The IUT did not forward PUBLISH");
-  }
-
-  if(v_packet_id2 > 0)
-  {
-    v_pubrec := t_pubrec(v_packet_id2);
-    f_send(valueof(v_pubrec));
-
-    v_pubrel_exp := tw_pubrel(v_packet_id2);
-    v_response := f_receive();
-
-    if(ischosen(v_response.receivedMsg))
-    {
-      if(not match(v_response.receivedMsg, v_pubrel_exp))
-      {
-        setverdict(fail, "The IUT answered with incorrect PUBREL ", v_response.receivedMsg);
-      }
-    }
-    else
-    {
-      setverdict(fail, "The IUT did not answer correctly with PUBREL ", v_response);
-    }
-  }
-
-  /* complete the publish */
-  if(getverdict == none)
-  {
-    v_pubcomp := t_pubcomp(v_packet_id2);
-    f_send(valueof(v_pubcomp));
-
-    setverdict(pass, "PUBLISH QoS 2 successful");
-  }
-
-  f_disconnectMqtt();
-  f_cleanUp();
-}
-}
+} // module MQTT_TestCases
