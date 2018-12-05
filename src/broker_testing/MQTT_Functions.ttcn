@@ -11,6 +11,7 @@
 *******************************************************************************/
 module MQTT_Functions {
 
+import from MQTT_Common_TestSystem all;
 import from MQTT_TestSystem all;
 import from MQTT_TypesAndValues all;
 import from MQTT_Templates all;
@@ -25,6 +26,7 @@ import from IPL4asp_Types all;
 /*
 * This group contains all functions running on MQTT_MTC component
 */
+/*
 group MqttMTC_FunctionsGroup
 {
   function f_clientInit(in charstring p_clientId, in charstring p_serverId) runs on MQTT_MTC 
@@ -557,7 +559,7 @@ group MqttPTC_FunctionsGroup
 
     /*
     this is a blocking function that waits for the response from IPL4_PCO. 
-
+    
     @return IPL4_Response 
     */
     function f_receive() runs on MQTT_Client 

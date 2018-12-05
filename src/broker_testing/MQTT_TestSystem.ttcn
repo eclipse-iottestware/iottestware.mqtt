@@ -11,6 +11,8 @@
 *******************************************************************************/
 module MQTT_TestSystem {
 
+import from MQTT_Common_TestSystem all;
+
 import from IPL4asp_PortType all;
 import from MQTT_TypesAndValues all;
 
@@ -51,19 +53,7 @@ group portDefinitionsGroup
 
 group testComponentsGroup
 {
-  /*
-  Base MQTT Test Component 
-  */
-  type component MQTT_PTC
-  {
-    // PCO: Point of Control and Obeservation
-    // ASP: Abstract Service Primitive
-    port IPL4asp_PT IPL4_PCO;
 
-    // TODO: see portDefinitionsGroup
-    // this Translation Port will be used instead of IPL4_PCO in the future
-    // port MQTT_TCP_PT MQTT_PCO;
-  }
 
   /*
   MQTT Client Test Component contains capabilities and context of a MQTT Client
@@ -72,25 +62,18 @@ group testComponentsGroup
   {
     var MqttClientContext ctx := c_MqttClientContext_empty; 
     var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
+    
+    //port IPL4asp_PT IPL4_PCO;
   }
 
+  type record of MQTT_Client MQTT_Client_List;
   /*
   MQTT Broker Test Component contains capabilities and context of a MQTT Broker
   */
   type component MQTT_Broker extends MQTT_PTC
   {
-
-  }
-
-  type record of MQTT_Client MQTT_Client_List;
-
-  /*
-  MQTT MTC aggregates and controls a List of MQTT Clients (and/or Brokers?)
-  */
-  type component MQTT_MTC {
     var MQTT_Client_List mqttClients := {};
   }
-
 }
 }
 

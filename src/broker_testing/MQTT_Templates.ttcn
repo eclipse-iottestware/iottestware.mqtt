@@ -332,21 +332,6 @@ group publishGroup
       retain_flag := p_retain_flag,
       remLength := '00000000'O
     }
-
-    template MQTT_v3_1_1_PublishHeader tw_publishHeader :=
-    {
-      packetType := '0011'B,
-      dup_flag := ?,
-      qos_level := ?,
-      retain_flag := ?,
-      remLength := ?
-    }
-
-    template MQTT_v3_1_1_PublishHeader tw_publish_header_qos(QoS p_qos) 
-    modifies tw_publishHeader :=
-    {
-      qos_level := p_qos
-    }
   }
 
   template MQTT_v3_1_1_Message t_publish(MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, integer p_packet_id, octetstring p_payload) :=
@@ -388,6 +373,36 @@ group publishGroup
       {
         header := t_publishHeader(p_qos := p_qos),
         packet_identifier := p_packet_id
+      }
+    }
+  }
+
+  template MQTT_v3_1_1_PublishHeader tw_publishHeader :=
+  {
+    packetType := '0011'B,
+    dup_flag := ?,
+    qos_level := ?,
+    retain_flag := ?,
+    remLength := ?
+  }
+
+  template MQTT_v3_1_1_PublishHeader tw_publish_header_qos(QoS p_qos) 
+  modifies tw_publishHeader :=
+  {
+    qos_level := p_qos
+  }
+
+  template MQTT_v3_1_1_Message tw_publish_basic :=
+  {
+    msg :=
+    {
+      publish := 
+      {
+        header := tw_publishHeader,
+        nameLength := ?,
+        topic_name := ?,
+        packet_identifier := ?,
+        payload := ?
       }
     }
   }
@@ -841,7 +856,7 @@ group unsubackGroup
       remLength := ?
     }
   }
-  
+
   template MQTT_v3_1_1_Message tw_unsuback_header_flags(BIT4n p_header_flags := '0000'B) :=
   {
     msg := 
@@ -853,7 +868,7 @@ group unsubackGroup
       }
     }
   }
-  
+
   template MQTT_v3_1_1_Message tw_unsuback_packed_id(integer p_packet_id) :=
   {
     msg := 
@@ -924,7 +939,7 @@ group pingrespGroup
       remLength := ?
     }
   }
-  
+
   template MQTT_v3_1_1_Message tw_ping_resp(BIT4n p_flags := '0000'B) :=
   {
     msg := 
@@ -969,7 +984,17 @@ group disconnectGroup
         header := t_disconnectHeader(p_flags)
       }
     }
-  } 
+  }
+
+  template MQTT_v3_1_1_Message tw_disconnect(BIT4n p_flags := '0000'B) := {
+    msg := {
+
+      disconnect_msg := 
+      {
+        header := tw_disconnectHeader(p_flags)
+      }
+    }
+  }
 }
 
 

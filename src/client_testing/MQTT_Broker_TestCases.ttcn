@@ -1,0 +1,131 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html 
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *    Sascha Hackel
+ *******************************************************************************/
+module MQTT_Broker_TestCases {
+
+import from MQTT_Broker_AltSteps all;
+import from MQTT_Broker_Functions all;
+import from MQTT_Broker_Templates all;
+import from MQTT_Common_Templates all;
+import from MQTT_Common_TestSystem all;
+import from MQTT_Templates all;
+import from MQTTasp_Types all;
+
+
+group connectGroup
+{
+  testcase TC_MQTT_Client_CONNECT_01() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      var MQTTasp_Message v_received
+      var template MQTTasp_Message vt_connect_all := tw_mqtt_message(tw_connect);
+
+      log("[UT]: Operator, please CONNECT and PUBLISH");
+      alt {
+        [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+          var MQTT_Connection v_con := v_received.conn
+          v_con.client_state := Wait_connack
+          f_add_connection(v_con)
+          
+          if (match(v_received.msg.msg.connect_msg.header, tw_connectHeader)) {
+            setverdict(pass, "Header flags checked")
+          } else {
+            setverdict(fail, "Header flags must be set to '0000'B")
+          }
+        }
+      }
+    }
+    f_clear_broker_ptc();
+  }
+  
+  testcase TC_MQTT_Client_CONNECT_02() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      var MQTTasp_Message v_received
+      var template MQTTasp_Message vt_connect_all := tw_mqtt_message(tw_connect);
+
+      log("[UT]: Operator, please CONNECT and PUBLISH");
+      alt {
+        [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+          var MQTT_Connection v_con := v_received.conn
+          v_con.client_state := Wait_connack
+          f_add_connection(v_con)
+          
+          if (match(v_received.msg, tw_connect_protocol_name)) {
+            setverdict(pass, "Protocol Name checked")
+          } else {
+            setverdict(fail, "Protocol Name must be UTF-8 encoded 'MQTT'")
+          }
+        }
+      }
+    }
+    f_clear_broker_ptc();
+  }
+  
+  testcase TC_MQTT_Client_CONNECT_03() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      var MQTTasp_Message v_received
+      var template MQTTasp_Message vt_connect_all := tw_mqtt_message(tw_connect);
+
+      log("[UT]: Operator, please CONNECT and PUBLISH");
+      alt {
+        [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+          var MQTT_Connection v_con := v_received.conn
+          v_con.client_state := Wait_connack
+          f_add_connection(v_con)
+          
+          if (match(v_received.msg, tw_connect_protocol_level)) {
+            setverdict(pass, "Protocol Level checked")
+          } else {
+            setverdict(fail, "Protocol Level for MQTT v3.1.1 must be 4")
+          }
+        }
+      }
+    }
+    f_clear_broker_ptc();
+  }
+}
+
+testcase TC_MQTT_CLIENT_PUBLISH_TEST() runs on MQTT_Broker_PTC
+{
+  f_init_broker_ptc();
+
+  // wait for connection
+  tl_timer_connect.start
+  var default v_connack_default := activate(a_mqtt_connack_default(tl_timer_connect))
+  var default v_disconnect_default := activate(a_mqtt_disconnect_default(tl_timer_connect))
+
+  var template MQTTasp_Message vt_publish_req := tw_mqtt_message(tw_publish_basic)
+  var MQTTasp_Message v_received;
+
+  log("[UT]: Operator, please CONNECT and PUBLISH");
+  alt {
+    [] MQTT_PCO.receive(MQTTasp_Message:vt_publish_req) -> value v_received {
+      log("[TC](Received PUBLISH): ", v_received)
+      setverdict(pass, "Publish received")
+      f_disconnect_single(v_received.conn.ipl4.id);
+      break;
+    }
+    [] tl_timer_connect.timeout {
+      log("[TC](Timeout event)")
+      setverdict(inconc, "No Publish received in time")
+      break;
+    }
+  }
+
+  deactivate(v_connack_default)
+  deactivate(v_disconnect_default)
+
+  f_clear_broker_ptc();
+}
+
+} // module

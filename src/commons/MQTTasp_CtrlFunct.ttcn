@@ -1,0 +1,76 @@
+/******************************************************************************
+* Copyright (c) 2010, 2015  Ericsson AB
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+******************************************************************************/
+//
+//  File:               MQTTasp_CtrlFunct.ttcn
+//  Rev:                R18H
+//  Prodnr:             CNL 113 531
+//  Updated:            2008-01-28
+//  Contact:            http://ttcn.ericsson.se
+//  Reference:          
+//
+// Template to declare the port control functions
+// Replace the MQTT_IPL4_PT tag with your user port type and
+// the SNMP_IPL4_Definitions tag with the module name in which the
+// user port type is declared.
+// Feel free to rename this module and file according to your
+// naming conventions.
+//
+// Source: https://www.eclipse.org/forums/index.php/t/1092981/
+
+module MQTTasp_CtrlFunct {
+
+  import from MQTTasp_PortType all;
+  import from MQTTasp_Types all;
+  import from IPL4asp_Types all;
+  
+  external function f_IPL4_listen(
+    inout MQTTasp_PT portRef, 
+    in HostName locName,
+    in PortNumber locPort,
+    in ProtoTuple proto,
+    in OptionList options := {}
+  ) return Result; 
+
+  external function f_IPL4_connect(
+    inout MQTTasp_PT portRef,
+    in HostName remName,
+    in PortNumber remPort,
+    in HostName locName,
+    in PortNumber locPort,
+    in ConnectionId connId,
+    in ProtoTuple proto,
+    in OptionList options := {}
+  ) return Result;
+
+  external function f_IPL4_close(
+    inout MQTTasp_PT portRef,
+    in ConnectionId id,
+    in ProtoTuple proto := { unspecified := {} }
+  ) return Result;
+
+  external function f_IPL4_setUserData(
+    inout MQTTasp_PT portRef,
+    in ConnectionId id,
+    in UserData userData
+  ) return Result;
+
+  external function f_IPL4_getUserData(
+    inout MQTTasp_PT portRef,
+    in ConnectionId id,
+    out UserData userData
+  ) return Result;
+
+  external function f_IPL4_setGetMsgLen(
+    inout MQTTasp_PT portRef,
+    in ConnectionId id := -1,
+    inout f_IPL4_getMsgLen f,
+    in ro_integer msgLenArgs
+  );
+  
+} // module IPL4_user_CtrlFunct
