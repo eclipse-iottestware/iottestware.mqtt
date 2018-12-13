@@ -1,0 +1,29 @@
+/*******************************************************************************
+* Copyright (c) 2018 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+
+module MQTT_Defaults_CONNECT
+{
+  /*
+   * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+   *
+   * @desc Client request to connect to Server
+   *
+   * @remark Packet Type: 0x01
+   * @remark   Direction: Client -> Server
+   */
+
+  group BrokerDefaults
+  {
+
+  } // group BrokerDefaults
+}

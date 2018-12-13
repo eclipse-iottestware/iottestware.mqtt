@@ -1,0 +1,66 @@
+/*******************************************************************************
+* Copyright (c) 2018 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+
+module MQTT_Defaults_DISCONNECT
+{
+  /*
+  * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+  *
+  * @desc Client is disconnecting
+  *
+  * @remark Packet Type: 0x0E
+  * @remark   Direction: Client -> Server
+  */
+
+  import from MQTT_TestSystem_Common all;
+
+  import from MQTTasp_CtrlFunct all;
+  import from MQTT_Functions_Protocol all;
+  import from MQTT_Functions_Network all;
+
+  import from MQTT_Templates_MQTTasp all;
+  import from MQTT_Templates_DISCONNECT all;
+
+  import from MQTTasp_CtrlFunct all;
+
+  import from MQTTasp_Types all;
+  import from IPL4asp_Types all;
+
+  group BrokerDefaults
+  {
+    altstep a_mqtt_disconnect_default(timer p_timer) runs on MQTT_Broker_PTC
+    {
+      var MQTTasp_Message v_received;
+      var template MQTTasp_Message vt_disconnect_req := mw_mqtt_message(mw_disconnect);
+
+      [] MQTT_PCO.receive(vt_disconnect_req) -> value v_received {
+        log("[DEFAULT](Disconnect default triggered for): ", v_received)
+
+        var integer v_conn_id := v_received.conn.ipl4.id
+        var MQTT_Connection v_con := vl_connections[v_conn_id]
+
+        // close the IPL4 connection
+        var Result v_res := f_IPL4_close(MQTT_PCO, v_con.ipl4.id)
+        log("[DEFAULT](Disconnect IPL4 connection): ", v_res)
+
+        v_con.client_state := Disconnected
+        v_con.ipl4.tcp_state := Disconnected
+
+        repeat;
+      }
+      [] p_timer.timeout {
+        break;
+      }
+    } // altstep a_mqtt_disconnect_default
+  } // group BrokerDefaults
+}

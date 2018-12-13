@@ -1,0 +1,39 @@
+
+
+module Playground
+{
+  import from MQTT_TestSystem_Common all;
+  import from MQTT_v3_1_1_Types all;
+  import from MQTT_Templates_CONNECT all;
+
+  /*
+   * test matching bahviour used in f_MQTT_Client_CONNECT_08
+   */
+  testcase TCU_Client_CONNECT_08() runs on MQTT_Broker_PTC
+  {
+    var MQTT_v3_1_1_ConnectPayload v_input :=
+    {
+      client_identifier :=
+      {
+        stringLength := 23,
+        stringItem := "TS7QVyCxbSK+aDkbDT3Zy5A"
+      },
+      will_topic := omit,
+      will_message := omit,
+      user_name := omit,
+      password := omit
+    }
+
+    log("[TEMPL]: ", mw_connect_payload)
+    log("[INPUT]:", v_input)
+    log("[TEMPL]: ", mw_connect_payload_credentials_empty)
+    //if(match(v_input, mw_connect_payload_credentials_empty))
+    if(match(valueof(v_input), mw_connect_payload))
+    {
+      setverdict(pass)
+    } else {
+      setverdict(fail)
+    }
+
+  }
+}

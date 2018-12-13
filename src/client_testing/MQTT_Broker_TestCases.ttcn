@@ -3,129 +3,279 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *   Alexander Kaiser
- *    Sascha Hackel
+ *   Sascha Hackel
+ *   Axel Rennoch
  *******************************************************************************/
-module MQTT_Broker_TestCases {
+module MQTT_Broker_Testcases {
 
-import from MQTT_Broker_AltSteps all;
-import from MQTT_Broker_Functions all;
-import from MQTT_Broker_Templates all;
-import from MQTT_Common_Templates all;
-import from MQTT_Common_TestSystem all;
-import from MQTT_Templates all;
+import from MQTT_TestSystem_Common all;
+import from MQTT_Broker_Testcase_Functions all;
+
+// defaults
+import from MQTT_Defaults_Common all;
+
+// PIXITs
+import from MQTT_Broker_Pixits all;
+
+// Functions
+import from MQTT_Functions_SetUp all;
+import from MQTT_Functions_Network all;
+import from MQTT_Functions_Protocol all;
+import from MQTTasp_PortType all;
+
+// Types
 import from MQTTasp_Types all;
 
+// Templates
+import from MQTT_Templates_MQTTasp all;
+import from MQTT_Templates_CONNECT all;
 
 group connectGroup
 {
+  /*
+  * @purpose "Header flags in CONNECT Control Packet are reserved for future use"
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
   testcase TC_MQTT_Client_CONNECT_01() runs on MQTT_Broker_PTC
   {
-    if(f_init_broker_ptc()) {
-      var MQTTasp_Message v_received
-      var template MQTTasp_Message vt_connect_all := tw_mqtt_message(tw_connect);
+    if(f_init_broker_ptc())
+    {
+      tc_testcase_max.start;
+      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
+      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
+      tc_testcase_max.start;
+      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
 
-      log("[UT]: Operator, please CONNECT and PUBLISH");
-      alt {
-        [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
-          var MQTT_Connection v_con := v_received.conn
-          v_con.client_state := Wait_connack
-          f_add_connection(v_con)
-          
-          if (match(v_received.msg.msg.connect_msg.header, tw_connectHeader)) {
-            setverdict(pass, "Header flags checked")
-          } else {
-            setverdict(fail, "Header flags must be set to '0000'B")
-          }
-        }
-      }
+
+      f_MQTT_Client_CONNECT_01()
+
+      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
-  
+
+  /*
+  * @purpose "The protocol name representing the protocol is a UTF-8 encoded 'MQTT' string"
+  *
+  * @reference [MQTT-3.1.2-1]
+  */
   testcase TC_MQTT_Client_CONNECT_02() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var MQTTasp_Message v_received
-      var template MQTTasp_Message vt_connect_all := tw_mqtt_message(tw_connect);
+      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
+      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
+      tc_testcase_max.start;
+      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
 
-      log("[UT]: Operator, please CONNECT and PUBLISH");
-      alt {
-        [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
-          var MQTT_Connection v_con := v_received.conn
-          v_con.client_state := Wait_connack
-          f_add_connection(v_con)
-          
-          if (match(v_received.msg, tw_connect_protocol_name)) {
-            setverdict(pass, "Protocol Name checked")
-          } else {
-            setverdict(fail, "Protocol Name must be UTF-8 encoded 'MQTT'")
-          }
-        }
-      }
+
+      f_MQTT_Client_CONNECT_02()
+
+      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
-  
+
+  /*
+   * @purpose "The 8 bit unsigned value that represents the revision level of the protocol used by the Client. The value of the the Protocol
+   *            Level field for the version 3.1.1 of the protocol is 4 (0x04)"
+   *
+   * @reference [MQTT-3.1.2-2]
+   */
   testcase TC_MQTT_Client_CONNECT_03() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var MQTTasp_Message v_received
-      var template MQTTasp_Message vt_connect_all := tw_mqtt_message(tw_connect);
+      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
+      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
+      tc_testcase_max.start;
+      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
 
-      log("[UT]: Operator, please CONNECT and PUBLISH");
-      alt {
-        [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
-          var MQTT_Connection v_con := v_received.conn
-          v_con.client_state := Wait_connack
-          f_add_connection(v_con)
-          
-          if (match(v_received.msg, tw_connect_protocol_level)) {
-            setverdict(pass, "Protocol Level checked")
-          } else {
-            setverdict(fail, "Protocol Level for MQTT v3.1.1 must be 4")
-          }
-        }
-      }
+
+      f_MQTT_Client_CONNECT_03()
+
+      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
 }
 
-testcase TC_MQTT_CLIENT_PUBLISH_TEST() runs on MQTT_Broker_PTC
-{
-  f_init_broker_ptc();
+  /*
+  * @purpose "The Connect Flags byte contains a number of parameters specifying the behavior of the MQTT connection. It also indicates the
+  *           presence of absence of fields in the payload. The reserved flag MUST be set to 0"
+  *
+  * @reference [MQTT-3.1.2-3]
+  */
+  testcase TC_MQTT_Client_CONNECT_04() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
+      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
+      tc_testcase_max.start;
+      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
 
-  // wait for connection
-  tl_timer_connect.start
-  var default v_connack_default := activate(a_mqtt_connack_default(tl_timer_connect))
-  var default v_disconnect_default := activate(a_mqtt_disconnect_default(tl_timer_connect))
 
-  var template MQTTasp_Message vt_publish_req := tw_mqtt_message(tw_publish_basic)
-  var MQTTasp_Message v_received;
+      f_MQTT_Client_CONNECT_04()
 
-  log("[UT]: Operator, please CONNECT and PUBLISH");
-  alt {
-    [] MQTT_PCO.receive(MQTTasp_Message:vt_publish_req) -> value v_received {
-      log("[TC](Received PUBLISH): ", v_received)
-      setverdict(pass, "Publish received")
-      f_disconnect_single(v_received.conn.ipl4.id);
-      break;
+      deactivate(v_timeout_default);
     }
-    [] tl_timer_connect.timeout {
-      log("[TC](Timeout event)")
-      setverdict(inconc, "No Publish received in time")
-      break;
-    }
+    f_clear_broker_ptc();
   }
 
-  deactivate(v_connack_default)
-  deactivate(v_disconnect_default)
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-9], [MQTT-3.1.2-14]
+  */
+  testcase TC_MQTT_Client_CONNECT_05() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
+      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
+      tc_testcase_max.start;
+      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
 
-  f_clear_broker_ptc();
-}
+
+      f_MQTT_Client_CONNECT_05()
+
+      deactivate(v_timeout_default);
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-11], [MQTT-3.1.2-13], [MQTT-3.1.2-15]
+  */
+  testcase TC_MQTT_Client_CONNECT_06() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
+      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
+      tc_testcase_max.start;
+      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
+
+
+      f_MQTT_Client_CONNECT_06()
+
+      deactivate(v_timeout_default);
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-18], [MQTT-3.1.2-20], [MQTT-3.1.2-22]
+  */
+  testcase TC_MQTT_Client_CONNECT_07() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
+      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
+      tc_testcase_max.start;
+      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
+
+      f_MQTT_Client_CONNECT_07()
+
+      deactivate(v_timeout_default);
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-19]
+  */
+  testcase TC_MQTT_Client_CONNECT_08() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_CONNECT_08()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-21]
+  */
+  testcase TC_MQTT_Client_CONNECT_09() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_CONNECT_09()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.3-1]
+  */
+  testcase TC_MQTT_Client_CONNECT_10() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_CONNECT_10()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.3-4], [MQTT-1.5.3-1]
+  */
+  testcase TC_MQTT_Client_CONNECT_11() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_CONNECT_11()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.3-7]
+  */
+  testcase TC_MQTT_Client_CONNECT_12() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_CONNECT_12()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.3-10]
+  */
+  testcase TC_MQTT_Client_CONNECT_13() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_CONNECT_13()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.3-11]
+  */
+  testcase TC_MQTT_Client_CONNECT_14() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_CONNECT_14()
+    }
+    f_clear_broker_ptc();
+  }
 
 } // module

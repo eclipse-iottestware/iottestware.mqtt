@@ -3,19 +3,23 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *   Alexander Kaiser
- *    Sascha Hackel
+ *   Sascha Hackel
+ *   Axel Rennoch
  *******************************************************************************/
 module MQTTasp_PortType {
 
+import from MQTT_TestSystem_Common all;
 import from IPL4asp_PortType all;
 import from IPL4asp_Types all;
+
 import from MQTT_v3_1_1_Types all;
-import from MQTT_Functions all;
+
 import from MQTTasp_Types all;
+
 
 //Dual faced port
 type port MQTTasp_PT message {
@@ -37,7 +41,7 @@ private function f_enc_mqtt(in MQTTasp_Message p_in, out ASP_SendTo p_out) retur
 {
   log("[TRPO](Ecndode MQTT message): ", p_in)
   var octetstring v_encoded := f_MQTT_enc(p_in.msg);
-  v_encoded := f_adjustLength(f_calcRemLength(v_encoded));
+  v_encoded := f_adjustLength(f_calc_rem_length(v_encoded));
 
   p_out.connId := p_in.conn.ipl4.id;
   p_out.remName := p_in.conn.ipl4.rem_name;
@@ -89,5 +93,36 @@ private function f_dec_asp_event(in ASP_Event p_in, out charstring p_out) return
   //} with {extension "prototype(fast)"}
 } with {extension "prototype(backtrack)" }
 
+// TODO: pass vl_connections as inout paramater and remove runs on
+function f_add_connection(MQTT_Connection p_mqtt_con, MQTTClientState p_client_state := Wait_connack) runs on MQTT_Broker_PTC
+{
+  f_change_connection_client_state(p_mqtt_con, p_client_state);
+  var integer v_conn_id := p_mqtt_con.ipl4.id;
+  vl_connections[v_conn_id] := p_mqtt_con;
+}
+
+// TODO: define MQTT_Connection module with own OOP-like functions? functions which work only on MQTT_Connection and has no runs on
+function f_change_connection_client_state(inout MQTT_Connection p_mqtt_con, MQTTClientState p_client_state)
+{
+  // TODO: check if connection already in vl_connections... ?
+  p_mqtt_con.client_state := p_client_state
+}
+
+/*
+* TODO:
+* This function is a workaround: calling f_MQTT_enc(..) seems not to calculate the remLength field
+*
+* TODO: duplicate function also in MQTT_Functions
+*
+* TODO: check byte encoding from MQTT 2.2.3 (http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718023)
+*/
+function f_calc_rem_length(in octetstring p_os) return octetstring
+{
+  // cut 1 Byte Packet Type + 4 Byte empty remLength
+  var integer v_remLength := lengthof(p_os) - 5;
+  p_os := replace(p_os, 1, 4, int2oct(v_remLength, 4));
+
+  return p_os;
+}
 
 } // module

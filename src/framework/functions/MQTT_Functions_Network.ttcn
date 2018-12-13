@@ -1,0 +1,64 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module MQTT_Functions_Network
+{
+  import from MQTT_TestSystem_Common all;
+  /*
+  import from MQTT_Templates_MQTTasp all;
+
+  import from MQTT_Templates_CONNACK all;
+  import from MQTT_Templates_DISCONNECT all;
+
+  import from MQTT_Broker_Pixits all;
+  */
+  import from MQTTasp_PortType all;
+  import from MQTTasp_Types all;
+  import from MQTTasp_CtrlFunct all;
+
+  import from IPL4asp_PortType all;
+  import from IPL4asp_Types all;
+
+  /*
+   * This is a wrapper of IPL4 functionality of MQTT: TODO: move to MQTT_Function_MQTT ?
+   */
+
+  group PTC_Common
+  {
+    function f_ipl4_close(integer p_idx) runs on MQTT_PTC return Result
+    {
+      log("[IPL4](close connection)(", p_idx, ")")
+      var Result vl_result := MQTTasp_CtrlFunct.f_IPL4_close(MQTT_PCO, p_idx);
+      return vl_result
+    }
+  } // group PTC_Common
+
+  group PTC_Broker
+  {
+    function f_ipl4_listen(integer p_port := 1883, charstring p_loc_name := "0.0.0.0") runs on MQTT_Broker_PTC return Result
+    {
+       log("[IPL4](listen on )(", p_loc_name, ":", p_port, ")")
+       var Result vl_result := MQTTasp_CtrlFunct.f_IPL4_listen(MQTT_PCO, p_loc_name, p_port, {tcp := {}})
+       return vl_result;
+    }
+  } // group PTC_Broker
+
+  group PTC_Client
+  {
+    // TODO: merge from broker_testing
+    function f_ipl4_connection() runs on MQTT_Client_PTC
+    {
+      // TODO:
+    }
+  } // group PTC_Client
+
+} // module

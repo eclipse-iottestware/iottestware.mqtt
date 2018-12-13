@@ -1,0 +1,50 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module MQTT_Broker_Dummy {
+
+import from MQTT_TestSystem_Common all;
+import from MQTT_Defaults_Common all;
+
+import from MQTT_Functions_SetUp all;
+import from MQTT_Defaults_CONNACK all;
+import from MQTT_Defaults_PUBLISH all;
+import from MQTT_Defaults_DISCONNECT all;
+import from MQTTasp_Types all;
+
+import from MQTT_Templates_MQTTasp all;
+import from MQTT_Templates_CONNECT all;
+
+testcase TC_MQTT_Client_DUMMY_BROKER () runs on MQTT_Broker_PTC
+{
+  if(f_init_broker_ptc()) {
+    var default v_connack_default := activate(a_mqtt_connack_default(tc_testcase_max));
+    var default v_publish_default := activate(a_mqtt_publish_default(tc_testcase_max));
+    var default v_disconnect_default := activate(a_mqtt_disconnect_default(tc_testcase_max));
+
+    tc_testcase_max.start;
+    alt {
+      [] tc_testcase_max.timeout {
+        setverdict(pass, "Timed out");
+        break;
+      }
+    }
+
+    deactivate(v_connack_default)
+    deactivate(v_publish_default)
+    deactivate(v_disconnect_default)
+  }
+
+  f_clear_broker_ptc();
+}
+
+} // module

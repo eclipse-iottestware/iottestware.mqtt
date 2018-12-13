@@ -1,0 +1,44 @@
+/*******************************************************************************
+* Copyright (c) 2018 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+module UTF8_Helper {
+
+  import from MQTT_v3_1_1_Types all;
+
+  function f_utf8_from_charstring(charstring p_in) return UTF8EncodedString
+  {
+    return { stringLength := lengthof(p_in), stringItem := p_in }
+  }
+
+  /*
+   * Function returns a template (ft_) of utf8 encodable charstring
+   */
+  function ft_utf8_from_charstring(charstring p_in) return template UTF8EncodedString
+  {
+    // TODO
+    return valueof(m_utf8_string(lengthof(p_in), p_in))
+  }
+
+  template UTF8EncodedString m_utf8_string(integer p_len, charstring p_item) :=
+  {
+    stringLength := p_len,
+    stringItem := p_item
+  }
+
+  template UTF8EncodedString mw_utf8_string(integer p_len, charstring p_item) :=
+  {
+    stringLength := ?,
+    stringItem := ?
+  }
+
+
+}

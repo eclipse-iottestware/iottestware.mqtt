@@ -1,0 +1,279 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module MQTT_Functions_Protocol
+{
+  import from MQTT_TestSystem_Common all;
+
+  import from MQTT_Templates_MQTTasp all;
+  import from MQTT_Templates_CONNECT all;
+  import from MQTT_Templates_CONNACK all;
+  import from MQTT_Templates_PUBLISH all;
+  import from MQTT_Templates_PUBACK all;
+  import from MQTT_Templates_PUBREC all;
+  import from MQTT_Templates_PUBREL all;
+  import from MQTT_Templates_PUBCOMP all;
+  import from MQTT_Templates_SUBSCRIBE all;
+  import from MQTT_Templates_SUBACK all;
+  import from MQTT_Templates_UNSUBSCRIBE all;
+  import from MQTT_Templates_UNSUBACK all;
+  import from MQTT_Templates_PINGREQ all;
+  import from MQTT_Templates_PINGRESP all;
+  import from MQTT_Templates_DISCONNECT all;
+
+  import from MQTT_Broker_Pixits all;
+  import from MQTTasp_PortType all;
+  import from MQTTasp_Types all;
+  import from MQTTasp_CtrlFunct all;
+
+  import from MQTT_v3_1_1_Types all;
+  import from IPL4asp_Types all;
+
+
+  /*
+  * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+  *
+  * @desc Broker PTC functions for MQTT publish and all delivery assurance packets
+  *
+  * @remark   Direction: Client <-> Server
+  */
+  group PTC_Publish
+  {
+    /*
+     * @desc response with a PUBLISH
+     */
+    function f_send_pubish(inout MQTT_Connection p_conn) runs on MQTT_PTC
+    {
+      // TODO: implement
+      log("[NOIMPL](f_publish)")
+    }
+
+    /*
+     * @desc response with a PUBACK
+     */
+    function f_send_puback(inout MQTT_Connection p_conn, integer p_packet_id)  runs on MQTT_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_puback := m_puback(p_packet_id)
+
+      // send PUBACK response
+      log("[MQTT_PTC](>>>)(PUBACK): ", vt_puback)
+      f_send_mqtt(p_conn, vt_puback)
+    }
+
+    /*
+     * @desc response with a PUBREC
+     */
+    function f_send_pubrec(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_pubrec := m_pubrec(p_packet_id)
+
+      // send PUBREC response
+      log("[MQTT_PTC](>>>)(PUBREC): ", vt_pubrec)
+      f_send_mqtt(p_conn, vt_pubrec)
+    }
+
+    /*
+     * @desc response with a PUBREL
+     */
+    function f_send_pubrel(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_pubrel := m_pubrel(p_packet_id)
+
+      // send PUBREL response
+      log("[MQTT_PTC](>>>)(PUBREL): ", vt_pubrel)
+      f_send_mqtt(p_conn, vt_pubrel)
+
+      // set state to 'Connected'
+      //f_change_connection_client_state(p_conn, Connected)
+    }
+
+    /*
+     * @desc response with a PUBCOMP
+     */
+    function f_send_pubcomp(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_pubcomp := m_pubcomp(p_packet_id)
+
+      // send PUBCOMP response
+      log("[MQTT_PTC](>>>)(PUBCOMP): ", vt_pubcomp)
+      f_send_mqtt(p_conn, vt_pubcomp)
+
+      // set state to 'Connected'
+      //f_change_connection_client_state(p_conn, Connected)
+    }
+
+  } // group PTC_Publish
+
+  /*
+  * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+  *
+  * @desc group of common functions for broker and client
+  *
+  * @remark   runs on MQTT_PTC
+  */
+  group PTC_Common
+  {
+    /*
+     * @desc send a generic MQTT message
+     */
+    function f_send_mqtt(inout MQTT_Connection p_conn, template MQTT_v3_1_1_Message p_msg) runs on MQTT_PTC
+    {
+      var template MQTTasp_Message vt_msg := m_mqtt_message_conn(p_msg, p_conn)
+
+      // send response
+      MQTT_PCO.send(valueof(vt_msg))
+      log("[MQTT_PTC](send)(MQTT Message): ", vt_msg)
+    }
+  } // group PTC_Common
+
+  /*
+  * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+  *
+  * @desc Broker PTC functions for MQTT request messages
+  *
+  * @remark   Direction: Client <- Server
+  */
+  group PTC_Broker
+  {
+    /*
+     * @desc response with a CONNACK
+     */
+    function f_send_connack(inout MQTT_Connection p_conn, integer p_return_code := 0) runs on MQTT_Broker_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_connack := m_connack_rc(p_return_code)
+
+      // send CONNACK response
+      log("[MQTT_Broker_PTC](>>>)(CONNACK): ", vt_connack)
+      f_send_mqtt(p_conn, vt_connack)
+
+      // set state to 'Connected'
+      f_change_connection_client_state(p_conn, Connected)
+    }
+
+    /*
+     * @desc response with a SUBACK
+     */
+    function f_send_suback(inout MQTT_Connection p_conn, integer p_packet_id, IntegerList p_return_codes) runs on MQTT_Broker_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_suback := m_suback(p_packet_id, p_return_codes)
+
+      // send SUBACK response
+      log("[MQTT_Broker_PTC](>>>)(SUBACK): ", vt_suback)
+      f_send_mqtt(p_conn, vt_suback)
+
+      // set state to 'Connected'
+      //f_change_connection_client_state(p_conn, Connected)
+    }
+
+    /*
+     * @desc response with a UNSUBACK
+     */
+    function f_send_unsuback(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_Broker_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_unsuback := m_unsuback(p_packet_id)
+
+      // send UNSUBACK response
+      log("[MQTT_Broker_PTC](>>>)(UNSUBACK): ", vt_unsuback)
+      f_send_mqtt(p_conn, vt_unsuback)
+
+      // set state to 'Connected'
+      //f_change_connection_client_state(p_conn, Connected)
+    }
+
+    /*
+     * @desc response with a PINGRESP
+     */
+    function f_send_ping_resp(inout MQTT_Connection p_conn) runs on MQTT_Broker_PTC
+    {
+      var template MQTT_v3_1_1_Message vt_ping_response := m_pingresp
+
+      // send PINGRESP response
+      log("[MQTT_Broker_PTC](>>>)(PINGRESP): ", vt_ping_response)
+      f_send_mqtt(p_conn, vt_ping_response)
+
+      // set state to 'Connected'
+      //f_change_connection_client_state(p_conn, Connected)
+    }
+
+
+
+    /*
+     * @desc disconnect all active mqtt connections from broker
+     * @mark the broker does NOT send a DISCONNECT but rather terminates the underlying IPL4 connection
+     * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+     */
+     function f_disconnect_all() runs on MQTT_Broker_PTC
+     {
+       log("[DISCONNECT](Disconnect all active MQTT connections)")
+
+       for (var integer i := lengthof(vl_connections); i > 0 ; i := i - 1) {
+         if (ispresent(vl_connections[i])) {
+           // TODO: implement
+         }
+       }
+     }
+  } // group PTC_Broker
+
+  /*
+  * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+  *
+  * @desc Broker PTC functions for MQTT response messages
+  *
+  * @remark   Direction: Client <- Server
+  */
+  group PTC_Client
+  {
+    /*
+     * @desc response with a CONNECT
+     */
+    function f_send_connect(inout MQTT_Connection p_conn) runs on MQTT_Client_PTC
+    {
+      // TODO: implement
+      log("[NOIMPL](f_connect_request)")
+    }
+
+    /*
+     * @desc response with a SUBSCRIBE
+     */
+    function f_send_subscribe(inout MQTT_Connection p_conn) runs on MQTT_Client_PTC
+    {
+      // TODO: implement
+      log("[NOIMPL](f_connect_request)")
+    }
+
+    /*
+     * @desc the client sends a DISCONNECT notification and closes the IPL4 connection
+     * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349355
+     */
+    function f_send_disconnect(inout MQTT_Connection p_conn) runs on MQTT_Client_PTC
+    {
+      /*
+      if(ispresent(p_conn.client_state) and p_conn.client_state != Disconnected) {
+        log("[DISCONNECT](Send Disconnect Request): ", p_conn)
+        var template MQTTasp_Message v_disc_req := m_mqtt_message_conn(m_disconnect, p_conn)
+        MQTT_PCO.send(valueof(v_disc_req))
+
+        p_conn.client_state := Disconnected;
+      } else {
+        log("[DISCONNECT](Not possible for ", p_con_idx, "): ", p_conn);
+      }
+
+      if(p_conn.ipl4.tcp_state != Disconnected) {
+        log("[DISCONNECT](Close IPL4 for): ", p_conn);
+        f_IPL4_close(MQTT_PCO, p_conn.ipl4.id);
+        p_conn.ipl4.tcp_state := Disconnected;
+      }*/
+    }
+
+  } // group PTC_Client
+
+} // module

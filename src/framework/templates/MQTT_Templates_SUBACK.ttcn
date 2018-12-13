@@ -1,0 +1,101 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+
+ /*
+  * This module contains all templates related to SUBACK control packets
+  */
+module MQTT_Templates_SUBACK
+{
+  import from MQTT_v3_1_1_Types all;
+
+  /*
+   * Sending Templates are templates without any wildcards or matching expressions.
+   * Thus, this templates can be used to create concrete MQTT PDUs with valueof(T)
+   */
+  group SendingTemplates
+  {
+    /*
+    * SUBACK Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718068
+    */
+    group SUBACK_Group
+    {
+      group FixedHeaderGroup
+      {
+        template Header m_suback_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '1001'B ,
+          flags := p_flags,
+          remLength := '00000000'O  // f_calcRemLength will set this field automatically after encoding
+        }
+      }
+
+      group SUBACK_MessageGroup
+      {
+        template MQTT_v3_1_1_Message m_suback(integer p_packet_id, IntegerList p_return_codes) :=
+        {
+          msg :=
+          {
+            suback :=
+            {
+              header := m_suback_header,
+              packet_identifier := p_packet_id,
+              payload :=
+              {
+                return_code := p_return_codes
+              }
+
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /*
+   * Matchin Templates are templates with wildcards or matching expressions.
+   * This templates should be only used for matching incoming MQTT PDUs
+   */
+  group MatchingTemplates
+  {
+    /*
+    * SUBACK Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718068
+    */
+    group SUBACK_Group
+    {
+      group FixedHeaderGroup
+      {
+        template Header mw_suback_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '1001'B ,
+          flags := p_flags,
+          remLength := ?
+        }
+      }
+
+      group SUBACK_MessageGroup
+      {
+        template MQTT_v3_1_1_Message mw_suback :=
+        {
+          msg :=
+          {
+            suback := ?
+          }
+        }
+      }
+    }
+  }
+}

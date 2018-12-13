@@ -1,0 +1,39 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module MQTT_Broker_Pixits {
+
+   /*
+    * @desc max duration in seconds to wait for a connect: Needed?
+    */
+
+   /*
+    * @desc max duration in seconds per test case
+    */
+   modulepar float PX_MAX_TC_TIMER := 20.0;
+
+   /*
+    * @desc the conformance statement [MQTT-3.1.2-1] specifies that a broker MAY disconnect.
+    *       If set to false, the TS broker will only accept 'MQTT' as valid protocol name
+    */
+   modulepar boolean PX_ACCEPT_ANY_PROTOCOL_NAME := false;
+
+   /*
+    * @desc should a verdict be set if TC times out?
+    */
+   modulepar boolean PX_ON_TIMEOUT_VERDICT := true;
+
+   /*
+    * @desc which verdict should be set if TC times out?
+    */
+   modulepar verdicttype PX_ON_TIMEOUT_VERDICT_VAL := fail
+}

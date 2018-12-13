@@ -1,0 +1,435 @@
+/*******************************************************************************
+* Copyright (c) 2018 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+module MQTT_Broker_Testcase_Functions {
+
+import from MQTT_TestSystem_Common all;
+
+// defaults
+import from MQTT_Defaults_Common all;
+
+// PIXITs
+import from MQTT_Broker_Pixits all;
+
+// Functions
+import from MQTT_Functions_SetUp all;
+import from MQTT_Functions_Network all;
+import from MQTT_Functions_Protocol all;
+import from MQTTasp_PortType all;
+
+// Types
+import from MQTTasp_Types all;
+import from MQTT_v3_1_1_Types all;
+
+// Templates
+import from MQTT_Templates_MQTTasp all;
+import from MQTT_Templates_CONNECT all;
+
+group connectGroup
+{
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  function f_MQTT_Client_CONNECT_01() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    // [UT] upper tester command via logging forwarded to the webserver
+    log("[UT](send CONNECT): ", mw_connect_header);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        // [TC_*] logging forwarded to the webserver can enrich resoult
+        log("[TC_MQTT_Client_CONNECT_01](received connect): ", v_received.msg.msg.connect_msg)
+
+        if (match(v_received.msg.msg.connect_msg.header, mw_connect_header)) {
+          f_send_connack(v_conn)
+          setverdict(pass, "Header flags checked")
+        } else {
+          // close network connection as specified in [MQTT-2.2.2-2]
+          f_ipl4_close(v_conn.ipl4.id)
+          setverdict(fail, "Header flags must be set to '0000'B")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-1]
+  */
+  function f_MQTT_Client_CONNECT_02() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT): ", mw_connect_protocol_name);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        if (match(v_received.msg, mw_connect_protocol_name) or PX_ACCEPT_ANY_PROTOCOL_NAME) {
+          f_send_connack(v_conn)
+
+          log("[TC_MQTT_Client_CONNECT_02](received connect): ", v_received.msg.msg.connect_msg)
+
+          // [MQTT-3.1.2-1] allows also to accept any other protocol names: configure PX_ACCEPT_ANY_PROTOCOL_NAME
+          if (PX_ACCEPT_ANY_PROTOCOL_NAME) {
+            setverdict(pass, "TS Broker accepts any protocol name")
+          } else {
+            setverdict(pass, "Protocol name checked")
+          }
+        } else {
+          // close network connection as specified in [MQTT-2.2.2-2]
+          f_ipl4_close(v_conn.ipl4.id)
+          setverdict(fail, "Protocol name must be UTF-8 encoded 'MQTT'")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-2]
+  */
+  function f_MQTT_Client_CONNECT_03() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT): ", mw_connect_protocol_level);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        log("[TC_MQTT_Client_CONNECT_03](received connect): ", v_received.msg.msg.connect_msg)
+
+        if (match(v_received.msg, mw_connect_protocol_level)) {
+          f_send_connack(v_conn)
+          setverdict(pass, "Protocol Level checked")
+        } else {
+          // return CONNACK with 0x01 see: [MQTT-3.1.2-2]
+          f_send_connack(v_conn, 1)
+
+          // close network connection as specified in TODO: [WHERE?]
+          f_ipl4_close(v_conn.ipl4.id)
+          setverdict(fail, "Protocol Level for MQTT v3.1.1 must be 4")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-3]
+  */
+  function f_MQTT_Client_CONNECT_04() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT): ", mw_connect_reserved);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        log("[TC_MQTT_Client_CONNECT_04](received connect): ", v_received.msg.msg.connect_msg)
+
+        if (match(v_received.msg, mw_connect_reserved)) {
+          f_send_connack(v_conn)
+          setverdict(pass, "Reserved flag checked")
+        } else {
+          // close network connection as specified in [MQTT-2.2.2-2]
+          f_ipl4_close(v_conn.ipl4.id)
+          setverdict(fail, "Reserved flag must be set to '0'")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-9], [MQTT-3.1.2-14]
+  */
+  function f_MQTT_Client_CONNECT_05() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT): ", mw_connect_will_flag);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        log("[TC_MQTT_Client_CONNECT_05](received connect): ", v_received.msg.msg.connect_msg)
+
+        if (match(v_received.msg, mw_connect_will_flag)) {
+
+          // check if will_qos is valid
+          //TODO: mw_connect_will_flag matching only valid?
+          var QoS vt_invalid_qos := RESERVED
+          if(match(vt_invalid_qos, v_received.msg.msg.connect_msg.flags.will_qos))
+          {
+            setverdict(fail, "Received CONNECT contains invalid Will Qos")
+          } else {
+            f_send_connack(v_conn)
+            setverdict(pass, "Will flag and Will QoS checked")
+          }
+        } else {
+          // close network connection
+          f_ipl4_close(v_conn.ipl4.id)
+          setverdict(fail, "Will flag must be set to '1'")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-11], [MQTT-3.1.2-13], [MQTT-3.1.2-15]
+  */
+  function f_MQTT_Client_CONNECT_06() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT): ", mw_connect_will_flag('0'B));
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        log("[TC_MQTT_Client_CONNECT_06](received connect): ", v_received.msg.msg.connect_msg)
+
+        if(match(v_received.msg, mw_connect_will_flag)) {
+
+          // check if will_qos is valid
+          //TODO: mw_connect_will_flag matching only valid?
+          var QoS vt_invalid_qos := AT_MOST_ONCE_DELIVERY
+          if(match(vt_invalid_qos, v_received.msg.msg.connect_msg.flags.will_qos)){
+            setverdict(fail, "Received CONNECT contains Will Qos > 0")
+          }
+
+          // check if will_retain
+          //TODO: mw_connect_will_flag matching only valid?
+          if(match('1'B, v_received.msg.msg.connect_msg.flags.will_retain)) {
+            setverdict(fail, "Received CONNECT contains will_retain but will_flag is '0'B")
+          }
+
+          // check if connect payload is empty
+          var template MQTT_v3_1_1_ConnectPayload vt_conn_payload := mw_connect_payload_lwt_empty
+          if(match(v_received.msg.msg.connect_msg.payload, vt_conn_payload)) {
+            setverdict(fail, "Received CONNECT contains LWT payload but will_flag is '0'B")
+          }
+
+          if(getverdict == pass) {
+            f_send_connack(v_conn)
+            setverdict(pass, "Will flag and Will QoS checked")
+          } else {
+            // close network connection; already failed
+            f_ipl4_close(v_conn.ipl4.id)
+          }
+
+        } else {
+          // close network connection
+          f_ipl4_close(v_conn.ipl4.id)
+          setverdict(fail, "Will flag must be set to '1'")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-18], [MQTT-3.1.2-20], [MQTT-3.1.2-22]
+  */
+  function f_MQTT_Client_CONNECT_07() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT): ", mw_connect_credentials_empty);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        log("[TC_MQTT_Client_CONNECT_07](received connect): ", v_received.msg.msg.connect_msg)
+
+        if (match(v_received.msg, mw_connect_credentials_empty)) {
+          f_send_connack(v_conn)
+          setverdict(pass, "No credentials behaviour checked")
+        } else {
+          // close network connection
+          f_ipl4_close(v_conn.ipl4.id)
+          setverdict(fail, "not match (usr_flag='0'B : pswd_flag='0'B : payload=omit)")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-19]
+  */
+  function f_MQTT_Client_CONNECT_08() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    var BIT1n v_user_name_flag := '1'B
+    var BIT1n v_password_flag := '0'B
+    var template MQTT_v3_1_1_Message vt_conn_msg := mw_connect_credentials_payload(v_user_name_flag, v_password_flag)
+
+    log("[UT](send CONNECT): ", vt_conn_msg);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        log("[TC_MQTT_Client_CONNECT_08](received connect): ", v_received.msg.msg.connect_msg)
+
+        // TODO: matching omits? see Playground.TCU_Client_CONNECT_08
+        if (not ispresent(v_received.msg.msg.connect_msg.payload.user_name))
+        {
+          setverdict(fail, "No user name in payload")
+        }
+
+        if (ispresent(v_received.msg.msg.connect_msg.payload.password))
+        {
+          setverdict(fail, "pswd flag is '0'B but payload contains pswd")
+        }
+
+        if (getverdict == fail)
+        {
+          // close network connection
+          f_ipl4_close(v_conn.ipl4.id)
+        } else {
+          f_send_connack(v_conn)
+          setverdict(pass, "Username set correctly")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.1.2-21]
+  */
+  function f_MQTT_Client_CONNECT_09() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    var BIT1n v_user_name_flag := '1'B
+    var BIT1n v_password_flag := '1'B
+    var template MQTT_v3_1_1_Message vt_conn_msg := mw_connect_credentials_payload(v_user_name_flag, v_password_flag)
+
+    log("[UT](send CONNECT): ", vt_conn_msg);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        log("[TC_MQTT_Client_CONNECT_09](received connect): ", v_received.msg.msg.connect_msg)
+
+        if (not ispresent(v_received.msg.msg.connect_msg.payload.user_name))
+        {
+          setverdict(fail, "uesr_name flag is '1'B but payload dosn't contain user_name")
+        }
+
+        if (not ispresent(v_received.msg.msg.connect_msg.payload.password))
+        {
+          setverdict(fail, "password flag is '1'B but payload dosn't contain a password")
+        }
+
+        if (getverdict == fail)
+        {
+          // close network connection
+          f_ipl4_close(v_conn.ipl4.id)
+        } else {
+          f_send_connack(v_conn)
+          setverdict(pass, "Username and Passwort set correctly")
+        }
+      }
+    } // alt
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_CONNECT_10() runs on MQTT_Broker_PTC
+  {
+    // TODO
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_CONNECT_11() runs on MQTT_Broker_PTC
+  {
+    // TODO
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_CONNECT_12() runs on MQTT_Broker_PTC
+  {
+    // TODO
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_CONNECT_13() runs on MQTT_Broker_PTC
+  {
+    // TODO
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_CONNECT_14() runs on MQTT_Broker_PTC
+  {
+    // TODO
+  }
+} // group connectGroup
+
+} // module

@@ -29,7 +29,7 @@ Package mts_tst {
         Test objective
         "The protocol name representing the protocol is a UTF-8 encoded 'MQTT' string"
         Reference
-        "[MQTT-2.2.2-1]"
+        "[MQTT-3.1.2-1]"
 
         PICS Selection PICS_CLIENT_BASIC
 
@@ -71,7 +71,7 @@ Package mts_tst {
 
         Test objective
         "The Connect Flags byte contains a number of parameters specifying the behavior of the MQTT connection. It also indicates the
-        presence of absence of fields in the payload"
+        presence of absence of fields in the payload. The reserved flag MUST be set to 0"
         Reference
         "[MQTT-3.1.2-3]"
 
@@ -126,7 +126,7 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_06
 
         Test objective
-        "If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be 
+        "If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be
         set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload"
         Reference
         "[MQTT-3.1.2-11], [MQTT-3.1.2-13], [MQTT-3.1.2-15]"
@@ -202,14 +202,17 @@ Package mts_tst {
               the IUT entity sends a CONNECT message containing
               connect_flags containing
                 user_name_flag indicating value '1'B;
+                password_flag indicating value '0'B;
               ;
           } then {
               the TS entity checks_that the received CONNECT message containing
               connect_flags containing
                 user_name_flag indicating value '1'B;
+                password_flag indicating value '0'B;
               ,
               payload containing
                 user_name indicating value not omit;
+                password indicating value omit;
               ;
           }
         }
@@ -221,7 +224,7 @@ Package mts_tst {
         Test objective
         "If the Password Flag is set to 1, a password MUST be present in the payload"
         Reference
-        "[MQTT-3.1.2-21]"
+        "[MQTT-3.1.2-21], [MQTT-3.1.2-21]"
 
         PICS Selection PICS_CLIENT_BASIC
 
@@ -230,14 +233,17 @@ Package mts_tst {
           when {
               the IUT entity sends a CONNECT message containing
               connect_flags containing
+                user_name_flag indicating value '1'B,
                 password_flag indicating value '1'B;
               ;
           } then {
               the TS entity checks_that the received CONNECT message containing
               connect_flags containing
+                user_name_flag indicating value '1'B,
                 password_flag indicating value '1'B;
               ,
               payload containing
+                user_name indicating value not omit,
                 password indicating value not omit;
               ;
           }
@@ -272,7 +278,7 @@ Package mts_tst {
                 password corresponding to PIXIT_MQTT_PASSWORD;
               ;
           } then {
-              // Assumption: by comparing each field with the sent values, the order is checked implicitly. 
+              // Assumption: by comparing each field with the sent values, the order is checked implicitly.
               // Wrong order would silently swap the fields during decoding
               the TS entity checks_that the received CONNECT message containing
               connect_flags containing
@@ -347,7 +353,7 @@ Package mts_tst {
           }
         }
     }
-    
+
     Test Purpose {
         TP Id TP_MQTT_Client_CONNECT_13
 
@@ -380,7 +386,7 @@ Package mts_tst {
           }
         }
     }
-    
+
     Test Purpose {
         TP Id TP_MQTT_Client_CONNECT_14
 

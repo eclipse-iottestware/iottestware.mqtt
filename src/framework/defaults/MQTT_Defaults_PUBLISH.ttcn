@@ -1,0 +1,63 @@
+/*******************************************************************************
+* Copyright (c) 2018 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+
+module MQTT_Defaults_PUBLISH
+{
+  /*
+  * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+  *
+  * @desc Publish message
+  *
+  * @remark Packet Type: 0x03
+  * @remark   Direction: Client <-> Server
+  */
+
+  import from MQTT_TestSystem_Common all;
+
+  import from MQTTasp_CtrlFunct all;
+  import from MQTT_Functions_Protocol all;
+  import from MQTT_Functions_Network all;
+
+  import from MQTT_Templates_MQTTasp all;
+  import from MQTT_Templates_PUBLISH all;
+  import from MQTT_Templates_PUBACK all;
+
+  import from MQTTasp_CtrlFunct all;
+
+  import from MQTTasp_Types all;
+  import from IPL4asp_Types all;
+
+  group BrokerDefaults
+  {
+
+  } // group BrokerDefaults
+
+  group ClientDefaults
+  {
+
+  } // group ClientDefaults
+
+  group CommonDefaults
+  {
+    altstep a_mqtt_publish_default(timer p_timer) runs on MQTT_PTC
+    {
+      var MQTTasp_Message v_received;
+      var template MQTTasp_Message vt_publish_all := mw_mqtt_message(mw_publish_all);
+
+      [] MQTT_PCO.receive(vt_publish_all) -> value v_received {
+        log("[DEFAULT](Received PUBLISH): ", v_received)
+        repeat;
+      }
+    } // altstep a_mqtt_publish_default
+  } // group CommonDefaults
+}

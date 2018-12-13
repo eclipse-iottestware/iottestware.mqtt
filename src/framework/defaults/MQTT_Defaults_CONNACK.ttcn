@@ -1,0 +1,77 @@
+/*******************************************************************************
+* Copyright (c) 2018 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+
+module MQTT_Defaults_CONNACK
+{
+  /*
+  * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
+  *
+  * @desc Connect acknowledgment
+  *
+  * @remark Packet Type: 0x02
+  * @remark   Direction: Client <- Server
+  */
+
+  import from MQTT_TestSystem_Common all;
+
+  import from MQTTasp_CtrlFunct all;
+  import from MQTT_Functions_Protocol all;
+  import from MQTT_Functions_Network all;
+
+  import from MQTT_Templates_MQTTasp all;
+  import from MQTT_Templates_CONNECT all;
+  import from MQTT_Templates_CONNACK all;
+
+  import from MQTTasp_PortType all;
+  import from MQTTasp_Types all;
+  import from IPL4asp_Types all;
+
+  group ClientDefaults
+  {
+    altstep a_mqtt_connack_default(timer p_timer) runs on MQTT_Broker_PTC
+    {
+      var MQTTasp_Message v_received;
+      var template MQTTasp_Message vt_connect_valid := mw_mqtt_message(mw_connect_valid_mqtt_311);
+      var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+      [] MQTT_PCO.receive(vt_connect_valid) -> value v_received {
+        log("[DEFAULT](Valid CONNECT received): ", v_received)
+
+        var MQTT_Connection v_con := v_received.conn
+
+        f_send_connack(v_con) // TODO: check the return code
+
+        // TODO: verify
+        var integer v_conn_id := v_received.conn.ipl4.id
+        vl_connections[v_conn_id] := v_con
+        repeat;
+      }
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        log("[DEFAULT](Invalid CONNECT received): ", v_received)
+
+        // TODO: implement function f_reject_connection(boolean withDisconnectReq)
+        // for easier handling of invalid client bahavior
+        var MQTT_Connection v_conn := v_received.conn
+        v_conn.client_state := Wait_connack
+        f_add_connection(v_conn)
+        f_ipl4_close(v_conn.ipl4.id);
+
+        setverdict(fail, "Received invalid CONNECT")
+        repeat;
+      }
+      [] p_timer.timeout {
+        break;
+      }
+    } //altstep a_mqtt_connack_default
+  } // group ClientDefaults
+}

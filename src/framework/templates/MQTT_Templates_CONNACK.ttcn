@@ -1,0 +1,109 @@
+/*******************************************************************************
+* Copyright (c) 2018 Relayr GmbH
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+
+/*
+* This module contains all templates related to CONNACK control packets
+*/
+module MQTT_Templates_CONNACK
+{
+import from MQTT_v3_1_1_Types all;
+
+/*
+* Sending Templates are templates without any wildcards or matching expressions.
+* Thus, this templates can be used to create concrete MQTT PDUs with valueof(T)
+*/
+group SendingTemplates
+{
+  /*
+  * CONNACK Control Packet
+  *
+  * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180846
+  */
+  group CONNACK_Group
+  {
+    group FixedHeader_Group
+    {
+      template Header m_connack_header(BIT4n p_flags := '0000'B) :=
+      {
+        packetType := '0010'B ,
+        flags := p_flags,
+        remLength := '00000000'O
+      }
+    }
+
+    group CONNACK_Message_Group
+    {
+      template MQTT_v3_1_1_Message m_connack :=
+      {
+        msg :=
+        {
+          connack :=
+          {
+            header := m_connack_header,
+            session_present_flag := '0'B,
+            connect_return_code := 0
+          }
+        }
+      }
+
+      template MQTT_v3_1_1_Message m_connack_rc(integer p_rc)
+      modifies m_connack :=
+      {
+        msg :=
+        {
+          connack :=
+          {
+            connect_return_code := p_rc
+          }
+        }
+      }
+    }
+  }
+}
+  /*
+  * Matchin Templates are templates with wildcards or matching expressions.
+  * This templates should be only used for matching incoming MQTT PDUs
+  */
+  group MatchingTemplates
+  {
+    /*
+    * CONNACK Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180846
+    */
+    group CONNACK_Group
+    {
+      group FixedHeader_Group
+      {
+        // TODO: one common header template for all control packets?
+        template Header mw_connack_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '0010'B ,
+          flags := p_flags,
+          remLength := ?
+        }
+      }
+
+      group CONNACK_Message_Group
+      {
+        template MQTT_v3_1_1_Message mw_connack :=
+        {
+          msg :=
+          {
+            connack := ?
+          }
+        }
+      }
+    }
+  }
+} // module

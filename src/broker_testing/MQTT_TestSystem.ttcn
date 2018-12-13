@@ -11,7 +11,7 @@
 *******************************************************************************/
 module MQTT_TestSystem {
 
-import from MQTT_Common_TestSystem all;
+import from MQTT_TestSystem_Common all;
 
 import from IPL4asp_PortType all;
 import from MQTT_TypesAndValues all;
@@ -63,16 +63,7 @@ group testComponentsGroup
     var MqttClientContext ctx := c_MqttClientContext_empty; 
     var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
     
-    //port IPL4asp_PT IPL4_PCO;
-  }
-
-  type record of MQTT_Client MQTT_Client_List;
-  /*
-  MQTT Broker Test Component contains capabilities and context of a MQTT Broker
-  */
-  type component MQTT_Broker extends MQTT_PTC
-  {
-    var MQTT_Client_List mqttClients := {};
+    port IPL4asp_PT IPL4_PCO;
   }
 }
 }

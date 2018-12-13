@@ -1,0 +1,97 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+
+ /*
+  * This module contains all templates related to DISCONNECT control packets
+  */
+module MQTT_Templates_DISCONNECT
+{
+  import from MQTT_v3_1_1_Types all;
+
+  /*
+   * Sending Templates are templates without any wildcards or matching expressions.
+   * Thus, this templates can be used to create concrete MQTT PDUs with valueof(T)
+   */
+  group SendingTemplates
+  {
+    /*
+    * DISCONNECT Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349355
+    */
+    group DISCONNECT_Group
+    {
+      group FixedHeaderGroup
+      {
+        // TODO: one common header template for all control packets?
+        template Header m_disconnect_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '1110'B ,
+          flags := p_flags,
+          remLength := '00000000'O
+        }
+      }
+
+      group DISCONNECT_MessageGroup
+      {
+        template MQTT_v3_1_1_Message m_disconnect :=
+        {
+          msg :=
+          {
+            disconnect_msg :=
+            {
+              header := m_disconnect_header
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /*
+   * Matchin Templates are templates with wildcards or matching expressions.
+   * This templates should be only used for matching incoming MQTT PDUs
+   */
+  group MatchingTemplates
+  {
+    /*
+    * DISCONNECT Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349355
+    */
+    group DISCONNECT_Group
+    {
+      group FixedHeaderGroup
+      {
+        // TODO: one common header template for all control packets?
+        template Header mw_disconnect_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '1110'B ,
+          flags := p_flags,
+          remLength := ?
+        }
+      }
+
+      group DISCONNECT_MessageGroup
+      {
+        template MQTT_v3_1_1_Message mw_disconnect :=
+        {
+          msg :=
+          {
+            disconnect_msg := ?
+          }
+        }
+      }
+    }
+  }
+}

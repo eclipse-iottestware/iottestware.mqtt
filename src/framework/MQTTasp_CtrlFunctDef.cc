@@ -25,11 +25,7 @@
 //  Source: https://www.eclipse.org/forums/index.php/t/1092981/
 
 #include "IPL4asp_PortType.hh"
-
-//#include "MQTT_IPL4_translation.hh"
-
 #include "MQTTasp_PortType.hh"
-
 #include "IPL4asp_PT.hh"
 
 
@@ -211,4 +207,3 @@ namespace MQTTasp__CtrlFunct {
 
 
 } // namespace IPL4__user__CtrlFunct
-

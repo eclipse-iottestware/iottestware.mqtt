@@ -3,13 +3,14 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *   Alexander Kaiser
- *    Sascha Hackel
+ *   Sascha Hackel
+ *   Axel Rennoch
  *******************************************************************************/
-module MQTT_Common_Templates {
+module MQTT_Templates_MQTTasp {
 
 import from MQTT_v3_1_1_Types all;
 import from MQTTasp_Types all;
@@ -18,16 +19,25 @@ import from MQTTasp_Types all;
 /*
  * This template is used to match a MQTT_v3_1_1_Messages from any connection
  */
-template MQTTasp_Message tw_mqtt_message(template MQTT_v3_1_1_Message p_msg) := 
+template MQTTasp_Message mw_mqtt_message(template MQTT_v3_1_1_Message p_msg) :=
 {
   msg := p_msg,
   conn := ?
 }
 
 /*
+ * This template is used to match any MQTT_v3_1_1_Message from a specific connection
+ */
+ template MQTTasp_Message mw_mqtt_connection(template MQTT_Connection p_conn) :=
+ {
+   msg := ?,
+   conn := p_conn
+ }
+
+/*
  * This template is used to match a MQTT_v3_1_1_Messages from a specific connection
  */
-template MQTTasp_Message t_mqtt_message_conn(template MQTT_v3_1_1_Message p_msg, MQTT_Connection p_conn) := 
+template MQTTasp_Message m_mqtt_message_conn(template MQTT_v3_1_1_Message p_msg, MQTT_Connection p_conn) :=
 {
   msg := p_msg,
   conn := p_conn

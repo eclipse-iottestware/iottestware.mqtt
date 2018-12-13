@@ -1,0 +1,80 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module MQTT_Functions_SetUp
+{
+  import from MQTT_TestSystem_Common all;
+
+  import from MQTT_Templates_MQTTasp all;
+  import from MQTT_Templates_CONNACK all;
+  import from MQTT_Templates_DISCONNECT all;
+
+  import from MQTT_Broker_Pixits all;
+  
+  import from MQTT_Functions_Network all;
+  import from MQTT_Functions_Protocol all;
+
+  import from IPL4asp_Types all;
+
+  group MTC_Broker
+  {
+    function f_init_broker_mtc() runs on MQTT_Broker_MTC {
+      log("[INIT](Initialize MQTT Broker MTC)")
+    }
+  } // group MTC_Broker
+
+  group PTC_Broker
+  {
+    /*
+    * initialize a broker PTC
+    * @return
+    */
+    function f_init_broker_ptc() runs on MQTT_Broker_PTC return boolean
+    {
+      log("[INIT](Initialize MQTT Broker PTC)")
+      map(self:MQTT_PCO, system:IPL4_PCO);
+
+      var Result vl_result := f_ipl4_listen();
+
+      if (not(ispresent(vl_result.connId)))
+      {
+        log("[INIT](Could not connect TCP/TLS)");
+
+        // TODO: test this case...
+        // see https://github.com/eclipse/iottestware.mqtt/commit/1767d6bca1ef3e3958e05adf6e444b6d86f8ad9d
+        stop;
+      }
+
+      // TODO: check if PX_MAX_TC_TIMER < 0.0 ??
+      //if (PX_MAX_TC_TIMER > 0.0) { vl_testcase_max := PX_MAX_TC_TIMER }
+
+      // TODO: check result
+      ctx.connId := vl_result.connId
+      vl_connections := {}
+      return true;
+    }
+
+    function f_clear_broker_ptc() runs on MQTT_Broker_PTC
+    {
+      log("[CLR](Clear MQTT Broker PTC)")
+
+      // cleanly disconnect all connections
+      f_disconnect_all();
+
+      map(self:MQTT_PCO, system:IPL4_PCO);
+      self.stop;
+    }
+  } // group PTC_Broker
+
+
+
+} // module

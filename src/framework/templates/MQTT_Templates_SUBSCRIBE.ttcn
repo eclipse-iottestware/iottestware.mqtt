@@ -1,0 +1,157 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+
+/*
+ * This module contains all templates related to SUBSCRIBE control packets
+ */
+module MQTT_Templates_SUBSCRIBE
+{
+  import from MQTT_v3_1_1_Types all;
+
+  /*
+   * Sending Templates are templates without any wildcards or matching expressions.
+   * Thus, this templates can be used to create concrete MQTT PDUs with valueof(T)
+   */
+  group sendingTemplates
+  {
+    group fixedHeaderGroup
+    {
+    template Header m_subscribe_header(BIT4n p_flags := '0010'B) :=
+      {
+        packetType := '1000'B,
+        flags := p_flags,
+        remLength := '00000000'O
+      }
+    } // group fixedHeaderGroup
+
+    group SUBSCRIBE_MessageGroup
+    {
+      /*
+      template MQTT_v3_1_1_Message t_subscribe_basic_valid(BIT4n p_header_flags) :=
+      {
+        msg :=
+        {
+          subscribe :=
+          {
+            header := t_subscribeHeader,
+            packet_identifier := 0,
+            payload := {
+              {
+                filterLength := 0,
+                topic_filter := "test",
+                requested_qos := AT_MOST_ONCE_DELIVERY
+              }
+            }
+          }
+        }
+      }*/
+    } // group SUBSCRIBE_MessageGroup
+  } // group sendingTemplates
+
+  /*
+   * Matchin Templates are templates with wildcards or matching expressions.
+   * This templates should be only used for matching incoming MQTT PDUs
+   */
+  group matchingTemplates
+  {
+    group fixedHeaderGroup
+    {
+    template Header mw_subscribe_header(BIT4n p_flags := '0010'B)
+      modifies m_subscribe_header :=
+      {
+        remLength := ?
+      }
+    } // group fixedHeaderGroup
+
+    group SUBSCRIBE_MessageGroup
+    {
+      template MQTT_v3_1_1_Message mw_subscribe_valid :=
+      {
+        msg :=
+        {
+          subscribe :=
+          {
+            header := mw_subscribe_header,
+            packet_identifier := ?,
+            payload := ?
+          }
+        }
+      }
+
+      template MQTT_v3_1_1_Message mw_subscribe_all :=
+      {
+        msg :=
+        {
+          subscribe :=
+          {
+            header := ?,
+            packet_identifier := ?,
+            payload := ?
+          }
+        }
+      }
+
+      template MQTT_v3_1_1_Message mw_subscribe_qos_0
+      modifies mw_subscribe_valid := {
+        msg :=
+        {
+          subscribe :=
+          {
+            payload := {
+              {
+                filterLength := ?,
+                topic_filter := ?,
+                requested_qos := AT_MOST_ONCE_DELIVERY
+              }
+            }
+          }
+        }
+      }
+
+      template MQTT_v3_1_1_Message mw_subscribe_qos_1
+      modifies mw_subscribe_valid := {
+        msg :=
+        {
+          subscribe :=
+          {
+            payload := {
+              {
+                filterLength := ?,
+                topic_filter := ?,
+                requested_qos := AT_LEAST_ONCE_DELIVERY
+              }
+            }
+          }
+        }
+      }
+
+      template MQTT_v3_1_1_Message mw_subscribe_qos_2
+      modifies mw_subscribe_valid := {
+        msg :=
+        {
+          subscribe :=
+          {
+            payload := {
+              {
+                filterLength := ?,
+                topic_filter := ?,
+                requested_qos := EXACTLY_ONE_DELIVERY
+              }
+            }
+          }
+        }
+      }
+    } // group SUBSCRIBE_MessageGroup
+  } // group matchingTemplates
+
+} // module

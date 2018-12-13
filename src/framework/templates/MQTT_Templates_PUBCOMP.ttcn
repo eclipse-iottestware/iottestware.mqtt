@@ -1,0 +1,98 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+
+ /*
+  * This module contains all templates related to PUBCOMP control packets
+  */
+module MQTT_Templates_PUBCOMP
+{
+  import from MQTT_v3_1_1_Types all;
+
+  /*
+   * Sending Templates are templates without any wildcards or matching expressions.
+   * Thus, this templates can be used to create concrete MQTT PDUs with valueof(T)
+   */
+  group SendingTemplates
+  {
+    /*
+    * PUBCOMP Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718058
+    */
+    group PUBCOMP_Group
+    {
+      group FixedHeader_Group
+      {
+        template Header m_pubcomp_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '0111'B ,
+          flags := p_flags,
+          remLength := '00000000'O  // f_calcRemLength will set this field automatically after encoding
+        }
+      }
+
+
+      group PUBCOMP_Message_Group
+      {
+        template MQTT_v3_1_1_Message m_pubcomp(integer p_packet_id) :=
+        {
+          msg :=
+          {
+            pubcomp :=
+            {
+              header := m_pubcomp_header,
+              packet_identifier := p_packet_id
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /*
+   * Matchin Templates are templates with wildcards or matching expressions.
+   * This templates should be only used for matching incoming MQTT PDUs
+   */
+  group MatchingTemplates
+  {
+    /*
+    * PUBCOMP Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718058
+    */
+    group PUBCOMP_Group
+    {
+      group FixedHeader_Group
+      {
+        template Header mw_pubcomp_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '0111'B ,
+          flags := p_flags,
+          remLength := ?
+        }
+      }
+
+
+      group PUBCOMP_Message_Group
+      {
+        template MQTT_v3_1_1_Message mw_pubcomp :=
+        {
+          msg :=
+          {
+            pubcomp := ?
+          }
+        }
+      }
+    }
+  }
+}

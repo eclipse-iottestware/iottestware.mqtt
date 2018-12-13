@@ -1,0 +1,90 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+
+ /*
+  * This module contains all templates related to PUBLISH control packets
+  */
+module MQTT_Templates_PUBLISH
+{
+  import from MQTT_v3_1_1_Types all;
+
+  /*
+   * Sending Templates are templates without any wildcards or matching expressions.
+   * Thus, this templates can be used to create concrete MQTT PDUs with valueof(T)
+   */
+  group sendingTemplates
+  {
+    group fixedHeaderGroup
+    {
+      template MQTT_v3_1_1_PublishHeader t_publish_header(BIT1n p_dup_flag := '0'B, QoS p_qos := AT_MOST_ONCE_DELIVERY, BIT1n p_retain_flag := '0'B) :=
+      {
+        packetType := '0011'B,
+        dup_flag := p_dup_flag,
+        qos_level := p_qos,
+        retain_flag := p_retain_flag,
+        remLength := '00000000'O
+      }
+    } // end group fixedHeaderGroup
+
+    group PUBLISH_MessageGroup
+    {
+
+    } // end group publishMessageGroup
+  } // end group sendingTemplates
+
+  /*
+   * Matchin Templates are templates with wildcards or matching expressions.
+   * This templates should be only used for matching incoming MQTT PDUs
+   */
+  group matchingTemplates
+  {
+    group fixedHeaderGroup
+    {
+      template MQTT_v3_1_1_PublishHeader mw_publish_header :=
+      {
+        packetType := '0011'B,
+        dup_flag := ?,
+        qos_level := ?,
+        retain_flag := ?,
+        remLength := ?
+      }
+    } // end group fixedHeaderGroup
+
+    group PUBLISH_MessageGroup
+    {
+      template MQTT_v3_1_1_Message mw_publish_all :=
+      {
+        msg :=
+        {
+          publish := ?
+        }
+      }
+
+      template MQTT_v3_1_1_Message mw_publish_basic :=
+      {
+        msg :=
+        {
+          publish :=
+          {
+            header := mw_publish_header,
+            nameLength := ?,
+            topic_name := ?,
+            packet_identifier := ?,
+            payload := ?
+          }
+        }
+      }
+    } // end group PUBLISH_MessageGroup
+  } // group matchingTemplates
+
+} // module

@@ -1,0 +1,315 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+
+ /*
+  * This module contains all templates related to CONNECT control packets
+  */
+module MQTT_Templates_CONNECT
+{
+  import from MQTT_v3_1_1_Types all;
+
+  /*
+   * Sending Templates are templates without any wildcards or matching expressions.
+   * Thus, this templates can be used to create concrete MQTT PDUs with valueof(T)
+   */
+  group SendingTemplates
+  {
+    /*
+    * CONNECT Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180841
+    */
+    group CONNECT_Group
+    {
+      group FixedHeader_Group
+      {
+        template Header m_connect_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '0001'B ,
+          flags := p_flags,
+          remLength := '00000000'O  // f_calcRemLength will set this field automatically after encoding
+        }
+      } // end group fixedHeader_Group
+
+      group CONNECT_Flags_Group
+      {
+        template MQTT_v3_1_1_ConnectFlags m_connect_flags_basic :=
+        {
+          user_name_flag := '0'B,
+          password_flag := '0'B,
+          will_retain := '0'B,
+          will_qos := AT_MOST_ONCE_DELIVERY,
+          will_flag := '0'B,
+          clean_session := '1'B,
+          reserved := '0'B
+        }
+      } // end group connectFlags_Group
+
+      group CONNECT_Payload_Group
+      {
+
+      } // end group connectPayload_Group
+
+      group CONNECT_Message_Group
+      {
+
+      } // end group connectMessage_Group
+    } // end group connect_Group
+  } // end group sendingTemplates
+
+  /*
+   * Matchin Templates are templates with wildcards or matching expressions.
+   * This templates should be only used for matching incoming MQTT PDUs
+   */
+  group MatchingTemplates
+  {
+    /*
+    * CONNECT Control Packet
+    *
+    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180841
+    */
+    group CONNECT__Group
+    {
+      group FixedHeader_Group
+      {
+        template Header mw_connect_header(BIT4n p_flags := '0000'B) :=
+        {
+          packetType := '0001'B ,
+          flags := p_flags,
+          remLength := ?
+        }
+      } // end group fixedHeader_Group
+
+      group CONNECT_Flags_Group
+      {
+        template MQTT_v3_1_1_ConnectFlags mw_connect_flags_basic :=
+        {
+          user_name_flag := ?,
+          password_flag := ?,
+          will_retain := ?,
+          will_qos := ?,
+          will_flag := ?,
+          clean_session := ?,
+          reserved := ?
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_reserved_flag(BIT1n p_flag := '0'B)
+        modifies mw_connect_flags_basic :=
+        {
+          reserved := p_flag
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_will_flag(BIT1n p_flag := '1'B)
+        modifies mw_connect_flags_basic :=
+        {
+          will_flag := p_flag
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_will_retain(BIT1n p_flag := '1'B)
+        modifies mw_connect_flags_basic :=
+        {
+          will_retain := p_flag
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_will_qos(QoS p_qos := AT_MOST_ONCE_DELIVERY)
+        modifies mw_connect_flags_basic :=
+        {
+          will_qos := p_qos
+        }
+
+        // TODO: remove default parameters?
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_lwt(BIT1n p_flag := '1'B, BIT1n p_retain := '1'B, QoS p_qos := AT_MOST_ONCE_DELIVERY)
+        modifies mw_connect_flags_basic :=
+        {
+          will_retain := p_retain,
+          will_qos := p_qos,
+          will_flag := p_flag
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_credentials(BIT1n p_user_name, BIT1n p_password)
+        modifies mw_connect_flags_basic :=
+        {
+          user_name_flag := p_user_name,
+          password_flag := p_password
+        }
+      } // end group connectFlags_Group
+
+      group CONNECTPayload_Group
+      {
+        template MQTT_v3_1_1_ConnectPayload mw_connect_payload :=
+        {
+          client_identifier := ?,
+          will_topic := ?,
+          will_message := ?,
+          user_name := ?,
+          password := ?
+        }
+
+        template MQTT_v3_1_1_ConnectPayload mw_connect_payload_credentials(UTF8EncodedString p_user_name, OctStringWithLength p_password) :=
+        {
+          client_identifier := ?,
+          will_topic := ?,
+          will_message := ?,
+          user_name := p_user_name,
+          password := p_password
+        }
+
+        template MQTT_v3_1_1_ConnectPayload mw_connect_payload_username(template UTF8EncodedString p_user_name) :=
+        {
+          client_identifier := ?,
+          will_topic := ?,
+          will_message := ?,
+          user_name := p_user_name,
+          password := ?
+        }
+
+        template MQTT_v3_1_1_ConnectPayload mw_connect_payload_credentials_empty :=
+        {
+          client_identifier := { stringLength := ?, stringItem := ? },
+          will_topic := ?,
+          will_message := ?,
+          user_name := omit,
+          password := omit
+        } with {optional "explicit omit"}   // Note: can be removed?
+
+        template MQTT_v3_1_1_ConnectPayload mw_connect_payload_lwt_empty :=
+        {
+          client_identifier := ?,
+          will_topic := omit,
+          will_message := omit,
+          user_name := ?,
+          password := ?
+        }
+      } // end group connectPayload_Group
+
+      group CONNECTMessage_Group
+      {
+        template MQTT_v3_1_1_Message mw_connect :=
+        {
+          msg :=
+          {
+            connect_msg := ?
+          }
+        }
+
+        template MQTT_v3_1_1_Message mw_connect_valid_mqtt_311 :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              header := mw_connect_header,
+              nameLength := 4,
+              name := "MQTT",
+              protocol_level := 4,
+              flags := ?,
+              keep_alive := ?,
+              payload := ?
+            }
+          }
+        }
+
+        template MQTT_v3_1_1_Message mw_connect_protocol_name :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              header := ?,
+              nameLength := 4,
+              name := "MQTT",
+              protocol_level := ?,
+              flags := ?,
+              keep_alive := ?,
+              payload := ?
+            }
+          }
+        }
+
+        template MQTT_v3_1_1_Message mw_connect_protocol_level :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              header := ?,
+              nameLength := ?,
+              name := ?,
+              protocol_level := 4,
+              flags := ?,
+              keep_alive := ?,
+              payload := ?
+            }
+          }
+        }
+
+        template MQTT_v3_1_1_Message mw_connect_reserved
+        modifies mw_connect :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              flags := mdw_connect_reserved_flag
+            }
+          }
+        }
+
+        template MQTT_v3_1_1_Message mw_connect_will_flag(BIT1n p_flag := '1'B)
+        modifies mw_connect :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              flags := mdw_connect_will_flag(p_flag)
+            }
+          }
+        }
+
+        /*
+         * the payload is empty, but you can still set the user_name and password flags
+         */
+        template MQTT_v3_1_1_Message mw_connect_credentials_empty(BIT1n p_user_name := '0'B, BIT1n p_password := '0'B)
+        modifies mw_connect :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              flags := mdw_connect_credentials(p_user_name, p_password),
+              payload := mw_connect_payload_credentials_empty
+            }
+          }
+        }
+
+        /*
+         * the payload is ?, but you can still set the user_name and password flags
+         */
+        template MQTT_v3_1_1_Message mw_connect_credentials_payload(BIT1n p_user_name, BIT1n p_password)
+        modifies mw_connect :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              flags := mdw_connect_credentials(p_user_name, p_password),
+              payload := ?
+            }
+          }
+        }
+
+      } // end group connectMessage_Group
+    } // end group connect_Group
+  } // end group matchingTemplates
+} // module

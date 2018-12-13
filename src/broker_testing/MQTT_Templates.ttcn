@@ -3,7 +3,7 @@
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html 
+* http://www.eclipse.org/legal/epl-v10.html
 *
 * Contributors:
 *   Alexander Kaiser
@@ -17,7 +17,7 @@ import from MQTT_TypesAndValues all;
 import from IPL4asp_Types all;
 
 /*
-* CONNECT Control Packet 
+* CONNECT Control Packet
 *
 * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180841
 */
@@ -27,12 +27,13 @@ group connectGroup
   {
     template Header t_connectHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '0001'B , 
-      flags := p_flags, 
+      packetType := '0001'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
-    template Header tw_connectHeader(BIT4n p_flags := '0000'B) 
+    // Obsolete: has duplicate in MQTT_Templates_Conn
+    template Header tw_connectHeader(BIT4n p_flags := '0000'B)
     modifies t_connectHeader :=
     {
       remLength := ?
@@ -40,21 +41,21 @@ group connectGroup
   }
 
 
-  group connectFlagsGroup 
+  group connectFlagsGroup
   {
-    template MQTT_v3_1_1_ConnectFlags t_connectFlags_base := 
+    template MQTT_v3_1_1_ConnectFlags t_connectFlags_base :=
     {
       user_name_flag := '0'B,
       password_flag := '0'B,
       will_retain := '0'B,
       will_qos := AT_MOST_ONCE_DELIVERY,
       will_flag := '0'B,
-      clean_session := '1'B, 
+      clean_session := '1'B,
       reserved := '0'B
     } // template MQTT_v3_1_1_ConnectFlags t_connect_flags_base
 
-    template MQTT_v3_1_1_ConnectFlags t_connectFlags_credentials(BIT1n p_user_name_flag := '1'B, BIT1n p_password_flag := '1'B, BIT1n p_clean_session := '1'B) 
-    modifies t_connectFlags_base := 
+    template MQTT_v3_1_1_ConnectFlags t_connectFlags_credentials(BIT1n p_user_name_flag := '1'B, BIT1n p_password_flag := '1'B, BIT1n p_clean_session := '1'B)
+    modifies t_connectFlags_base :=
     {
       user_name_flag := p_user_name_flag,
       password_flag := p_password_flag,
@@ -62,7 +63,7 @@ group connectGroup
     } // template MQTT_v3_1_1_ConnectFlags t_connect_flags_credentials
 
     template MQTT_v3_1_1_ConnectFlags t_connectFlags_lwt(BIT1n p_user_name_flag := '1'B, BIT1n p_password_flag := '1'B, BIT1n p_clean_session := '1'B, BIT1n p_will_retain, QoS p_will_qos, BIT1n p_will_flag)
-    modifies t_connectFlags_credentials := 
+    modifies t_connectFlags_credentials :=
     {
       will_retain := p_will_retain,
       will_qos := p_will_qos,
@@ -76,7 +77,7 @@ group connectGroup
       will_retain := '0'B,
       will_qos := AT_MOST_ONCE_DELIVERY,
       will_flag := '0'B,
-      clean_session := '1'B, 
+      clean_session := '1'B,
       reserved := p_reserved
     } // template MQTT_v3_1_1_ConnectFlags t_connect_flags_reserved
   }
@@ -119,13 +120,13 @@ group connectGroup
     }
   }
 
-  group connectMessageGroup 
+  group connectMessageGroup
   {
-    template MQTT_v3_1_1_Message t_connect(UTF8EncodedString p_client_id) := 
+    template MQTT_v3_1_1_Message t_connect(UTF8EncodedString p_client_id) :=
     {
       msg :=
       {
-        connect_msg := 
+        connect_msg :=
         {
           header := t_connectHeader,
           nameLength := 4,
@@ -133,7 +134,7 @@ group connectGroup
           protocol_level := 4,
           flags := t_connectFlags_base,
           keep_alive := 20,
-          payload := {        
+          payload := {
             client_identifier := p_client_id,
             will_topic := omit,
             will_message := omit,
@@ -145,7 +146,7 @@ group connectGroup
     } // template MQTT_v3_1_1_Message t_connect
 
     template MQTT_v3_1_1_Message t_connect_protocol_name(UTF8EncodedString p_client_id, UCHAR0_65535 p_protocol_name)
-    modifies t_connect := 
+    modifies t_connect :=
     {
       msg :=
       {
@@ -156,10 +157,10 @@ group connectGroup
       }
     } // template MQTT_v3_1_1_Message t_connect_protocol_name
 
-    template MQTT_v3_1_1_Message t_connect_flags(UTF8EncodedString p_client_id, BIT4n p_flags) 
-    modifies t_connect := 
+    template MQTT_v3_1_1_Message t_connect_flags(UTF8EncodedString p_client_id, BIT4n p_flags)
+    modifies t_connect :=
     {
-      msg := 
+      msg :=
       {
         connect_msg :=
         {
@@ -168,15 +169,15 @@ group connectGroup
       }
     }
 
-    template MQTT_v3_1_1_Message t_connect_credentials(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password) 
+    template MQTT_v3_1_1_Message t_connect_credentials(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password)
     modifies t_connect :=
     {
       msg :=
       {
-        connect_msg := 
+        connect_msg :=
         {
           flags := t_connectFlags_credentials,
-          payload := {        
+          payload := {
             client_identifier := p_client_id,
             user_name := p_username,
             password := p_password
@@ -185,7 +186,7 @@ group connectGroup
       }
     }
 
-    template MQTT_v3_1_1_Message t_connect_session(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, BIT1n p_clean_session) 
+    template MQTT_v3_1_1_Message t_connect_session(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, BIT1n p_clean_session)
     modifies t_connect_credentials :=
     {
       msg :=
@@ -197,7 +198,7 @@ group connectGroup
       }
     }
 
-    template MQTT_v3_1_1_Message t_connect_protocol_level(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, integer p_protocol_level) 
+    template MQTT_v3_1_1_Message t_connect_protocol_level(UTF8EncodedString p_client_id, UTF8EncodedString p_username, OctStringWithLength p_password, integer p_protocol_level)
     modifies t_connect_credentials :=
     {
       msg :=
@@ -213,7 +214,7 @@ group connectGroup
     {
       msg :=
       {
-        connect_msg := 
+        connect_msg :=
         {
           header := t_connectHeader,
           nameLength := 4,
@@ -240,8 +241,8 @@ group connackGroup
   {
     template Header t_connackHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '0010'B , 
-      flags := p_flags, 
+      packetType := '0010'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -256,7 +257,7 @@ group connackGroup
   {
     msg :=
     {
-      connack := 
+      connack :=
       {
         header := t_connackHeader,
         session_present_flag := '0'B,
@@ -295,7 +296,7 @@ group connackGroup
   {
     msg :=
     {
-      connack := 
+      connack :=
       {
         connect_return_code := 2
       }
@@ -338,7 +339,7 @@ group publishGroup
   {
     msg :=
     {
-      publish := 
+      publish :=
       {
         header := p_header,
         nameLength := 0,
@@ -353,7 +354,7 @@ group publishGroup
   {
     msg :=
     {
-      publish := 
+      publish :=
       {
         header := t_publishHeader,
         nameLength := 0,
@@ -362,14 +363,14 @@ group publishGroup
         payload := p_payload
       }
     }
-  } 
+  }
 
   template MQTT_v3_1_1_Message t_publish_qos(UCHAR0_65535 p_topic_name, octetstring p_payload, QoS p_qos, integer p_packet_id)
-  modifies t_publish_base := 
+  modifies t_publish_base :=
   {
     msg :=
     {
-      publish := 
+      publish :=
       {
         header := t_publishHeader(p_qos := p_qos),
         packet_identifier := p_packet_id
@@ -386,7 +387,7 @@ group publishGroup
     remLength := ?
   }
 
-  template MQTT_v3_1_1_PublishHeader tw_publish_header_qos(QoS p_qos) 
+  template MQTT_v3_1_1_PublishHeader tw_publish_header_qos(QoS p_qos)
   modifies tw_publishHeader :=
   {
     qos_level := p_qos
@@ -396,7 +397,7 @@ group publishGroup
   {
     msg :=
     {
-      publish := 
+      publish :=
       {
         header := tw_publishHeader,
         nameLength := ?,
@@ -411,7 +412,7 @@ group publishGroup
   {
     msg :=
     {
-      publish := 
+      publish :=
       {
         header := p_header,
         nameLength := ?,
@@ -434,14 +435,14 @@ group pubackGroup
   {
     template Header t_pubackHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType:='0100'B , 
-      flags := p_flags, 
+      packetType:='0100'B ,
+      flags := p_flags,
       remLength:='00000000'O
     }
 
-    template Header tw_pubackHeader(BIT4n p_flags := '0000'B) 
+    template Header tw_pubackHeader(BIT4n p_flags := '0000'B)
     modifies t_pubackHeader :=
-    { 
+    {
       remLength := ?
     }
   }
@@ -450,7 +451,7 @@ group pubackGroup
   {
     msg :=
     {
-      puback := 
+      puback :=
       {
         header := tw_pubackHeader,
         packet_identifier := p_packetId
@@ -470,12 +471,12 @@ group pubrecGroup
   {
     template Header t_pubrecHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '0101'B , 
-      flags := p_flags, 
+      packetType := '0101'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
-    template Header tw_pubrecHeader(BIT4n p_flags := '0000'B) 
+    template Header tw_pubrecHeader(BIT4n p_flags := '0000'B)
     modifies t_pubrecHeader :=
     {
       remLength := ?
@@ -494,7 +495,7 @@ group pubrecGroup
     }
   }
 
-  template MQTT_v3_1_1_Message tw_pubrec(integer p_packet_id) := 
+  template MQTT_v3_1_1_Message tw_pubrec(integer p_packet_id) :=
   {
     msg :=
     {
@@ -518,8 +519,8 @@ group pubrelGroup
   {
     template Header t_pubrelHeader(BIT4n p_flags := '0010'B) :=
     {
-      packetType := '0110'B , 
-      flags := p_flags, 
+      packetType := '0110'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -532,7 +533,7 @@ group pubrelGroup
 
   template MQTT_v3_1_1_Message t_pubrel(integer p_packet_id) :=
   {
-    msg := 
+    msg :=
     {
       pubrel :=
       {
@@ -544,7 +545,7 @@ group pubrelGroup
 
   template MQTT_v3_1_1_Message tw_pubrel(integer p_packet_id) :=
   {
-    msg := 
+    msg :=
     {
       pubrel :=
       {
@@ -566,8 +567,8 @@ group pubcompGroup
   {
     template Header t_pubcompHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '0111'B , 
-      flags := p_flags, 
+      packetType := '0111'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -580,7 +581,7 @@ group pubcompGroup
 
   template MQTT_v3_1_1_Message t_pubcomp(integer p_packet_id) :=
   {
-    msg := 
+    msg :=
     {
       pubcomp :=
       {
@@ -592,7 +593,7 @@ group pubcompGroup
 
   template MQTT_v3_1_1_Message tw_pubcomp(integer p_packet_id) :=
   {
-    msg := 
+    msg :=
     {
       pubcomp :=
       {
@@ -608,14 +609,14 @@ group pubcompGroup
 *
 * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180876
 */
-group subscribeGroup 
+group subscribeGroup
 {
   group fixedHeaderGroup
   {
     template Header t_subscribeHeader(BIT4n p_flags := '0010'B) :=
     {
-      packetType := '1000'B , 
-      flags := p_flags, 
+      packetType := '1000'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -630,7 +631,7 @@ group subscribeGroup
   {
     msg :=
     {
-      subscribe := 
+      subscribe :=
       {
         header := t_subscribeHeader(p_header_flags),
         packet_identifier := 0,
@@ -645,26 +646,26 @@ group subscribeGroup
     }
   }
 
-  template MQTT_v3_1_1_Message t_subscribe_id(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234) 
+  template MQTT_v3_1_1_Message t_subscribe_id(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234)
   modifies t_subscribe_base :=
   {
     msg :=
     {
-      subscribe := 
+      subscribe :=
       {
         packet_identifier := p_packet_id
-      } 
+      }
     }
   }
 
-  template MQTT_v3_1_1_Message t_subscribe_topic(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, UCHAR0_65535 p_topic_filter, QoS p_qos) 
+  template MQTT_v3_1_1_Message t_subscribe_topic(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, UCHAR0_65535 p_topic_filter, QoS p_qos)
   modifies t_subscribe_id :=
   {
     msg :=
     {
-      subscribe := 
+      subscribe :=
       {
-        payload := 
+        payload :=
         {
           {
             filterLength := 0,
@@ -677,18 +678,18 @@ group subscribeGroup
   }
 
   template MQTT_v3_1_1_Message t_subscribe_empty_payload(BIT4n p_header_flags := '0010'B, integer p_packet_id)
-  modifies t_subscribe_id := 
+  modifies t_subscribe_id :=
   {
     msg :=
     {
-      subscribe := 
+      subscribe :=
       {
         payload := { }
       }
     }
   }
 
-  template MQTT_v3_1_1_Message t_subscribe_topiclist(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, MQTT_v3_1_1_SubscribePayloadList p_topic_list) 
+  template MQTT_v3_1_1_Message t_subscribe_topiclist(BIT4n p_header_flags := '0010'B, integer p_packet_id := 1234, MQTT_v3_1_1_SubscribePayloadList p_topic_list)
   modifies t_subscribe_id:=
   {
     msg :=
@@ -699,7 +700,7 @@ group subscribeGroup
     }
   }
 
-  template MQTT_v3_1_1_SubscribePayload t_subscribe_payload(UCHAR0_65535 p_topic_filter, QoS p_qos := AT_MOST_ONCE_DELIVERY) := 
+  template MQTT_v3_1_1_SubscribePayload t_subscribe_payload(UCHAR0_65535 p_topic_filter, QoS p_qos := AT_MOST_ONCE_DELIVERY) :=
   {
     filterLength := 0,
     topic_filter := p_topic_filter,
@@ -718,8 +719,8 @@ group subackGroup
   {
     template Header t_subackHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '1001'B , 
-      flags := p_flags, 
+      packetType := '1001'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -756,7 +757,7 @@ group subackGroup
     }
   }
 
-  template MQTT_v3_1_1_Message tw_suback(integer p_packet_id, MQTT_v3_1_1_SubackPayload p_payload) 
+  template MQTT_v3_1_1_Message tw_suback(integer p_packet_id, MQTT_v3_1_1_SubackPayload p_payload)
   modifies tw_suback_packet_id:=
   {
     msg :=
@@ -787,8 +788,8 @@ group unsubscribeGroup
   {
     template Header t_unsubscribeHeader(BIT4n p_flags := '0010'B) :=
     {
-      packetType := '1010'B , 
-      flags := p_flags, 
+      packetType := '1010'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -807,7 +808,7 @@ group unsubscribeGroup
       {
         header := t_unsubscribeHeader(p_flags),
         packet_identifier := p_packet_id,
-        payload := 
+        payload :=
         {
           {
             filterLength := 0,
@@ -826,7 +827,7 @@ group unsubscribeGroup
       {
         header := t_unsubscribeHeader(-),
         packet_identifier := p_packet_id,
-        payload := 
+        payload :=
         {
         }
       }
@@ -845,8 +846,8 @@ group unsubackGroup
   {
     template Header t_unsubackHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '1011'B , 
-      flags := p_flags, 
+      packetType := '1011'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -859,7 +860,7 @@ group unsubackGroup
 
   template MQTT_v3_1_1_Message tw_unsuback_header_flags(BIT4n p_header_flags := '0000'B) :=
   {
-    msg := 
+    msg :=
     {
       unsuback :=
       {
@@ -871,7 +872,7 @@ group unsubackGroup
 
   template MQTT_v3_1_1_Message tw_unsuback_packed_id(integer p_packet_id) :=
   {
-    msg := 
+    msg :=
     {
       unsuback :=
       {
@@ -893,8 +894,8 @@ group pingreqGroup
   {
     template Header t_pingreqHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '1100'B , 
-      flags := p_flags, 
+      packetType := '1100'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -909,7 +910,7 @@ group pingreqGroup
   {
     msg :=
     {
-      pingreq := 
+      pingreq :=
       {
         header := t_pingreqHeader(p_flags)
       }
@@ -928,8 +929,8 @@ group pingrespGroup
   {
     template Header t_pingrespHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '1101'B , 
-      flags := p_flags, 
+      packetType := '1101'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -942,9 +943,9 @@ group pingrespGroup
 
   template MQTT_v3_1_1_Message tw_ping_resp(BIT4n p_flags := '0000'B) :=
   {
-    msg := 
+    msg :=
     {
-      pingresp := 
+      pingresp :=
       {
         header := tw_pingrespHeader(p_flags)
       }
@@ -957,14 +958,14 @@ group pingrespGroup
 *
 * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/errata01/os/mqtt-v3.1.1-errata01-os-complete.html#_Toc442180903
 */
-group disconnectGroup 
+group disconnectGroup
 {
   group fixedHeaderGroup
   {
     template Header t_disconnectHeader(BIT4n p_flags := '0000'B) :=
     {
-      packetType := '1110'B , 
-      flags := p_flags, 
+      packetType := '1110'B ,
+      flags := p_flags,
       remLength := '00000000'O
     }
 
@@ -975,11 +976,11 @@ group disconnectGroup
     }
   }
 
-  template MQTT_v3_1_1_Message t_disconnect(BIT4n p_flags := '0000'B) := 
+  template MQTT_v3_1_1_Message t_disconnect(BIT4n p_flags := '0000'B) :=
   {
     msg := {
 
-      disconnect_msg := 
+      disconnect_msg :=
       {
         header := t_disconnectHeader(p_flags)
       }
@@ -989,7 +990,7 @@ group disconnectGroup
   template MQTT_v3_1_1_Message tw_disconnect(BIT4n p_flags := '0000'B) := {
     msg := {
 
-      disconnect_msg := 
+      disconnect_msg :=
       {
         header := tw_disconnectHeader(p_flags)
       }
@@ -1001,14 +1002,14 @@ group disconnectGroup
 
 group socketAPIGroup
 {
-  template IPL4_Response t_connection_closed := 
+  template IPL4_Response t_connection_closed :=
   {
     aspEvent := t_close
   }
 
   template IPL4_Response t_empty_response :=
   {
-    empty := '0'B 
+    empty := '0'B
   }
 
   template ASP_Event t_close := {
