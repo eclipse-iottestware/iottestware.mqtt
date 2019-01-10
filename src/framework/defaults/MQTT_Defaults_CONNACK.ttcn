@@ -23,8 +23,9 @@ module MQTT_Defaults_CONNACK
   */
 
   import from MQTT_TestSystem_Common all;
+  import from MQTT_Broker_Pixits all;
 
-  import from MQTTasp_CtrlFunct all;
+  import from MQTT_Functions_Conformance all;
   import from MQTT_Functions_Protocol all;
   import from MQTT_Functions_Network all;
 
@@ -36,42 +37,72 @@ module MQTT_Defaults_CONNACK
   import from MQTTasp_Types all;
   import from IPL4asp_Types all;
 
-  group ClientDefaults
+  group BrokerDefaults
   {
-    altstep a_mqtt_connack_default(timer p_timer) runs on MQTT_Broker_PTC
+    /*
+     * CONNACK default behaviour: if CONNECT is valid response with a valid CONNACK
+     *
+     * @remark  log out the checked conformance statements from mqtt spec
+     * [MQTT_v4]: regex keyword for all MQTT v.3.1.1 conformance statements
+     * rest of line contains the covered conformance statements
+     */
+    altstep a_mqtt_connack_default() runs on MQTT_Broker_PTC
     {
       var MQTTasp_Message v_received;
-      var template MQTTasp_Message vt_connect_valid := mw_mqtt_message(mw_connect_valid_mqtt_311);
+      var template MQTTasp_Message vt_connect_valid := mw_mqtt_message(mdw_connect_valid_mqtt_x);
       var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
       [] MQTT_PCO.receive(vt_connect_valid) -> value v_received {
-        log("[DEFAULT](Valid CONNECT received): ", v_received)
+        log("[RCV](CONNECT valid): ", v_received)
+        //log("[MQTT_v4]: {[MQTT-2.2.2-1], [MQTT-3.1.2-1], [MQTT-3.1.2-3], [MQTT-3.1.4-1]}")
 
-        var MQTT_Connection v_con := v_received.conn
+        var MQTT_Connection v_conn := v_received.conn
 
-        f_send_connack(v_con) // TODO: check the return code
+        // check if header flags are valid
+        if(not f_header_flags_valid(v_received.msg.msg.connect_msg.header, mw_connect_header))
+        {
+          // fixed header is invalid, terminate connection
+          f_terminate_due_invalid_header(v_conn)
+          repeat;
+        }
 
-        // TODO: verify
-        var integer v_conn_id := v_received.conn.ipl4.id
-        vl_connections[v_conn_id] := v_con
+        // check connection flags
+        if(not f_connect_flags_valid(v_received.msg.msg.connect_msg.flags, mw_connect_flags_basic))
+        {
+          f_terminate_due_to_violation(v_conn)
+          repeat;
+        }
+
+        // check the protocol level
+        if(v_received.msg.msg.connect_msg.protocol_level == 4)
+        {
+          // check the protocol name
+          if (not (f_connect_protocol_name_valid(v_received.msg.msg.connect_msg) or PX_ACCEPT_ANY_PROTOCOL_NAME)) {
+            f_terminate_due_to_violation(v_conn)
+          } else {
+            f_send_connack(v_conn, 0)
+            var integer v_conn_id := v_received.conn.ipl4.id
+            vl_connections[v_conn_id] := v_conn
+          }
+        } else {
+          // send CONNACK with return_code 1 and close network connection
+          f_unacceptable_protocol(v_conn)
+        }
+
         repeat;
       }
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        // Note: this case should never happen
         log("[DEFAULT](Invalid CONNECT received): ", v_received)
 
-        // TODO: implement function f_reject_connection(boolean withDisconnectReq)
-        // for easier handling of invalid client bahavior
         var MQTT_Connection v_conn := v_received.conn
-        v_conn.client_state := Wait_connack
-        f_add_connection(v_conn)
-        f_ipl4_close(v_conn.ipl4.id);
+        f_terminate_due_to_violation(v_conn)
 
         setverdict(fail, "Received invalid CONNECT")
         repeat;
       }
-      [] p_timer.timeout {
-        break;
-      }
     } //altstep a_mqtt_connack_default
-  } // group ClientDefaults
+
+
+  } // group BrokerDefaults
 }

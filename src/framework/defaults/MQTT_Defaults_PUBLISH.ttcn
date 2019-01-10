@@ -24,15 +24,12 @@ module MQTT_Defaults_PUBLISH
 
   import from MQTT_TestSystem_Common all;
 
-  import from MQTTasp_CtrlFunct all;
   import from MQTT_Functions_Protocol all;
   import from MQTT_Functions_Network all;
 
   import from MQTT_Templates_MQTTasp all;
   import from MQTT_Templates_PUBLISH all;
   import from MQTT_Templates_PUBACK all;
-
-  import from MQTTasp_CtrlFunct all;
 
   import from MQTTasp_Types all;
   import from IPL4asp_Types all;
@@ -49,7 +46,7 @@ module MQTT_Defaults_PUBLISH
 
   group CommonDefaults
   {
-    altstep a_mqtt_publish_default(timer p_timer) runs on MQTT_PTC
+    altstep a_mqtt_publish_default() runs on MQTT_PTC
     {
       var MQTTasp_Message v_received;
       var template MQTTasp_Message vt_publish_all := mw_mqtt_message(mw_publish_all);

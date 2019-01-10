@@ -103,6 +103,12 @@ module MQTT_Templates_CONNECT
           reserved := ?
         }
 
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_flags_valid
+        modifies mw_connect_flags_basic :=
+        {
+          reserved := '0'B
+        }
+
         template MQTT_v3_1_1_ConnectFlags mdw_connect_reserved_flag(BIT1n p_flag := '0'B)
         modifies mw_connect_flags_basic :=
         {
@@ -212,9 +218,22 @@ module MQTT_Templates_CONNECT
               nameLength := 4,
               name := "MQTT",
               protocol_level := 4,
-              flags := ?,
+              flags := mdw_connect_flags_valid,
               keep_alive := ?,
               payload := ?
+            }
+          }
+        }
+
+        template MQTT_v3_1_1_Message mdw_connect_valid_mqtt_x
+        modifies mw_connect_valid_mqtt_311 :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              header := ?,
+              protocol_level := ?
             }
           }
         }
@@ -236,6 +255,17 @@ module MQTT_Templates_CONNECT
           }
         }
 
+        template MQTT_v3_1_1_Connect mw_connect_msg_protocol_name :=
+        {
+          header := ?,
+          nameLength := 4,
+          name := "MQTT",
+          protocol_level := ?,
+          flags := ?,
+          keep_alive := ?,
+          payload := ?
+        }
+
         template MQTT_v3_1_1_Message mw_connect_protocol_level :=
         {
           msg :=
@@ -251,6 +281,17 @@ module MQTT_Templates_CONNECT
               payload := ?
             }
           }
+        }
+
+        template MQTT_v3_1_1_Connect mw_connect_msg_protocol_level :=
+        {
+          header := ?,
+          nameLength := ?,
+          name := ?,
+          protocol_level := 4,
+          flags := ?,
+          keep_alive := ?,
+          payload := ?
         }
 
         template MQTT_v3_1_1_Message mw_connect_reserved

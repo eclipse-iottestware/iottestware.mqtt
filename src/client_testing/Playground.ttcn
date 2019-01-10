@@ -34,6 +34,22 @@ module Playground
     } else {
       setverdict(fail)
     }
-
   }
+
+  /*
+   * test case for building a mtc controlled test
+   *
+   *    +----------------+              +----------------+
+   *    |                |            * |                |
+   *    |      MTC       +-------------->      PTC       |
+   *    |                |              |                |
+   *    +----------------+              +----------------+
+   *
+   * MTC (Main Test Component) controls multiple PTC (Parallel Test Component)
+   */
+
+   testcase TC_Exp_MTC_01() runs on MQTT_MTC
+   {
+     // TODO:
+   }
 }

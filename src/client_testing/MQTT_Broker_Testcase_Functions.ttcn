@@ -22,7 +22,7 @@ import from MQTT_Broker_Pixits all;
 
 // Functions
 import from MQTT_Functions_SetUp all;
-import from MQTT_Functions_Network all;
+import from MQTT_Functions_Conformance all;
 import from MQTT_Functions_Protocol all;
 import from MQTTasp_PortType all;
 
@@ -61,7 +61,7 @@ group connectGroup
           setverdict(pass, "Header flags checked")
         } else {
           // close network connection as specified in [MQTT-2.2.2-2]
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
           setverdict(fail, "Header flags must be set to '0000'B")
         }
       }
@@ -84,7 +84,7 @@ group connectGroup
         var MQTT_Connection v_conn := v_received.conn
         f_add_connection(v_conn);
 
-        if (match(v_received.msg, mw_connect_protocol_name) or PX_ACCEPT_ANY_PROTOCOL_NAME) {
+        if (f_connect_protocol_name_valid(v_received.msg.msg.connect_msg) or PX_ACCEPT_ANY_PROTOCOL_NAME) {
           f_send_connack(v_conn)
 
           log("[TC_MQTT_Client_CONNECT_02](received connect): ", v_received.msg.msg.connect_msg)
@@ -97,7 +97,7 @@ group connectGroup
           }
         } else {
           // close network connection as specified in [MQTT-2.2.2-2]
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
           setverdict(fail, "Protocol name must be UTF-8 encoded 'MQTT'")
         }
       }
@@ -122,15 +122,11 @@ group connectGroup
 
         log("[TC_MQTT_Client_CONNECT_03](received connect): ", v_received.msg.msg.connect_msg)
 
-        if (match(v_received.msg, mw_connect_protocol_level)) {
+        if (f_connect_protocol_lvl_valid(v_received.msg.msg.connect_msg)) {
           f_send_connack(v_conn)
           setverdict(pass, "Protocol Level checked")
         } else {
-          // return CONNACK with 0x01 see: [MQTT-3.1.2-2]
-          f_send_connack(v_conn, 1)
-
-          // close network connection as specified in TODO: [WHERE?]
-          f_ipl4_close(v_conn.ipl4.id)
+          f_unacceptable_protocol(v_conn)
           setverdict(fail, "Protocol Level for MQTT v3.1.1 must be 4")
         }
       }
@@ -155,12 +151,12 @@ group connectGroup
 
         log("[TC_MQTT_Client_CONNECT_04](received connect): ", v_received.msg.msg.connect_msg)
 
-        if (match(v_received.msg, mw_connect_reserved)) {
+        if (f_connect_flags_reserved_valid(v_received.msg.msg.connect_msg.flags)) {
           f_send_connack(v_conn)
           setverdict(pass, "Reserved flag checked")
         } else {
           // close network connection as specified in [MQTT-2.2.2-2]
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
           setverdict(fail, "Reserved flag must be set to '0'")
         }
       }
@@ -185,21 +181,22 @@ group connectGroup
 
         log("[TC_MQTT_Client_CONNECT_05](received connect): ", v_received.msg.msg.connect_msg)
 
+        // TODO: check the will flag -> outsource to conformance function
         if (match(v_received.msg, mw_connect_will_flag)) {
 
-          // check if will_qos is valid
-          //TODO: mw_connect_will_flag matching only valid?
+          // TODO: outsource to separate conformance function
           var QoS vt_invalid_qos := RESERVED
           if(match(vt_invalid_qos, v_received.msg.msg.connect_msg.flags.will_qos))
           {
+            // Note: inverted match -> vt_INVALID_qos
+            f_terminate_due_to_violation(v_conn)
             setverdict(fail, "Received CONNECT contains invalid Will Qos")
           } else {
             f_send_connack(v_conn)
             setverdict(pass, "Will flag and Will QoS checked")
           }
         } else {
-          // close network connection
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
           setverdict(fail, "Will flag must be set to '1'")
         }
       }
@@ -250,12 +247,12 @@ group connectGroup
             setverdict(pass, "Will flag and Will QoS checked")
           } else {
             // close network connection; already failed
-            f_ipl4_close(v_conn.ipl4.id)
+            f_terminate_due_to_violation(v_conn)
           }
 
         } else {
           // close network connection
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
           setverdict(fail, "Will flag must be set to '1'")
         }
       }
@@ -285,7 +282,7 @@ group connectGroup
           setverdict(pass, "No credentials behaviour checked")
         } else {
           // close network connection
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
           setverdict(fail, "not match (usr_flag='0'B : pswd_flag='0'B : payload=omit)")
         }
       }
@@ -328,7 +325,7 @@ group connectGroup
         if (getverdict == fail)
         {
           // close network connection
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
         } else {
           f_send_connack(v_conn)
           setverdict(pass, "Username set correctly")
@@ -372,11 +369,15 @@ group connectGroup
         if (getverdict == fail)
         {
           // close network connection
-          f_ipl4_close(v_conn.ipl4.id)
+          f_terminate_due_to_violation(v_conn)
         } else {
           f_send_connack(v_conn)
           setverdict(pass, "Username and Passwort set correctly")
         }
+      }
+      [] MQTT_PCO.receive {
+        log("Received unexpected PDU")
+        setverdict(fail, "received unexpected PDU")
       }
     } // alt
   }

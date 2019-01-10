@@ -33,7 +33,9 @@ module MQTT_Functions_Protocol
   import from MQTT_Broker_Pixits all;
   import from MQTTasp_PortType all;
   import from MQTTasp_Types all;
+
   import from MQTTasp_CtrlFunct all;
+  import from MQTT_Functions_Network all;
 
   import from MQTT_v3_1_1_Types all;
   import from IPL4asp_Types all;
@@ -91,9 +93,6 @@ module MQTT_Functions_Protocol
       // send PUBREL response
       log("[MQTT_PTC](>>>)(PUBREL): ", vt_pubrel)
       f_send_mqtt(p_conn, vt_pubrel)
-
-      // set state to 'Connected'
-      //f_change_connection_client_state(p_conn, Connected)
     }
 
     /*
@@ -106,9 +105,6 @@ module MQTT_Functions_Protocol
       // send PUBCOMP response
       log("[MQTT_PTC](>>>)(PUBCOMP): ", vt_pubcomp)
       f_send_mqtt(p_conn, vt_pubcomp)
-
-      // set state to 'Connected'
-      //f_change_connection_client_state(p_conn, Connected)
     }
 
   } // group PTC_Publish
@@ -140,6 +136,7 @@ module MQTT_Functions_Protocol
   *
   * @desc Broker PTC functions for MQTT request messages
   *
+  * TODO: outsource the checking functions to own module?
   * @remark   Direction: Client <- Server
   */
   group PTC_Broker
@@ -152,7 +149,7 @@ module MQTT_Functions_Protocol
       var template MQTT_v3_1_1_Message vt_connack := m_connack_rc(p_return_code)
 
       // send CONNACK response
-      log("[MQTT_Broker_PTC](>>>)(CONNACK): ", vt_connack)
+      log("[MQTT_v4][exec]: {[MQTT-3.1.4-4]}")
       f_send_mqtt(p_conn, vt_connack)
 
       // set state to 'Connected'
@@ -169,9 +166,6 @@ module MQTT_Functions_Protocol
       // send SUBACK response
       log("[MQTT_Broker_PTC](>>>)(SUBACK): ", vt_suback)
       f_send_mqtt(p_conn, vt_suback)
-
-      // set state to 'Connected'
-      //f_change_connection_client_state(p_conn, Connected)
     }
 
     /*
@@ -184,9 +178,6 @@ module MQTT_Functions_Protocol
       // send UNSUBACK response
       log("[MQTT_Broker_PTC](>>>)(UNSUBACK): ", vt_unsuback)
       f_send_mqtt(p_conn, vt_unsuback)
-
-      // set state to 'Connected'
-      //f_change_connection_client_state(p_conn, Connected)
     }
 
     /*
@@ -199,12 +190,7 @@ module MQTT_Functions_Protocol
       // send PINGRESP response
       log("[MQTT_Broker_PTC](>>>)(PINGRESP): ", vt_ping_response)
       f_send_mqtt(p_conn, vt_ping_response)
-
-      // set state to 'Connected'
-      //f_change_connection_client_state(p_conn, Connected)
     }
-
-
 
     /*
      * @desc disconnect all active mqtt connections from broker
@@ -220,6 +206,31 @@ module MQTT_Functions_Protocol
            // TODO: implement
          }
        }
+     }
+
+     /*
+      * covers [MQTT-3.1.2-2], [MQTT-3.1.4-5], [MQTT-3.2.2-5]
+      */
+     function f_unacceptable_protocol(inout MQTT_Connection p_conn) runs on MQTT_Broker_PTC
+     {
+       log("[MQTT_v4][exec]: {[MQTT-3.1.2-2], [MQTT-3.1.4-5], [MQTT-3.2.2-5]}")
+       f_send_connack(p_conn, 1)
+       f_ipl4_close(p_conn.ipl4.id)
+     }
+
+     function f_terminate_due_invalid_header(inout MQTT_Connection p_conn) runs on MQTT_PTC
+     {
+       log("[MQTT_v4][exec]: {[MQTT-2.2.2-2]}")
+       f_terminate_due_to_violation(p_conn)
+     }
+
+     /*
+      * hides f_ipl4_close from user and enables logging of [MQTT-4.8.0-1] on each termination
+      */
+     function f_terminate_due_to_violation(inout MQTT_Connection p_conn) runs on MQTT_PTC
+     {
+       log("[MQTT_v4][exec]: {[MQTT-4.8.0-1]}")
+       f_ipl4_close(p_conn.ipl4.id)
      }
   } // group PTC_Broker
 

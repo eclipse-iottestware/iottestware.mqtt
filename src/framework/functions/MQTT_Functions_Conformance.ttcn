@@ -1,0 +1,134 @@
+/*******************************************************************************
+ * Copyright (c) 2018 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module MQTT_Functions_Conformance
+{
+  import from MQTT_TestSystem_Common all;
+  import from MQTT_v3_1_1_Types all;
+
+  import from MQTT_Templates_MQTTasp all;
+  import from MQTT_Templates_CONNECT all;
+  import from MQTT_Templates_CONNACK all;
+  import from MQTT_Templates_PUBLISH all;
+  import from MQTT_Templates_PUBACK all;
+  import from MQTT_Templates_PUBREC all;
+  import from MQTT_Templates_PUBREL all;
+  import from MQTT_Templates_PUBCOMP all;
+  import from MQTT_Templates_SUBSCRIBE all;
+  import from MQTT_Templates_SUBACK all;
+  import from MQTT_Templates_UNSUBSCRIBE all;
+  import from MQTT_Templates_UNSUBACK all;
+  import from MQTT_Templates_PINGREQ all;
+  import from MQTT_Templates_PINGRESP all;
+  import from MQTT_Templates_DISCONNECT all;
+
+  // TODO: structure all functions for checking conformance bahaviour here
+  // those functions wrap MQTT_Functions_Protocol and MQTT_Functions_Network
+  // a valid Test Case should usually use only these functions which will give a logfile with all
+  // checked and executed conformance statements
+
+  /*
+   * @see [MQTT-2.2.2-1]
+   */
+  function f_header_flags_valid(Header p_header, template Header p_exp_header) return boolean
+  {
+    log("[MQTT_v4][checked]: {[MQTT-2.2.2-1]}")
+    if(match(p_header, p_exp_header))
+    {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  function f_connect_flags_valid(MQTT_v3_1_1_ConnectFlags p_connect_flags, template MQTT_v3_1_1_ConnectFlags p_exp) return boolean
+  {
+    // TODO: which conformance statement is covered?
+    if(f_connect_flags_reserved_valid(p_connect_flags))
+    {
+      if(match(p_connect_flags, p_exp))
+      {
+        return true
+      } else {
+        return false
+      }
+    } else {
+      return false
+    }
+  }
+
+  /*
+  * @see [MQTT-3.1.2-3]
+  */
+  function f_connect_flags_reserved_valid(MQTT_v3_1_1_ConnectFlags p_connect_flags) return boolean
+  {
+    log("[MQTT_v4][checked]: {[MQTT-3.1.2-3]}")
+    if(match(p_connect_flags, mdw_connect_reserved_flag('0'B)))
+    {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  function f_connect_protocol_name_valid(MQTT_v3_1_1_Connect p_msg) return boolean
+  {
+    log("[MQTT_v4][checked]: {[MQTT-3.1.2-1]}")
+    if (match(p_msg, mw_connect_msg_protocol_name))
+    {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  function f_connect_protocol_lvl_valid(MQTT_v3_1_1_Connect p_msg) return boolean
+  {
+    log("[MQTT_v4][checked]: {[MQTT-3.1.2-2]}")
+    if (match(p_msg, mw_connect_msg_protocol_level)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  /*
+   * see [MQTT-3.14.1-1]
+   */
+  function f_disconnect_header_valid(Header p_header) return boolean
+  {
+    log("[MQTT_v4][checked]: {[MQTT-3.14.1-1]}")
+    return f_header_flags_valid(p_header, mw_disconnect_header)
+  }
+
+  /*
+   * TODO
+   */
+  function f_publish_header_valid(MQTT_v3_1_1_PublishHeader p_header) return boolean
+  {
+    if(match(p_header, mdw_publish_header_qos(AT_MOST_ONCE_DELIVERY)))
+    {
+      // QoS == 0: check the DUP flag
+      log("[MQTT_v4][checked]: {[MQTT-3.3.1-2]}")
+      if(p_header.dup_flag == '1'B) { return false }
+    }
+
+    log("[MQTT_v4][checked]: {[MQTT-3.3.1-4]}")
+    if(match(p_header, mdw_publish_header_qos(RESERVED)))
+    {
+      return false
+    }
+
+    // TODO: further checkings!
+    return true
+  }
+}

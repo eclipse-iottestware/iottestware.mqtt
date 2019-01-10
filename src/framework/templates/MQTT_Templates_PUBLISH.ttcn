@@ -58,6 +58,12 @@ module MQTT_Templates_PUBLISH
         retain_flag := ?,
         remLength := ?
       }
+
+      template MQTT_v3_1_1_PublishHeader mdw_publish_header_qos(QoS p_qos_level)
+      modifies mw_publish_header :=
+      {
+        qos_level := p_qos_level
+      }
     } // end group fixedHeaderGroup
 
     group PUBLISH_MessageGroup
