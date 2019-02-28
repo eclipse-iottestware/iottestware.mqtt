@@ -20,11 +20,42 @@ module UTF8_Helper {
   }
 
   /*
+   * check if the decoded charstring is valid UTF-8 according to the MQTT specification (1.5.3)
+   * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718016
+   */
+  function f_is_valid_utf8(UTF8EncodedString p_in) return boolean
+  {
+    const integer c_low_surrogate  := 55296; // decimal code point for U+D800
+    const integer c_high_surrogate := 55551; // decimal code point for U+DFFF
+    const integer c_null_character := 0;     // null character U+0000
+
+    // gives the number of encoded (UTF-8) characters, whereas p_in.stringLength contains the number of octets
+    var integer v_string_length := lengthof(p_in.stringItem);
+    var boolean v_return := true
+
+    for(var integer i := 0; i < v_string_length; i := i + 1)
+    {
+      // get one single UTF-8 char from string
+      var universal charstring v_current_char := substr(p_in.stringItem, i, 1)
+
+      // convert to decimal code point
+      var integer v_dec_cp := unichar2int(v_current_char)
+
+      // [MQTT-1.5.3-1]
+      if(v_dec_cp >= c_low_surrogate and v_dec_cp <= c_high_surrogate) { v_return := false }
+
+      // [MQTT-1.5.3-2]
+      if(v_dec_cp == c_null_character) { v_return := false }
+    }
+
+    return v_return
+  }
+
+  /*
    * Function returns a template (ft_) of utf8 encodable charstring
    */
   function ft_utf8_from_charstring(charstring p_in) return template UTF8EncodedString
   {
-    // TODO
     return valueof(m_utf8_string(lengthof(p_in), p_in))
   }
 

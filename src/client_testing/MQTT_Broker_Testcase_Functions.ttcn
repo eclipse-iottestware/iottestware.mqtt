@@ -34,6 +34,8 @@ import from MQTT_v3_1_1_Types all;
 import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
 
+import from UTF8_Helper all;
+
 group connectGroup
 {
   /*
@@ -384,12 +386,40 @@ group connectGroup
 
   /*
   * @purpose TODO
+  * @remark by comparing each field with the sent values, the order is checked implicitly.
+  *         Wrong order would silently swap the fields during decoding
   *
-  * @reference TODO
+  * @reference [MQTT-3.1.3-1]
   */
   function f_MQTT_Client_CONNECT_10() runs on MQTT_Broker_PTC
   {
-    // TODO
+    var MQTTasp_Message v_received
+
+    var UTF8EncodedString v_client_id := f_utf8_from_charstring(PX_CLIENT_ID);
+    var UTF8EncodedString v_will_topic := f_utf8_from_charstring(PX_WILL_TOPIC);
+    var OctStringWithLength v_will_msg := { stringLength := lengthof(PX_WILL_MESSAGE), stringItem := char2oct(PX_WILL_MESSAGE) };
+    var UTF8EncodedString v_user_name := f_utf8_from_charstring(PX_USER_NAME);
+    var OctStringWithLength v_password := { stringLength := lengthof(PX_PASSWORD), stringItem := char2oct(PX_PASSWORD) }
+
+    var template MQTT_v3_1_1_Message vt_conn_msg := m_connect_credentials_payload_lwt(v_client_id, v_will_topic, v_will_msg, v_user_name, v_password)
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT with PAYLOAD): ", vt_conn_msg.msg.connect_msg.payload);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+        f_send_connack(v_conn)
+
+        log("[TC_MQTT_Client_CONNECT_10](received connect): ", v_received.msg.msg.connect_msg)
+        setverdict(pass, "Order of fields in CONNECT Payload checked")
+      }
+      [] MQTT_PCO.receive {
+        log("Received unexpected PDU")
+        // TODO: f_terminate_due_to_violation(v_conn)  // NOTE: not conformant response!! checking all fields would be still required here!
+        setverdict(fail, "received unexpected PDU")
+      }
+    } // alt
   }
 
   /*
@@ -399,7 +429,40 @@ group connectGroup
   */
   function f_MQTT_Client_CONNECT_11() runs on MQTT_Broker_PTC
   {
-    // TODO
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT with valid CLIENT_ID): ");
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        if(ispresent(v_received.msg.msg.connect_msg.payload.client_identifier))
+        {
+          var UTF8EncodedString v_client_id := v_received.msg.msg.connect_msg.payload.client_identifier
+          if(f_client_id_valid(v_client_id))
+          {
+            f_send_connack(v_conn)
+            setverdict(pass, "Client ID ", v_client_id.stringItem, " is valid")
+          }
+          else
+          {
+            f_terminate_due_to_violation(v_conn)
+            setverdict(fail, "Client ID", v_client_id.stringItem, " is invalid")
+          }
+        }
+        else
+        {
+          f_terminate_due_to_violation(v_conn)
+          setverdict(fail, "No Client ID was given")
+        }
+      }
+      [] MQTT_PCO.receive {
+        log("Received unexpected PDU")
+        setverdict(fail, "received unexpected PDU")
+      }
+    } // alt
   }
 
   /*
@@ -409,7 +472,46 @@ group connectGroup
   */
   function f_MQTT_Client_CONNECT_12() runs on MQTT_Broker_PTC
   {
-    // TODO
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT without CLIENT_ID and Clean Session): ", mdw_connect_msg_clean_session);
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        /*
+         * Note:
+         * single specific and (probably) not reusable case and therefore not in MQTT_Functions_Conformance.ttcn
+         * This way the verdict message is more precise
+         */
+        log("[MQTT_v4][checked]: {[MQTT-3.1.3-7]}")
+
+        // if(match(v_received.msg, mdw_connect_msg_clean_session)) <- does not match directly!
+        if(match(v_received.msg.msg.connect_msg.payload.client_identifier, mdw_connect_msg_clean_session.msg.connect_msg.payload.client_identifier))
+        {
+          if(match(v_received.msg.msg.connect_msg.flags, mdw_connect_msg_clean_session.msg.connect_msg.flags))
+          {
+            f_send_connack(v_conn)
+            setverdict(pass, "Empty Client ID and Clean Session flag set correctly")
+          }
+          else
+          {
+            f_send_connack(v_conn, 2) // [MQTT-3.1.3-9]
+            setverdict(fail, "Client ID is empty but Clean Session flag is not set")
+          }
+        }
+        else
+        {
+          setverdict(fail, "Client ID is not empty")
+        }
+      }
+      [] MQTT_PCO.receive(?) -> value v_received{
+        log("Received unexpected PDU: ", v_received)
+        setverdict(fail, "received unexpected PDU")
+      }
+    }
   }
 
   /*
@@ -419,7 +521,45 @@ group connectGroup
   */
   function f_MQTT_Client_CONNECT_13() runs on MQTT_Broker_PTC
   {
-    // TODO
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    log("[UT](send CONNECT with Will flag and a valid Will Topic):");
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        if(match(v_received.msg.msg.connect_msg.flags, mdw_connect_will_flag))
+        {
+          if(ispresent(v_received.msg.msg.connect_msg.payload.will_topic))
+          {
+            var UTF8EncodedString v_will_topic := v_received.msg.msg.connect_msg.payload.will_topic;
+            if(f_topic_valid(v_will_topic))
+            {
+              f_send_connack(v_conn)
+              setverdict(pass, "Will Topic is valid UTF-8")
+            }
+            else
+            {
+              setverdict(fail, "Will Topic is invalid UTF-8")
+            }
+          }
+          else
+          {
+            setverdict(fail, "Will Topic is not present")
+          }
+        }
+        else
+        {
+          setverdict(fail, "Will flag is not set")
+        }
+      }
+      [] MQTT_PCO.receive(?) -> value v_received{
+        log("Received unexpected PDU: ", v_received)
+        setverdict(fail, "received unexpected PDU")
+      }
+    }
   }
 
   /*
@@ -429,8 +569,71 @@ group connectGroup
   */
   function f_MQTT_Client_CONNECT_14() runs on MQTT_Broker_PTC
   {
-    // TODO
+    var MQTTasp_Message v_received
+    var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    alt {
+      [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn);
+
+        if(match(v_received.msg.msg.connect_msg.flags, mdw_connect_credentials_username))
+        {
+          // TODO: decoding of MQTT payload seems to be incorrect! 
+          if(ispresent(v_received.msg.msg.connect_msg.payload.user_name))
+          {
+            if(f_username_valid(v_received.msg.msg.connect_msg.payload.user_name))
+            {
+              f_send_connack(v_conn)
+              setverdict(pass, "Username is valid UTF-8")
+            }
+            else
+            {
+              setverdict(fail, "Username is invalid UTF-8")
+            }
+          }
+          else
+          {
+            setverdict(fail, "Username is not present in connect payload")
+          }
+        }
+        else
+        {
+          setverdict(fail, "Username flag is not set")
+        }
+      }
+      [] MQTT_PCO.receive(?) -> value v_received{
+        log("Received unexpected PDU: ", v_received)
+        setverdict(fail, "received unexpected PDU")
+      }
+    }
   }
 } // group connectGroup
 
+
+
 } // module
+
+
+/*
+* @purpose TODO
+*
+* @reference TODO
+*
+function f_MQTT_Client_TEMPLATE() runs on MQTT_Broker_PTC
+{
+  var MQTTasp_Message v_received
+  var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+  alt {
+    [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
+      var MQTT_Connection v_conn := v_received.conn
+      f_add_connection(v_conn);
+      // TODO:
+    }
+    [] MQTT_PCO.receive(?) -> value v_received{
+      log("Received unexpected PDU: ", v_received)
+      setverdict(fail, "received unexpected PDU")
+    }
+  }
+}*/

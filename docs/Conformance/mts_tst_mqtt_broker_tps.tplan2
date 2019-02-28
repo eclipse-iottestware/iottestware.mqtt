@@ -802,7 +802,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    // TODO: defferentiate MQTT_USER_NAME_INVALID_UTF8 to distinguish from _CONNECT_024
+    // TODO: differentiate MQTT_USER_NAME_INVALID_UTF8 to distinguish from _CONNECT_024
     TP Id TP_MQTT_Broker_CONNECT_025
 
 

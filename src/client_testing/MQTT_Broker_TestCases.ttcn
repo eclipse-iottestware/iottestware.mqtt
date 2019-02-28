@@ -43,18 +43,8 @@ group connectGroup
   */
   testcase TC_MQTT_Client_CONNECT_01() runs on MQTT_Broker_PTC
   {
-    if(f_init_broker_ptc())
-    {
-      tc_testcase_max.start;
-      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
-      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
-      tc_testcase_max.start;
-      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
-
-
+    if(f_init_broker_ptc()) {
       f_MQTT_Client_CONNECT_01()
-
-      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
@@ -67,15 +57,7 @@ group connectGroup
   testcase TC_MQTT_Client_CONNECT_02() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
-      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
-      tc_testcase_max.start;
-      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
-
-
       f_MQTT_Client_CONNECT_02()
-
-      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
@@ -89,15 +71,7 @@ group connectGroup
   testcase TC_MQTT_Client_CONNECT_03() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
-      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
-      tc_testcase_max.start;
-      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
-
-
       f_MQTT_Client_CONNECT_03()
-
-      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
@@ -112,15 +86,7 @@ group connectGroup
   testcase TC_MQTT_Client_CONNECT_04() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
-      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
-      tc_testcase_max.start;
-      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
-
-
       f_MQTT_Client_CONNECT_04()
-
-      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
@@ -133,15 +99,7 @@ group connectGroup
   testcase TC_MQTT_Client_CONNECT_05() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
-      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
-      tc_testcase_max.start;
-      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
-
-
       f_MQTT_Client_CONNECT_05()
-
-      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
@@ -154,15 +112,7 @@ group connectGroup
   testcase TC_MQTT_Client_CONNECT_06() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
-      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
-      tc_testcase_max.start;
-      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
-
-
       f_MQTT_Client_CONNECT_06()
-
-      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }
@@ -175,14 +125,7 @@ group connectGroup
   testcase TC_MQTT_Client_CONNECT_07() runs on MQTT_Broker_PTC
   {
     if(f_init_broker_ptc()) {
-      var boolean v_verdict_mode := PX_ON_TIMEOUT_VERDICT
-      var verdicttype v_verdict_type := PX_ON_TIMEOUT_VERDICT_VAL
-      tc_testcase_max.start;
-      var default v_timeout_default := activate(a_timeout_default(tc_testcase_max, v_verdict_mode, v_verdict_type))
-
       f_MQTT_Client_CONNECT_07()
-
-      deactivate(v_timeout_default);
     }
     f_clear_broker_ptc();
   }

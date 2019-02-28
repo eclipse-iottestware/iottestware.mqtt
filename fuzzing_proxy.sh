@@ -9,6 +9,7 @@ display_help()
   echo "-s, --seed            the seed to initialize the random fuzzing"
   echo "-r, --ratio           the ratio of flipped bits (default: 0.035 => 3.5%)"
   echo "-d, --destination     the destination the proxy should forward to (address:port)"
+  echo "-b, --byte_offset     the bytes offset"
   echo "-l, --listen          the port on which the proxy listens for incoming PDUs"
 
   exit 1
@@ -19,6 +20,9 @@ SEED=$(date +%s)
 RATIO=0.035
 LISTEN_PORT=1884
 DST_HOST=127.0.0.1:1883
+
+# avoid fuzzing the packet type! TODO: where is the beginning? TCP PDU or TCP payload?
+BYTES_OFFSET=1
 
 # adapt values according to CLI arguments
 while [ "$1" != "" ]; do
@@ -31,6 +35,9 @@ while [ "$1" != "" ]; do
                                 ;;
         -d | --destination )    shift
                                 DST_HOST=$1
+                                ;;
+        -b | --byte_offset )    shift
+                                BYTES_OFFSET=$1
                                 ;;
         -l | --listen )         shift
                                 LISTEN_PORT=$1
@@ -47,4 +54,4 @@ done
 echo "Starting Fuzzing-Proxy: 0.0.0.0:$LISTEN_PORT <-> $DST_HOST"
 echo "Fuzzing parameters: Seed = $SEED, Ratio = $RATIO"
 
-zzuf -s$SEED -d -n -p$LISTEN_PORT -A  -r$RATIO socat TCP-LISTEN:$LISTEN_PORT,reuseaddr,fork TCP4:$DST_HOST
+zzuf -s$SEED -n -p$LISTEN_PORT -b$BYTES_OFFSET- -A -r$RATIO socat TCP-LISTEN:$LISTEN_PORT,reuseaddr,fork TCP4:$DST_HOST

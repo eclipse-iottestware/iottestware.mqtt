@@ -15,19 +15,19 @@ module MQTTasp_Types {
 import from MQTT_v3_1_1_Types all;
 import from IPL4asp_Types all;
 
-type enumerated TCPState { Connected, Disconnected } // Connected if MQTTClientState != Disconnected
-type enumerated MQTTClientState { Idle, Wait_connack, Connected, Wait_suback, Wait_unsuback, Wait_publish_echo,  Subscribed , Disconnected }
+type enumerated TCP_State { Connected, Disconnected } // Connected if MQTTClientState != Disconnected
+type enumerated MQTT_ClientState { Idle, Wait_connack, Connected, Wait_suback, Wait_unsuback, Wait_publish_echo,  Subscribed , Disconnected }
 
 type record IPL4_Connection {
   integer id,
   charstring rem_name,
   integer rem_port,
-  TCPState tcp_state
+  TCP_State tcp_state
 }
 
 type record MQTT_Connection {
   IPL4_Connection ipl4,
-  MQTTClientState client_state optional
+  MQTT_ClientState client_state optional
 }
 type record of MQTT_Connection MQTT_ConnectionList
 

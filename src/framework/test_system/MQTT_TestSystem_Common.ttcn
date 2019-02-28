@@ -23,12 +23,15 @@ import from MQTT_Broker_TypesAndValues all;
 import from MQTT_Broker_Pixits all;
 
 group common_components {
+  /*
+  * Base PTC Test Component
+  */
   type component MQTT_MTC {
     // TODO: Base MTC component
   }
 
   /*
-  Base PTC Test Component
+  * Base PTC Test Component
   */
   type component MQTT_PTC
   {
@@ -48,20 +51,20 @@ group broker_components {
   }
 
   /*
-  MQTT Broker Test Component contains capabilities and context of a MQTT Broker
+  * MQTT Broker Test Component contains capabilities and context of a MQTT Broker
   */
   type component MQTT_Broker_PTC extends MQTT_PTC
   {
-    // timer locally available for MQTT_Broker_PTC; value retrieved from .cfg
-    //var float vl_testcase_max;
-    timer tc_testcase_max := PX_MAX_TC_TIMER
+    // timer locally available for MQTT_Broker_PTC; value retrieved from .cfg (PIXIT)
+    timer tc_testcase_max := PX_MAX_TC_TIMER;
+    var default vc_timeout_default;
 
-    var MqttBrokerContext ctx;
+    var MQTT_BrokerContext ctx;
     var MQTT_ConnectionList vl_connections;
   }
-  
+
   /*
-   * MQTT Client Test Component
+   * MQTT Client Test Component contains capabilities and context of a MQTT Client
    */
   type component MQTT_Client_PTC extends MQTT_PTC
   {

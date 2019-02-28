@@ -12,9 +12,42 @@
  *******************************************************************************/
 module MQTT_Broker_Pixits {
 
+  import from MQTT_Broker_TypesAndValues all;
+
    /*
-    * @desc max duration in seconds to wait for a connect: Needed?
+    * @desc the port on which to wait for incoming MQTT connections
     */
+   modulepar IPL4_PortRange PX_LISTEN_PORT := 1883;
+
+   /*
+    * @desc TODO
+    */
+   modulepar charstring PX_CLIENT_ID := "TESTER_CLIENT_ID"
+
+   /*
+    * @desc TODO
+    */
+   modulepar charstring PX_USER_NAME := "TESTER_USER_NAME"
+
+   /*
+    * @desc TODO
+    */
+   modulepar charstring PX_PASSWORD := "TESTER_PASSWORD"
+
+   /*
+    * @desc TODO
+    */
+   modulepar charstring PX_WILL_TOPIC := "testware/will/topic"
+
+   /*
+    * @desc TODO
+    */
+   modulepar charstring PX_WILL_MESSAGE := "TESTER'S LWT MESSAGE"
+
+
+   /**********************************************************************
+    * timers and timeout behaviors
+    **********************************************************************/
 
    /*
     * @desc max duration in seconds per test case
@@ -22,18 +55,33 @@ module MQTT_Broker_Pixits {
    modulepar float PX_MAX_TC_TIMER := 20.0;
 
    /*
-    * @desc the conformance statement [MQTT-3.1.2-1] specifies that a broker MAY disconnect.
-    *       If set to false, the TS broker will only accept 'MQTT' as valid protocol name
-    */
-   modulepar boolean PX_ACCEPT_ANY_PROTOCOL_NAME := false;
-
-   /*
-    * @desc should a verdict be set if TC times out?
+    * @desc should a verdict be set if PX_MAX_TC_TIMER times out?
     */
    modulepar boolean PX_ON_TIMEOUT_VERDICT := true;
 
    /*
-    * @desc which verdict should be set if TC times out?
+    * @desc which verdict should be set if a test case times out?
     */
    modulepar verdicttype PX_ON_TIMEOUT_VERDICT_VAL := fail
+
+
+   /**********************************************************************
+    * configuration of optional behaviors
+    * optional behaviors result from "MAY" wording in the specification
+    * default values will enable the strictest configuration
+    **********************************************************************/
+
+    /*
+     * @desc the conformance statement [MQTT-3.1.2-1] specifies that a broker MAY disconnect.
+     *       If set to false, the TS broker will only accept 'MQTT' as valid protocol name
+     */
+    modulepar boolean PX_ACCEPT_ANY_PROTOCOL_NAME := false;
+
+    /*
+     * @desc a server MAY allow client ids that contain more than 23 encoded bytes and
+     *       characters other than alphanum [MQTT-3.1.3-5]
+     *
+     */
+    modulepar boolean PX_ALLOW_LONG_CLIENT_IDS := false
+    modulepar boolean PX_ALLOW_SPECIAL_CHAR_CLIENT_IDS := false
 }

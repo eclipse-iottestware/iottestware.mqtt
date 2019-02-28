@@ -16,25 +16,26 @@ module MQTT_Broker_TypesAndValues {
 import from MQTT_v3_1_1_Types all;
 import from IPL4asp_Types all;
 
+type integer IPL4_PortRange (1..65535);
 type record of NamedHostPort Address_List;
 
 type record NamedHostPort
 {
   charstring id,
   charstring hostName,
-  integer portNumber
+  IPL4_PortRange portNumber
 }
 
-type record MqttBrokerContext
+type record MQTT_BrokerContext
 {
   integer connId,
   charstring remoteHost,
-  integer remotePort,
+  IPL4_PortRange remotePort,
   charstring localHost,
-  integer localPort
-}
-with { extension "done" }
+  IPL4_PortRange localPort
+} with { extension "done" }
 
+/*
 const MqttBrokerContext c_MqttBrokerContext_empty :=
 {
   connId := -1,
@@ -44,5 +45,5 @@ const MqttBrokerContext c_MqttBrokerContext_empty :=
   localPort := 1885
 }
 with { extension "done"}
-
+*/
 }

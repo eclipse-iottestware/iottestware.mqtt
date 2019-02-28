@@ -29,7 +29,7 @@ module MQTT_Functions_Network
   import from IPL4asp_Types all;
 
   /*
-   * This is a wrapper of IPL4 functionality of MQTT: TODO: move to MQTT_Function_MQTT ?
+   * This is a wrapper of IPL4 functionality of MQTT: TODO: move to MQTT_Function_Protocol ?
    */
 
   group PTC_Common

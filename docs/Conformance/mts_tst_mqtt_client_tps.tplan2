@@ -284,8 +284,7 @@ Package mts_tst {
               connect_flags containing
                 user_name_flag indicating value '1'B,
                 password_flag indicating value '1'B,
-                will_flag indicating value '1'B,
-                will_qos corresponding to AT_MOST_ONCE;
+                will_flag indicating value '1'B;
               ,
               payload containing
                 client_identifier corresponding to VALID_CLIENT_ID,

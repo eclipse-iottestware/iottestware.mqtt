@@ -31,6 +31,11 @@ module MQTT_Functions_Conformance
   import from MQTT_Templates_PINGRESP all;
   import from MQTT_Templates_DISCONNECT all;
 
+  import from MQTT_Broker_Pixits all;
+
+  // Helpers
+  import from UTF8_Helper all;
+
   // TODO: structure all functions for checking conformance bahaviour here
   // those functions wrap MQTT_Functions_Protocol and MQTT_Functions_Network
   // a valid Test Case should usually use only these functions which will give a logfile with all
@@ -99,6 +104,87 @@ module MQTT_Functions_Conformance
     } else {
       return false
     }
+  }
+
+  /*
+   * check if the given Client ID is valid
+   * see [MQTT-1.5.3-1], [MQTT-1.5.3-2], [MQTT-3.1.3-4], [MQTT-3.1.3-5]
+   */
+  function f_client_id_valid(UTF8EncodedString p_client_id) return boolean
+  {
+    // check UTF-8
+    log("[MQTT_v4][checked]: {[MQTT-1.5.3-1], [MQTT-1.5.3-2], [MQTT-3.1.3-4]}")
+    var boolean v_return := f_is_valid_utf8(p_client_id)
+
+    // check length and characters
+    // Note: [MQTT-3.1.3-5] vs. [MQTT-3.1.3-6] and [MQTT-3.1.3-7]?
+    log("[MQTT_v4][checked]: {[MQTT-3.1.3-5]}")
+    if(p_client_id.stringLength < 1) { v_return := false }
+    if(not PX_ALLOW_LONG_CLIENT_IDS)
+    {
+      if(p_client_id.stringLength > 23) { v_return := false }
+    }
+
+    if(not PX_ALLOW_SPECIAL_CHAR_CLIENT_IDS)
+    {
+      // range borders of the defined list of characters in [MQTT-3.1.3-5]
+      // Note: ASCII and UTF-8 are equivalent in this range
+      const integer c_ascii_0 := 48
+      const integer c_ascii_9 := 57
+      const integer c_ascii_A := 65
+      const integer c_ascii_Z := 90
+      const integer c_ascii_a := 97
+      const integer c_ascii_z := 122
+
+      var integer v_string_length := lengthof(p_client_id.stringItem);
+      for(var integer i := 0; i < v_string_length; i := i + 1)
+      {
+        // get one single UTF-8 char from string and convert to decimal code point
+        var integer v_dec_cp := unichar2int(substr(p_client_id.stringItem, i, 1))
+
+        // check if the current character is in one the segments
+        if(v_dec_cp < c_ascii_0 or c_ascii_0 > c_ascii_z)
+        {
+          v_return := false
+        }
+        else if(v_dec_cp > c_ascii_9 and v_dec_cp < c_ascii_A)
+        {
+          v_return := false
+        }
+        else if(v_dec_cp > c_ascii_Z and v_dec_cp < c_ascii_a)
+        {
+          v_return := false
+        }
+      }
+    }
+
+    return v_return
+  }
+
+  /*
+   * check if the given Topic is valid (check only UTF-8 ?)
+   * see [MQTT-3.1.3-10]
+   */
+  function f_topic_valid(UTF8EncodedString p_topic) return boolean
+  {
+    // check UTF-8
+    log("[MQTT_v4][checked]: {[MQTT-3.1.3-10]}")
+    var boolean v_return := f_is_valid_utf8(p_topic)
+
+    return v_return
+  }
+
+  /*
+   * check if the given Username is valid (check only UTF-8 ?)
+   * see [MQTT-3.1.3-11]
+   */
+  function f_username_valid(UTF8EncodedString p_username) return boolean
+  {
+    // check UTF-8
+    log("[MQTT_v4][checked]: {[MQTT-3.1.3-11]}")
+    var boolean v_return := f_is_valid_utf8(p_username)
+
+    return v_return
   }
 
   /*

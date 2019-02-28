@@ -1,5 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<TITAN_Project_File_Information version="1.0">
+<?xml version="1.0" encoding="UTF-8"?><TITAN_Project_File_Information version="1.0">
+<!--
+ Copyright (c) 2000-2018 Ericsson Telecom AB
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+-->
   <ProjectName>iottestware.mqtt</ProjectName>
   <ReferencedProjects>
     <ReferencedProject name="IPL4asp_CNL113531" projectLocationURI="../../TestPorts/IPL4asp/IPL4asp_CNL113531.tpd"/>
@@ -7,8 +13,115 @@
   </ReferencedProjects>
   <Folders>
     <FolderResource projectRelativePath="cfg" relativeURI="cfg"/>
+    <FolderResource projectRelativePath="cfg/oracle" relativeURI="cfg/oracle"/>
+    <FolderResource projectRelativePath="cfg/self_test" relativeURI="cfg/self_test"/>
+    <FolderResource projectRelativePath="cfg/templates" relativeURI="cfg/templates"/>
+    <FolderResource projectRelativePath="docs" relativeURI="docs"/>
+    <FolderResource projectRelativePath="docs/Conformance" relativeURI="docs/Conformance"/>
+    <FolderResource projectRelativePath="logs" relativeURI="logs"/>
+    <FolderResource projectRelativePath="logs/client_logs" relativeURI="logs/client_logs"/>
+    <FolderResource projectRelativePath="logs/fuzzing_logs" relativeURI="logs/fuzzing_logs"/>
+    <FolderResource projectRelativePath="logs/oracle_logs" relativeURI="logs/oracle_logs"/>
+    <FolderResource projectRelativePath="logs/selftest" relativeURI="logs/selftest"/>
     <FolderResource projectRelativePath="src" relativeURI="src"/>
+    <FolderResource projectRelativePath="src/broker_testing" relativeURI="src/broker_testing"/>
+    <FolderResource projectRelativePath="src/client_testing" relativeURI="src/client_testing"/>
+    <FolderResource projectRelativePath="src/framework" relativeURI="src/framework"/>
+    <FolderResource projectRelativePath="src/framework/defaults" relativeURI="src/framework/defaults"/>
+    <FolderResource projectRelativePath="src/framework/functions" relativeURI="src/framework/functions"/>
+    <FolderResource projectRelativePath="src/framework/templates" relativeURI="src/framework/templates"/>
+    <FolderResource projectRelativePath="src/framework/test_system" relativeURI="src/framework/test_system"/>
+    <FolderResource projectRelativePath="src/framework/utils" relativeURI="src/framework/utils"/>
   </Folders>
+  <Files>
+    <FileResource projectRelativePath="CONTRIBUTING.md" relativeURI="CONTRIBUTING.md"/>
+    <FileResource projectRelativePath="GUIDELINES.md" relativeURI="GUIDELINES.md"/>
+    <FileResource projectRelativePath="LICENSE" relativeURI="LICENSE"/>
+    <FileResource projectRelativePath="MQTT_Summary.pdf" relativeURI="MQTT_Summary.pdf"/>
+    <FileResource projectRelativePath="README.md" relativeURI="README.md"/>
+    <FileResource projectRelativePath="cfg/broker_testing_01.cfg" relativeURI="cfg/broker_testing_01.cfg"/>
+    <FileResource projectRelativePath="cfg/broker_testing_fuzzing_01.cfg" relativeURI="cfg/broker_testing_fuzzing_01.cfg"/>
+    <FileResource projectRelativePath="cfg/oracle/broker_sut.cfg" relativeURI="cfg/oracle/broker_sut.cfg"/>
+    <FileResource projectRelativePath="cfg/oracle/client_ts.cfg" relativeURI="cfg/oracle/client_ts.cfg"/>
+    <FileResource projectRelativePath="cfg/self_test/sf_broker_01.cfg" relativeURI="cfg/self_test/sf_broker_01.cfg"/>
+    <FileResource projectRelativePath="cfg/self_test/sf_client_01.cfg" relativeURI="cfg/self_test/sf_client_01.cfg"/>
+    <FileResource projectRelativePath="cfg/templates/playground.cfg" relativeURI="cfg/templates/playground.cfg"/>
+    <FileResource projectRelativePath="docs/Conformance/mts_tst_mqtt_broker_tps.tplan2" relativeURI="docs/Conformance/mts_tst_mqtt_broker_tps.tplan2"/>
+    <FileResource projectRelativePath="docs/Conformance/mts_tst_mqtt_client_tps.tplan2" relativeURI="docs/Conformance/mts_tst_mqtt_client_tps.tplan2"/>
+    <FileResource projectRelativePath="docs/Conformance/mts_tst_mqtt_commons.tplan2" relativeURI="docs/Conformance/mts_tst_mqtt_commons.tplan2"/>
+    <FileResource projectRelativePath="fuzzing_proxy.sh" relativeURI="fuzzing_proxy.sh"/>
+    <FileResource projectRelativePath="iottestware.mqtt.tpd" relativeURI="iottestware.mqtt.tpd"/>
+    <FileResource projectRelativePath="logs/client_logs/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/client_logs/client_mqtt.alexander-VirtualBox-hc.log"/>
+    <FileResource projectRelativePath="logs/client_logs/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/client_logs/client_mqtt.alexander-VirtualBox-mtc.log"/>
+    <FileResource projectRelativePath="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-hc.log"/>
+    <FileResource projectRelativePath="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-mtc.log"/>
+    <FileResource projectRelativePath="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-hc.log"/>
+    <FileResource projectRelativePath="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-mtc.log"/>
+    <FileResource projectRelativePath="logs/oracle_logs/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/oracle_logs/client_mqtt.alexander-VirtualBox-hc.log"/>
+    <FileResource projectRelativePath="logs/oracle_logs/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/oracle_logs/client_mqtt.alexander-VirtualBox-mtc.log"/>
+    <FileResource projectRelativePath="logs/selftest/broker_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/selftest/broker_mqtt.alexander-VirtualBox-hc.log"/>
+    <FileResource projectRelativePath="logs/selftest/broker_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/selftest/broker_mqtt.alexander-VirtualBox-mtc.log"/>
+    <FileResource projectRelativePath="logs/selftest/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/selftest/client_mqtt.alexander-VirtualBox-hc.log"/>
+    <FileResource projectRelativePath="logs/selftest/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/selftest/client_mqtt.alexander-VirtualBox-mtc.log"/>
+    <FileResource projectRelativePath="oracle_broker_demo.sh" relativeURI="oracle_broker_demo.sh"/>
+    <FileResource projectRelativePath="selftest.sh" relativeURI="selftest.sh"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_Functions.ttcn" relativeURI="src/broker_testing/MQTT_Functions.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_Pixits.ttcn" relativeURI="src/broker_testing/MQTT_Pixits.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_Templates.ttcn" relativeURI="src/broker_testing/MQTT_Templates.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_TestCases.ttcn" relativeURI="src/broker_testing/MQTT_TestCases.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_TestControl.ttcn" relativeURI="src/broker_testing/MQTT_TestControl.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_TestSystem.ttcn" relativeURI="src/broker_testing/MQTT_TestSystem.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_Testcase_Functions.ttcn" relativeURI="src/broker_testing/MQTT_Testcase_Functions.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_TypesAndValues.ttcn" relativeURI="src/broker_testing/MQTT_TypesAndValues.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/MQTT_Broker_Pixits.ttcn" relativeURI="src/client_testing/MQTT_Broker_Pixits.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/MQTT_Broker_Testcase_Functions.ttcn" relativeURI="src/client_testing/MQTT_Broker_Testcase_Functions.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/MQTT_Broker_Testcases.ttcn" relativeURI="src/client_testing/MQTT_Broker_Testcases.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/MQTT_Broker_TypesAndValues.ttcn" relativeURI="src/client_testing/MQTT_Broker_TypesAndValues.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/MQTT_Oracle_Broker.ttcn" relativeURI="src/client_testing/MQTT_Oracle_Broker.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/Playground.ttcn" relativeURI="src/client_testing/Playground.ttcn"/>
+    <FileResource projectRelativePath="src/framework/MQTTasp_CtrlFunct.ttcn" relativeURI="src/framework/MQTTasp_CtrlFunct.ttcn"/>
+    <FileResource projectRelativePath="src/framework/MQTTasp_CtrlFunctDef.cc" relativeURI="src/framework/MQTTasp_CtrlFunctDef.cc"/>
+    <FileResource projectRelativePath="src/framework/MQTTasp_PortType.ttcn" relativeURI="src/framework/MQTTasp_PortType.ttcn"/>
+    <FileResource projectRelativePath="src/framework/MQTTasp_Types.ttcn" relativeURI="src/framework/MQTTasp_Types.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_CONNACK.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_CONNACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_CONNECT.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_CONNECT.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_Common.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_Common.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_DISCONNECT.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_DISCONNECT.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_PINGREQ.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_PINGREQ.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_PINGRESP.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_PINGRESP.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_PUBACK.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_PUBACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_PUBCOMP.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_PUBCOMP.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_PUBLISH.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_PUBLISH.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_PUBREC.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_PUBREC.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_PUBREL.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_PUBREL.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_SUBACK.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_SUBACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_SUBSCRIBE.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_SUBSCRIBE.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_UNSUBACK.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_UNSUBACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_UNSUBSCRIBE.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_UNSUBSCRIBE.ttcn"/>
+    <FileResource projectRelativePath="src/framework/functions/MQTT_Functions_Conformance.ttcn" relativeURI="src/framework/functions/MQTT_Functions_Conformance.ttcn"/>
+    <FileResource projectRelativePath="src/framework/functions/MQTT_Functions_Network.ttcn" relativeURI="src/framework/functions/MQTT_Functions_Network.ttcn"/>
+    <FileResource projectRelativePath="src/framework/functions/MQTT_Functions_Protocol.ttcn" relativeURI="src/framework/functions/MQTT_Functions_Protocol.ttcn"/>
+    <FileResource projectRelativePath="src/framework/functions/MQTT_Functions_SetUp.ttcn" relativeURI="src/framework/functions/MQTT_Functions_SetUp.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_CONNACK.ttcn" relativeURI="src/framework/templates/MQTT_Templates_CONNACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_CONNECT.ttcn" relativeURI="src/framework/templates/MQTT_Templates_CONNECT.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_DISCONNECT.ttcn" relativeURI="src/framework/templates/MQTT_Templates_DISCONNECT.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_Header.ttcn" relativeURI="src/framework/templates/MQTT_Templates_Header.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_MQTTasp.ttcn" relativeURI="src/framework/templates/MQTT_Templates_MQTTasp.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_PINGREQ.ttcn" relativeURI="src/framework/templates/MQTT_Templates_PINGREQ.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_PINGRESP.ttcn" relativeURI="src/framework/templates/MQTT_Templates_PINGRESP.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_PUBACK.ttcn" relativeURI="src/framework/templates/MQTT_Templates_PUBACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_PUBCOMP.ttcn" relativeURI="src/framework/templates/MQTT_Templates_PUBCOMP.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_PUBLISH.ttcn" relativeURI="src/framework/templates/MQTT_Templates_PUBLISH.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_PUBREC.ttcn" relativeURI="src/framework/templates/MQTT_Templates_PUBREC.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_PUBREL.ttcn" relativeURI="src/framework/templates/MQTT_Templates_PUBREL.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_SUBACK.ttcn" relativeURI="src/framework/templates/MQTT_Templates_SUBACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_SUBSCRIBE.ttcn" relativeURI="src/framework/templates/MQTT_Templates_SUBSCRIBE.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_UNSUBACK.ttcn" relativeURI="src/framework/templates/MQTT_Templates_UNSUBACK.ttcn"/>
+    <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn" relativeURI="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn"/>
+    <FileResource projectRelativePath="src/framework/test_system/MQTT_TestSystem_Common.ttcn" relativeURI="src/framework/test_system/MQTT_TestSystem_Common.ttcn"/>
+    <FileResource projectRelativePath="src/framework/utils/UTF8_Helper.ttcn" relativeURI="src/framework/utils/UTF8_Helper.ttcn"/>
+    <FileResource projectRelativePath="start_mqtt_fuzzing.py" relativeURI="start_mqtt_fuzzing.py"/>
+  </Files>
   <ActiveConfiguration>Default</ActiveConfiguration>
   <Configurations>
     <Configuration name="Default">
@@ -16,14 +129,41 @@
         <MakefileSettings>
           <functiontestRuntime>true</functiontestRuntime>
           <targetExecutable>bin/iottestware.mqtt</targetExecutable>
+          <suppressWarnings>true</suppressWarnings>
         </MakefileSettings>
         <LocalBuildSettings>
           <workingDirectory>bin</workingDirectory>
         </LocalBuildSettings>
       </ProjectProperties>
+      <FolderProperties>
+        <FolderResource>
+          <FolderPath>cfg</FolderPath>
+          <FolderProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FolderProperties>
+        </FolderResource>
+        <FolderResource>
+          <FolderPath>docs</FolderPath>
+          <FolderProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FolderProperties>
+        </FolderResource>
+        <FolderResource>
+          <FolderPath>logs</FolderPath>
+          <FolderProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FolderProperties>
+        </FolderResource>
+      </FolderProperties>
       <FileProperties>
         <FileResource>
           <FilePath>CONTRIBUTING.md</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>GUIDELINES.md</FilePath>
           <FileProperties>
             <ExcludeFromBuild>true</ExcludeFromBuild>
           </FileProperties>
@@ -47,7 +187,31 @@
           </FileProperties>
         </FileResource>
         <FileResource>
-          <FilePath>report_template.ts</FilePath>
+          <FilePath>fuzzing_proxy.sh</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>iottestware.mqtt.tpd</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>oracle_broker_demo.sh</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>selftest.sh</FilePath>
+          <FileProperties>
+            <ExcludeFromBuild>true</ExcludeFromBuild>
+          </FileProperties>
+        </FileResource>
+        <FileResource>
+          <FilePath>start_mqtt_fuzzing.py</FilePath>
           <FileProperties>
             <ExcludeFromBuild>true</ExcludeFromBuild>
           </FileProperties>

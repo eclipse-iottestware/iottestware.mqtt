@@ -53,16 +53,59 @@ module MQTT_Templates_CONNECT
           clean_session := '1'B,
           reserved := '0'B
         }
+
+        template MQTT_v3_1_1_ConnectFlags md_connect_credentials
+        modifies m_connect_flags_basic :=
+        {
+          user_name_flag := '1'B,
+          password_flag := '1'B
+        }
+
+        template MQTT_v3_1_1_ConnectFlags md_connect_credentials_lwt(BIT1n p_will_flag := '1'B, BIT1n p_will_retain := '0'B, QoS p_will_qos := AT_MOST_ONCE_DELIVERY)
+        modifies md_connect_credentials :=
+        {
+          will_retain := p_will_retain,
+          will_qos := p_will_qos,
+          will_flag := p_will_flag
+        }
       } // end group connectFlags_Group
 
       group CONNECT_Payload_Group
       {
-
+        template MQTT_v3_1_1_ConnectPayload m_connect_payload_credentials(
+          UTF8EncodedString p_client_id,
+          UTF8EncodedString p_will_topic,
+          OctStringWithLength p_will_msg,
+          UTF8EncodedString p_user_name,
+          OctStringWithLength p_password) :=
+        {
+          client_identifier := p_client_id,
+          will_topic := p_will_topic,
+          will_message := p_will_msg,
+          user_name := p_user_name,
+          password := p_password
+        }
       } // end group connectPayload_Group
 
       group CONNECT_Message_Group
       {
-
+        template MQTT_v3_1_1_Message m_connect_credentials_payload_lwt(
+          UTF8EncodedString p_client_id,
+          UTF8EncodedString p_will_topic,
+          OctStringWithLength p_will_msg,
+          UTF8EncodedString p_user_name,
+          OctStringWithLength p_password)
+        modifies mw_connect :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              flags := md_connect_credentials_lwt,
+              payload := m_connect_payload_credentials(p_client_id, p_will_topic, p_will_msg, p_user_name, p_password)
+            }
+          }
+        }
       } // end group connectMessage_Group
     } // end group connect_Group
   } // end group sendingTemplates
@@ -148,6 +191,24 @@ module MQTT_Templates_CONNECT
           user_name_flag := p_user_name,
           password_flag := p_password
         }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_credentials_username(BIT1n p_user_name := '1'B)
+        modifies mw_connect_flags_basic :=
+        {
+          user_name_flag := p_user_name
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_credentials_password(BIT1n p_password := '1'B)
+        modifies mw_connect_flags_basic :=
+        {
+          password_flag := p_password
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_clean_session(BIT1n p_clean_session)
+        modifies mw_connect_flags_basic :=
+        {
+          clean_session := p_clean_session
+        }
       } // end group connectFlags_Group
 
       group CONNECTPayload_Group
@@ -159,6 +220,12 @@ module MQTT_Templates_CONNECT
           will_message := ?,
           user_name := ?,
           password := ?
+        }
+
+        template MQTT_v3_1_1_ConnectPayload mdw_connect_payload_zero_byte_client_id
+        modifies mw_connect_payload :=
+        {
+          client_identifier := { stringLength := 0, stringItem := "" }
         }
 
         template MQTT_v3_1_1_ConnectPayload mw_connect_payload_credentials(UTF8EncodedString p_user_name, OctStringWithLength p_password) :=
@@ -346,6 +413,20 @@ module MQTT_Templates_CONNECT
             {
               flags := mdw_connect_credentials(p_user_name, p_password),
               payload := ?
+            }
+          }
+        }
+
+        // TODO: align previous templates to mdw_connect_[msg | payload | flags]
+        template MQTT_v3_1_1_Message mdw_connect_msg_clean_session(BIT1n p_clean_session := '1'B)
+        modifies mw_connect :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              flags := mdw_connect_clean_session(p_clean_session),
+              payload := mdw_connect_payload_zero_byte_client_id
             }
           }
         }

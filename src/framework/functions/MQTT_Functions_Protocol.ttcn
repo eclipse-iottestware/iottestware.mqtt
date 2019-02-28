@@ -203,7 +203,9 @@ module MQTT_Functions_Protocol
 
        for (var integer i := lengthof(vl_connections); i > 0 ; i := i - 1) {
          if (ispresent(vl_connections[i])) {
-           // TODO: implement
+           var MQTT_Connection v_mqtt_con := vl_connections[i]
+           var integer v_ipl4_con_id := v_mqtt_con.ipl4.id
+           f_ipl4_close(v_ipl4_con_id)
          }
        }
      }
