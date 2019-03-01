@@ -17,8 +17,7 @@ Package mts_tst_mqtt {
       when {
           the IUT entity receives a CONNECT message containing
           header_flags indicating value '1111'B;
-      }
-      then {
+      } then {
           the IUT entity closes the TCP_CONNECTION
       }
     }
@@ -31,7 +30,7 @@ Package mts_tst_mqtt {
     Test objective
     "If the Protocol Name is incorrect the IUT MAY disconnect the Client or it MAY continue processing the CONNECT packet."
     Reference
-      "[MQTT-3.1.2-1]"
+      "[MQTT-3.1.2-1], [MQTT-3.1.4-4]"
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -41,8 +40,7 @@ Package mts_tst_mqtt {
             header_flags indicating value '0000'B,
             protocol_name corresponding to PROTOCOL_NAME_INVALID,
             protocol_level indicating value 0x04;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
 
             // TODO: missing in TTCN-3 Implementation
@@ -69,8 +67,7 @@ Package mts_tst_mqtt {
             header_flags indicating value '0000'B,
             protocol_name corresponding to PROTOCOL_NAME,
             protocol_level indicating value 0x04;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             connect_return_code indicating value 0x00;
         }
@@ -97,8 +94,7 @@ Package mts_tst_mqtt {
             connect_flags containing
                 reserved_field indicating value '1'B;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -131,8 +127,7 @@ Package mts_tst_mqtt {
                 will_topic indicating value omit,
                 will_message indicating value omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -162,11 +157,10 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                will_topic corresponding to TOPIC,
-                will_message corresponding to WILL_MESSAGE;
+                will_topic corresponding to PX_WILL_TOPIC,
+                will_message corresponding to PX_WILL_MESSAGE;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -195,8 +189,7 @@ Package mts_tst_mqtt {
                 will_retain indicating value '0'B,
                 reserved_field indicating value '0'B;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -225,8 +218,7 @@ Package mts_tst_mqtt {
                 will_retain indicating value '0'B,
                 reserved_field indicating value '0'B;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -255,8 +247,7 @@ Package mts_tst_mqtt {
                 will_retain indicating value '0'B,
                 reserved_field indicating value '0'B;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             connect_return_code indicating value 0x00;
         }
@@ -290,8 +281,7 @@ Package mts_tst_mqtt {
                 will_topic indicating value omit,
                 will_message indicating value omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -324,8 +314,7 @@ Package mts_tst_mqtt {
                 will_topic indicating value omit,
                 will_message indicating value omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             connect_return_code indicating value 0x00;
         }
@@ -357,8 +346,7 @@ Package mts_tst_mqtt {
                 will_retain indicating value '0'B,
                 reserved_field indicating value '0'B;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -390,11 +378,10 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                user_name corresponding to MQTT_USER_NAME,
+                user_name corresponding to PX_MQTT_USER_NAME,
                 password indicating value omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -429,8 +416,7 @@ Package mts_tst_mqtt {
                 user_name indicating value omit,
                 password indicating value omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -463,10 +449,9 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 user_name indicating value omit,
-                password corresponding to MQTT_PASSWORD;
+                password corresponding to PX_MQTT_PASSWORD;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -498,11 +483,10 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                user_name corresponding to MQTT_USER_NAME,
+                user_name corresponding to PX_MQTT_USER_NAME,
                 password indicating value omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -537,8 +521,7 @@ Package mts_tst_mqtt {
             payload containing
                 client_identifier corresponding to CLIENT_ID_24_BYTES;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -573,8 +556,7 @@ Package mts_tst_mqtt {
             payload containing
                 client_identifier corresponding to CLIENT_ID_NON_ALPHA_NUM;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -609,8 +591,7 @@ Package mts_tst_mqtt {
             payload containing
                 client_identifier corresponding to CLIENT_ID_ZERO_BYTES;
             ;
-        }
-        then {
+        } then {
             // TODO: Standards says: MAY allow
             the IUT entity sends a CONNACK message containing
             connect_return_code indicating value 0x00;
@@ -647,8 +628,7 @@ Package mts_tst_mqtt {
             payload containing
                 client_identifier corresponding to CLIENT_ID_D800;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -683,8 +663,7 @@ Package mts_tst_mqtt {
             payload containing
                 client_identifier corresponding to CLIENT_ID_0000;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -718,10 +697,9 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 will_topic indicating value WILL_TOPIC_D800,
-                will_message corresponding to WILL_MESSAGE;
+                will_message corresponding to PX_WILL_MESSAGE;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -755,10 +733,9 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 will_topic indicating value WILL_TOPIC_0000,
-                will_message corresponding to WILL_MESSAGE;
+                will_message corresponding to PX_WILL_MESSAGE;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -792,10 +769,9 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 user_name corresponding to MQTT_USER_NAME_INVALID_UTF8,
-                password corresponding to MQTT_PASSWORD;
+                password corresponding to PX_MQTT_PASSWORD;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -830,10 +806,9 @@ Package mts_tst_mqtt {
             ,
             payload containing
                 user_name corresponding to MQTT_USER_NAME_INVALID_UTF8,
-                password corresponding to MQTT_PASSWORD;
+                password corresponding to PX_MQTT_PASSWORD;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -865,8 +840,7 @@ Package mts_tst_mqtt {
                 will_retain indicating value '0'B,
                 reserved_field indicating value '0'B;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             connect_return_code indicating value 0x00;
@@ -881,7 +855,7 @@ Package mts_tst_mqtt {
     Test objective
     "If the IUT accepts a connection with CleanSession set to 1, the IUT MUST set SessionPresent to 0 in the CONNACK packet in addition to setting a zero-return code."
     Reference
-      "[MQTT-3.2.2-1]"
+      "[MQTT-3.2.2-1], [MQTT-3.1.4-4]"
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -903,8 +877,7 @@ Package mts_tst_mqtt {
             payload containing
                 client_identifier corresponding to VALID_CLIENT_ID;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             session_present_flag indicating value '0'B,
@@ -920,7 +893,7 @@ Package mts_tst_mqtt {
     Test objective
     "If the IUT has stored session state, it MUST set session present flag to 1 in the CONNACK control packet."
     Reference
-      "[MQTT-3.2.2-2]"
+      "[MQTT-3.2.2-2], [MQTT-3.1.4-4]"
     PICS Selection PICS_BROKER_RTND
 
     Initial conditions
@@ -945,10 +918,9 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PX_CLIENT_ID;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             session_present_flag indicating value '1'B,
@@ -965,7 +937,7 @@ Package mts_tst_mqtt {
     Test objective
     "If the IUT does not have a stored session state, it MUST set session present flag to 0 in the CONNACK control packet."
     Reference
-      "[MQTT-3.2.2-3]"
+      "[MQTT-3.2.2-3], [MQTT-3.1.4-4]"
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_RTND
 
 
@@ -991,10 +963,9 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PX_CLIENT_ID;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             session_present_flag indicating value '0'B,
@@ -1031,10 +1002,9 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PX_CLIENT_ID;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             session_present_flag indicating value '0'B,
@@ -1073,8 +1043,7 @@ Package mts_tst_mqtt {
             payload containing
                 client_identifier corresponding to CLIENT_ID_ZERO_BYTES;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             session_present_flag indicating value '0'B,
@@ -1119,10 +1088,9 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID;
+                client_identifier corresponding to PX_CLIENT_ID;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             session_present_flag indicating value '0'B,
@@ -1161,12 +1129,11 @@ Package mts_tst_mqtt {
                 reserved_field indicating value '0'B;
             ,
             payload containing
-                client_identifier corresponding to CLIENT_ID,
+                client_identifier corresponding to PX_CLIENT_ID,
                 user_name corresponding to MQTT_USER_NAME_INVALID,
                 password corresponding to MQTT_PASSWORD_INVALID;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a CONNACK message containing
             header_flags indicating value '0000'B,
             session_present_flag indicating value '0'B,
@@ -1177,6 +1144,309 @@ Package mts_tst_mqtt {
     }
   }
 
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_001
+
+    Test objective
+    "The DUP flag MUST be set to 0 for all QoS 0 messages"
+    Reference
+    "[MQTT-3.3.1-2]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the TEST_SYSTEM entity subscribed a PX_PUBLISH_TOPIC to the IUT entity
+      and
+      the SUBSCRIPTION entity having a requested QoS AT_MOST_ONCE
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to VALID_QOS,
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+        ;
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          dup_flag indicating value '0'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+        ;
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_002
+
+    Test objective
+    "The DUP flag MUST be set to 1 on re-deliver for all QoS 1 messages"
+    Reference
+    "[MQTT-3.3.1-1]"
+
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the TEST_SYSTEM entity subscribed a PX_PUBLISH_TOPIC to the IUT entity
+      and
+      the SUBSCRIPTION entity having a requested QoS AT_LEAST_ONCE
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to VALID_QOS,
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+        ;
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+          dup_flag indicating value '0'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+        ;
+
+        and the TEST_SYSTEM entity drops the received PUBLISH message
+
+        and the TEST_SYSTEM entity awaits the resent PUBLISH message
+
+        and the TEST_SYSTEM entity checks_that the resent PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+          dup_flag indicating value '1'B;
+        ;
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_003
+
+    Test objective
+    "The DUP flag MUST be set to 1 on re-deliver for all QoS 2 messages"
+    Reference
+    "[MQTT-3.3.1-1]"
+
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the TEST_SYSTEM entity subscribed a PX_PUBLISH_TOPIC to the IUT entity
+      and
+      the SUBSCRIPTION entity having a requested QoS EXACTLY_ONCE
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to VALID_QOS,
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+        ;
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to EXACTLY_ONCE,
+          dup_flag indicating value '0'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+        ;
+
+        and the TEST_SYSTEM entity drops the received PUBLISH message
+
+        and the TEST_SYSTEM entity awaits the resent PUBLISH message
+
+        and the TEST_SYSTEM entity checks_that the resent PUBLISH message containing
+        header containing
+          qos_level corresponding to EXACTLY_ONCE,
+          dup_flag indicating value '1'B;
+        ;
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_004
+
+    Test objective
+    "A PUBLISH packet MUST NOT have both QoS bits set to 1"
+    Reference
+    "[MQTT-3.3.1-4]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to INVALID_QOS;
+        ;
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_005
+
+    Test objective
+    "The Topic Name MUST be a UTF-8 encoded string and be present as the first field in the variable header"
+    Reference
+    "[MQTT-3.3.2-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_INVALID_UTF8;
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_006
+
+    Test objective
+    "The Topic Name in the PUBLISH Packet MUST NOT contain wildcard characters"
+    Reference
+    "[MQTT-3.3.2-2]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_INVALID;
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_007
+
+    Test objective
+    "The receiver of a PUBLISH with QoS 0 MUST NOT send any response"
+    Reference
+    "[MQTT-3.3.4-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the TEST_SYSTEM entity subscribed a PX_PUBLISH_TOPIC to the IUT entity
+      and
+      the SUBSCRIPTION entity having a requested QoS AT_MOST_ONCE
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+      } then {
+        the TEST_SYSTEM entity checks_that the IUT sends NO response message
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_008
+
+    Test objective
+    "The receiver of a PUBLISH packet with QoS 1 MUST response with a PUBACK packet"
+    Reference
+    "[MQTT-3.3.4-1]"
+
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the TEST_SYSTEM entity subscribed a PX_PUBLISH_TOPIC to the IUT entity
+      and
+      the SUBSCRIPTION entity having a requested QoS AT_LEAST_ONCE
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+      } then {
+          the IUT entity sends a PUBACK response message
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_009
+
+    Test objective
+    "The receiver of a PUBLISH packet with QoS 2 MUST response with a PUBREC packet"
+    Reference
+    "[MQTT-3.3.4-1]"
+
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the TEST_SYSTEM entity subscribed a PX_PUBLISH_TOPIC to the IUT entity
+      and
+      the SUBSCRIPTION entity having a requested QoS EXACTLY_ONCE
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to PX_PUBLISH_TOPIC;
+      } then {
+          the IUT entity sends a PUBREC response message
+      }
+    }
+  }
 
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBSCRIBE_001
@@ -1198,8 +1468,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a SUBSCRIBE message containing
             header_flags indicating value '1101'B;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1228,11 +1497,10 @@ Package mts_tst_mqtt {
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID_ZERO,
             payload containing
-                topic_filter corresponding to TOPIC_FILTER,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to AT_LEAST_ONCE;
             ;
-        }
-        then {
+        } then {
             // TODO: response/behavior is not described in the standard
             // Note: Mosquitto answers here with SUBACK and packet_id = 0
             the IUT entity sends a SUBACK message containing
@@ -1267,8 +1535,7 @@ Package mts_tst_mqtt {
                 topic_filter corresponding to TOPIC_FILTER_D800,
                 requested_qos corresponding to AT_LEAST_ONCE;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1300,8 +1567,7 @@ Package mts_tst_mqtt {
                 topic_filter corresponding to TOPIC_FILTER_0000,
                 requested_qos corresponding to AT_LEAST_ONCE;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1332,8 +1598,7 @@ Package mts_tst_mqtt {
             payload containing
                 omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1362,12 +1627,11 @@ Package mts_tst_mqtt {
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC_FILTER,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to AT_MOST_ONCE,
                 requested_qos_flags indicating value '111111'B;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1396,11 +1660,10 @@ Package mts_tst_mqtt {
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC_FILTER,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to INVALID_QOS;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1427,8 +1690,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a SUBSCRIBE message containing
             header_flags indicating value '0010'B;
-        }
-        then {
+        } then {
             the IUT entity sends a SUBACK message containing
             header_flags indicating value '0000'B;
         }
@@ -1458,11 +1720,10 @@ Package mts_tst_mqtt {
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC_FILTER,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to AT_LEAST_ONCE;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a SUBACK message containing
             header_flags indicating value '0000'B,
             packet_identifier corresponding to PACKET_ID;
@@ -1493,11 +1754,10 @@ Package mts_tst_mqtt {
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC_FILTER,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to AT_MOST_ONCE;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a SUBACK message containing
             header_flags indicating value '0000'B,
             packet_identifier corresponding to PACKET_ID,
@@ -1529,11 +1789,10 @@ Package mts_tst_mqtt {
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC_FILTER,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to AT_LEAST_ONCE;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a SUBACK message containing
             header_flags indicating value '0000'B,
             packet_identifier corresponding to PACKET_ID,
@@ -1571,11 +1830,10 @@ Package mts_tst_mqtt {
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC_FILTER,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to EXACTLY_ONCE;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a SUBACK message containing
             header_flags indicating value '0000'B,
             packet_identifier corresponding to PACKET_ID,
@@ -1622,8 +1880,7 @@ Package mts_tst_mqtt {
                 topic_filter corresponding to TOPIC_FILTER_INVALID,
                 requested_qos corresponding to AT_MOST_ONCE;    // TODO: check if QoS 2 necessary here!!
             ;
-        }
-        then {
+        } then {
             // Note: Specification not clear: not explicitly stating what "failed subscription" is.
             // see: https://github.com/erlio/vernemq/issues/72
             // see: https://groups.google.com/forum/#!topic/mqtt/ppdmL4-v2Yk
@@ -1656,8 +1913,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a UNSUBSCRIBE message containing
             header_flags indicating value '1101'B;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1685,8 +1941,7 @@ Package mts_tst_mqtt {
             the IUT entity receives a UNSUBSCRIBE message containing
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID_ZERO;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
 
             // Note: response/behavior not explicitly described in the specification
@@ -1721,8 +1976,7 @@ Package mts_tst_mqtt {
             payload containing
                 topic_filter corresponding to TOPIC_FILTER_D800;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1753,8 +2007,7 @@ Package mts_tst_mqtt {
             payload containing
                 omit;
             ;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1781,8 +2034,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a UNSUBSCRIBE message containing
             header_flags indicating value '0010'B;
-        }
-        then {
+        } then {
             the IUT entity sends a UNSUBACK message containing
             header_flags indicating value '0000'B;
         }
@@ -1811,8 +2063,7 @@ Package mts_tst_mqtt {
             the IUT entity receives a UNSUBSCRIBE message containing
             header_flags indicating value '0010'B,
             packet_identifier corresponding to PACKET_ID;
-        }
-        then {
+        } then {
             the IUT entity sends a UNSUBACK message containing
             header_flags indicating value '0000'B,
             packet_identifier corresponding to PACKET_ID;
@@ -1841,8 +2092,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a PINGREQ message containing
             header_flags indicating value '1111'B;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1869,8 +2119,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a PINGREQ message containing
             header_flags indicating value '0000'B;
-        }
-        then {
+        } then {
             the IUT entity sends a PINGRESP message containing
             header_flags indicating value '0000'B;
         }
@@ -1898,8 +2147,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a DISCONNECT message containing
             header_flags indicating value '0000'B;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1926,8 +2174,7 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a DISCONNECT message containing
             header_flags indicating value '1111'B;
-        }
-        then {
+        } then {
             the IUT entity closes the TCP_CONNECTION
         }
     }
@@ -1945,7 +2192,7 @@ Package mts_tst_mqtt {
 
     Initial conditions
     with {
-        the IUT entity having a RETAINED_MESSAGE in the RETAIN_TOPIC entity and
+        the IUT entity having a UTF8_MESSAGE_VALID in the RETAIN_TOPIC entity and
         the CLIENT entity having a MQTT_CONNECTION to the IUT entity and
         the CLIENT entity having a CLEAN_SESSION
     }
@@ -1956,17 +2203,16 @@ Package mts_tst_mqtt {
             the IUT entity receives a SUBSCRIBE message containing
             packet_identifier corresponding to PACKET_ID,
             payload containing
-                topic_filter corresponding to TOPIC,
+                topic_filter corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
                 requested_qos corresponding to AT_MOST_ONCE;
             ;
-        }
-        then {
+        } then {
             the IUT entity sends a SUBACK message containing
             return_code indicating value 0x00;
 
             and the IUT entity sends a PUBLISH message containing
-            topic_name corresponding to TOPIC,
-            payload corresponding to RETAINED_MESSAGE;
+            topic_name corresponding to PX_SUBSCRIBE_TOPIC_FILTER,
+            payload corresponding to UTF8_MESSAGE_VALID;
         }
     }
   }
@@ -2009,7 +2255,7 @@ Package mts_tst_mqtt {
                dup_flag indicating value '0'B,
                qos_level indicating value '1'B,
                retain_flag indicating value '1'B,
-               topic_name corresponding to TOPIC,
+               topic_name corresponding to PX_PUBLISH_TOPIC,
             packet_identifier corresponding to PACKET_ID_1,
             payload corresponding to PAYLOAD;
            to the IUT entity and
@@ -2022,12 +2268,11 @@ Package mts_tst_mqtt {
             the IUT entity receives a SUBSCRIBE message containing
             packet_identifier corresponding to PACKET_ID_2,
             payload containing
-                topic_filter corresponding to TOPIC,
+                topic_filter corresponding to PX_PUBLISH_TOPIC,
                 requested_qos corresponding to AT_MOST_ONCE;
             ;
             from the CLIENT_2 entity
-        }
-        then {
+        } then {
             the IUT entity sends a SUBACK message containing
             packet_identifier corresponding to PACKET_ID_2,
             payload containing
@@ -2040,7 +2285,7 @@ Package mts_tst_mqtt {
                 dup_flag indicating value '0'B,
                 qos_level indicating value '0'B,
                 retain_flag indicating value '1'B,
-            topic_name corresponding to TOPIC,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
             packet_identifier corresponding to PACKET_ID_3,
             payload corresponding to PAYLOAD;
             ;
@@ -2076,13 +2321,12 @@ Package mts_tst_mqtt {
                 dup_flag indicating value '0'B,
                 qos_level corresponding to AT_LEAST_ONCE,
                 retain_flag indicating value '1'B,
-            topic_name corresponding to TOPIC,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
             packet_identifier corresponding to PACKET_ID_1,
             payload corresponding to PAYLOAD;
             ;
             from the CLIENT_1 entity
-        }
-        then {
+        } then {
             the IUT entity sends a PUBACK message containing
             packet_identifier corresponding to PACKET_ID_1;
             to the CLIENT_1 entity
@@ -2092,7 +2336,7 @@ Package mts_tst_mqtt {
                 dup_flag indicating value '0'B,
                 qos_level corresponding to AT_MOST_ONCE,
                 retain_flag indicating value '0'B,
-            topic_name corresponding to TOPIC,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
             packet_identifier corresponding to PACKET_ID_2,
             payload corresponding to PAYLOAD;
             ;

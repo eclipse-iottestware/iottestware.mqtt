@@ -17,9 +17,11 @@ logs/
 # Titan
 .TITAN_properties
 .project
-
-# External tool builders
 .externalToolBuilders/
+
+# TDL models and representation
+*.tdl
+*.aird
 
 # Locally stored "Eclipse launch configurations"
 *.launch
