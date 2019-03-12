@@ -62,8 +62,17 @@ module MQTT_Broker_Pixits {
    /*
     * @desc which verdict should be set if a test case times out?
     */
-   modulepar verdicttype PX_ON_TIMEOUT_VERDICT_VAL := fail
+   modulepar verdicttype PX_ON_TIMEOUT_VERDICT_VAL := fail;
 
+   /*
+    * @desc max duration to wait for a retransmission of a PUBLISH packet
+    *
+    * @remark PX_MAX_TC_TIMER can still timeout earlier. However, PX_PUB_RETRANSMISSION_TIMER is required
+    * to define a clear verdict. Thus, PX_PUB_RETRANSMISSION_TIMER should be defined smaller than PX_MAX_TC_TIMER
+    *
+    * @remark this value is not defined within the MQTT specification
+    */
+   modulepar float PX_PUB_RETRANSMISSION_TIMER := 5.0;
 
    /**********************************************************************
     * configuration of optional behaviors

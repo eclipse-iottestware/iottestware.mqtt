@@ -16,7 +16,10 @@ import from MQTT_v3_1_1_Types all;
 import from IPL4asp_Types all;
 
 type enumerated TCP_State { Connected, Disconnected } // Connected if MQTTClientState != Disconnected
-type enumerated MQTT_ClientState { Idle, Wait_connack, Connected, Wait_suback, Wait_unsuback, Wait_publish_echo,  Subscribed , Disconnected }
+
+// Notes:
+// Wait_publish is used to mark dropped publish packets -> wait for re-transmission of publish on QoS > 0
+type enumerated MQTT_ClientState { Idle, Wait_connack, Connected, Wait_suback, Wait_unsuback, Wait_publish, Wait_puback, Wait_pubrec, Wait_pubrel, Wait_pubcomp,  Subscribed , Disconnected }
 
 type record IPL4_Connection {
   integer id,

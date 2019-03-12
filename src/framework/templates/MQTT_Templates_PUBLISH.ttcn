@@ -64,6 +64,13 @@ module MQTT_Templates_PUBLISH
       {
         qos_level := p_qos_level
       }
+
+      template MQTT_v3_1_1_PublishHeader mdw_publish_header_dup(QoS p_qos_level, BIT1n p_dup_flag)
+      modifies mw_publish_header :=
+      {
+        dup_flag := p_dup_flag,
+        qos_level := p_qos_level
+      }
     } // end group fixedHeaderGroup
 
     group PUBLISH_MessageGroup
@@ -90,6 +97,23 @@ module MQTT_Templates_PUBLISH
           }
         }
       }
+
+      template MQTT_v3_1_1_Message mw_publish_dup(QoS p_qos_level, BIT1n p_dup_flag) :=
+      {
+        msg :=
+        {
+          publish :=
+          {
+            header := mdw_publish_header_dup(p_qos_level, p_dup_flag),
+            nameLength := ?,
+            topic_name := ?,
+            packet_identifier := ?,
+            payload := ?
+          }
+        }
+      }
+
+
     } // end group PUBLISH_MessageGroup
   } // group matchingTemplates
 

@@ -221,4 +221,108 @@ group connectGroup
     f_clear_broker_ptc();
   }
 
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.1-2]
+  */
+  testcase TC_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_PUBLISH_01()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.1-1]
+  */
+  testcase TC_MQTT_Client_PUBLISH_02() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_PUBLISH_02()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.1-1]
+  */
+  testcase TC_MQTT_Client_PUBLISH_03() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      f_MQTT_Client_PUBLISH_03()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.1-1]
+  */
+  testcase TC_MQTT_Client_PUBLISH_04() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      //f_MQTT_Client_PUBLISH_04()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.2-2]
+  */
+  testcase TC_MQTT_Client_PUBLISH_05() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      //f_MQTT_Client_PUBLISH_05()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.4-1]
+  */
+  testcase TC_MQTT_Client_PUBLISH_06() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      //f_MQTT_Client_PUBLISH_06()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.4-1]
+  */
+  testcase TC_MQTT_Client_PUBLISH_07() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      //f_MQTT_Client_PUBLISH_07()
+    }
+    f_clear_broker_ptc();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.3.4-1]
+  */
+  testcase TC_MQTT_Client_PUBLISH_08() runs on MQTT_Broker_PTC
+  {
+    if(f_init_broker_ptc()) {
+      //f_MQTT_Client_PUBLISH_08()
+    }
+    f_clear_broker_ptc();
+  }
+
 } // module

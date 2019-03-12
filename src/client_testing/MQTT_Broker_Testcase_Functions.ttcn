@@ -16,6 +16,7 @@ import from MQTT_TestSystem_Common all;
 
 // defaults
 import from MQTT_Defaults_Common all;
+import from MQTT_Defaults_CONNACK all;
 
 // PIXITs
 import from MQTT_Broker_Pixits all;
@@ -24,6 +25,7 @@ import from MQTT_Broker_Pixits all;
 import from MQTT_Functions_SetUp all;
 import from MQTT_Functions_Conformance all;
 import from MQTT_Functions_Protocol all;
+import from MQTT_Functions_Network all;
 import from MQTTasp_PortType all;
 
 // Types
@@ -33,6 +35,7 @@ import from MQTT_v3_1_1_Types all;
 // Templates
 import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
+import from MQTT_Templates_PUBLISH all;
 
 import from UTF8_Helper all;
 
@@ -579,7 +582,7 @@ group connectGroup
 
         if(match(v_received.msg.msg.connect_msg.flags, mdw_connect_credentials_username))
         {
-          // TODO: decoding of MQTT payload seems to be incorrect! 
+          // TODO: decoding of MQTT payload seems to be incorrect!
           if(ispresent(v_received.msg.msg.connect_msg.payload.user_name))
           {
             if(f_username_valid(v_received.msg.msg.connect_msg.payload.user_name))
@@ -610,7 +613,147 @@ group connectGroup
   }
 } // group connectGroup
 
+group publishGroup
+{
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var default v_connack_default := activate(a_mqtt_connack_default())
+    var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
 
+    log("[UT](send PUBLISH packet with QoS 0):");
+    alt {
+      [] MQTT_PCO.receive(vt_publish) -> value v_received {
+        var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(AT_MOST_ONCE_DELIVERY)
+        if(match(v_received.msg.msg.publish.header, v_pub_qos))
+        {
+          if(match(v_received.msg.msg.publish.header.dup_flag, '0'B))
+          {
+            setverdict(pass, "received PUBLISH with QoS 0 and DUP 0")
+          }
+          else
+          {
+            setverdict(fail, "received PUBLISH has wrong DUP")
+          }
+        }
+        else
+        {
+          setverdict(fail, "received PUBLISH has wrong QoS")
+        }
+      }
+    }
+
+    deactivate(v_connack_default)
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_02() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var default v_connack_default := activate(a_mqtt_connack_default())
+    var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
+    timer t_retransmission := PX_PUB_RETRANSMISSION_TIMER
+
+    log("[UT](send PUBLISH packet with QoS 1):");
+    alt {
+      [] MQTT_PCO.receive(vt_publish) -> value v_received {
+        var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(AT_LEAST_ONCE_DELIVERY)
+        if(match(v_received.msg.msg.publish.header, v_pub_qos))
+        {
+          if(v_received.conn.client_state != Wait_publish)
+          {
+            // NOTE: drop the first publish packet and set client state to
+            // dropping the packet should enforce re-transmission
+            f_change_connection_client_state(v_received.conn, Wait_publish)
+            t_retransmission.start
+            repeat;
+          }
+          else
+          {
+            if(match(v_received.msg.msg.publish.header.dup_flag, '1'B))
+            {
+              f_send_puback(v_received.conn, v_received.msg.msg.publish.packet_identifier)
+              setverdict(pass, "received PUBLISH with QoS 1 and DUP 1")
+            }
+            else
+            {
+              setverdict(fail, "received PUBLISH has wrong DUP")
+            }
+          }
+        }
+        else
+        {
+          setverdict(fail, "received PUBLISH has wrong QoS")
+        }
+      }
+      [] t_retransmission.timeout {
+        setverdict(fail, "no retransmission of PUBLISH with DUP 1")
+      }
+    }
+
+    deactivate(v_connack_default)
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_03() runs on MQTT_Broker_PTC
+  {
+    var MQTTasp_Message v_received
+    var default v_connack_default := activate(a_mqtt_connack_default())
+    var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
+    timer t_retransmission := PX_PUB_RETRANSMISSION_TIMER
+
+    log("[UT](send PUBLISH packet with QoS 2):");
+    alt {
+      [] MQTT_PCO.receive(vt_publish) -> value v_received {
+        var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(EXACTLY_ONE_DELIVERY)
+        if(match(v_received.msg.msg.publish.header, v_pub_qos))
+        {
+          if(v_received.conn.client_state != Wait_publish)
+          {
+            // drop the first publish packet and set client state to
+            f_change_connection_client_state(v_received.conn, Wait_publish)
+            t_retransmission.start
+            repeat;
+          }
+          else
+          {
+            if(match(v_received.msg.msg.publish.header.dup_flag, '1'B))
+            {
+              f_send_puback(v_received.conn, v_received.msg.msg.publish.packet_identifier)
+              setverdict(pass, "received PUBLISH with QoS 2 and DUP 1")
+            }
+            else
+            {
+              setverdict(fail, "received PUBLISH has wrong DUP")
+            }
+          }
+        }
+        else
+        {
+          setverdict(fail, "received PUBLISH has wrong QoS")
+        }
+      }
+      [] t_retransmission.timeout {
+        setverdict(fail, "no retransmission of PUBLISH with DUP 1")
+      }
+    }
+
+    deactivate(v_connack_default)
+  }
+} // group publishGroup
 
 } // module
 

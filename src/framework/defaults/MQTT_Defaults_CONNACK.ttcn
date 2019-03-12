@@ -80,9 +80,8 @@ module MQTT_Defaults_CONNACK
           if (not (f_connect_protocol_name_valid(v_received.msg.msg.connect_msg) or PX_ACCEPT_ANY_PROTOCOL_NAME)) {
             f_terminate_due_to_violation(v_conn)
           } else {
-            f_send_connack(v_conn, 0)
-            var integer v_conn_id := v_received.conn.ipl4.id
-            vl_connections[v_conn_id] := v_conn
+            f_add_connection(v_conn)  // add connection to brokers list
+            f_send_connack(v_conn, 0) // acknowledge CONNECT with CONNACK
           }
         } else {
           // send CONNACK with return_code 1 and close network connection
