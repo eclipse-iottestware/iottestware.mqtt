@@ -2253,7 +2253,7 @@ Package mts_tst_mqtt {
     with {
            the CLIENT_1 entity published a Message containing
                dup_flag indicating value '0'B,
-               qos_level indicating value '1'B,
+               qos_level corresponding to AT_LEAST_ONCE,
                retain_flag indicating value '1'B,
                topic_name corresponding to PX_PUBLISH_TOPIC,
             packet_identifier corresponding to PACKET_ID_1,
@@ -2283,7 +2283,7 @@ Package mts_tst_mqtt {
             and the IUT entity sends a PUBLISH message containing
             publish_header containing
                 dup_flag indicating value '0'B,
-                qos_level indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
                 retain_flag indicating value '1'B,
             topic_name corresponding to PX_PUBLISH_TOPIC,
             packet_identifier corresponding to PACKET_ID_3,
@@ -2309,7 +2309,7 @@ Package mts_tst_mqtt {
     with {
         the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity and
         the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity and
-        the CLIENT_2 entity subscribed the TOPIC containing
+        the CLIENT_2 entity subscribed the PIXIT_TOPIC containing
             qos_level corresponding to AT_MOST_ONCE;
     }
 
