@@ -473,26 +473,57 @@ group connackGroup
   }
 
   /*
-   * @purpose The Network Connection has been made but the MQTT service is unavailable
-   *
-   * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
-   */
+  * @purpose The data in the username or password is malfromed
+  *
+  * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
+  */
   testcase TC_MQTT_BROKER_CONNACK_007() runs on MQTT_Client
   {
-    // TODO:
-    setverdict(fail, "NO IMPLEMENTED YET");
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_CONNACK_007();
+    }
+    f_cleanUp();
   }
 
   /*
-  * @purpose The data in the username or password is malfromed
+  * @purpose The client is not authorized to connect. Username is invalid
   *
-  * @reference [MQTT-3.1.2-19], [MQTT-3.1.2-21], [MQTT-3.2.2-4], [MQTT-3.2.2-5]
+  * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
   testcase TC_MQTT_BROKER_CONNACK_008() runs on MQTT_Client
   {
     if(f_init("mqtt_client", "mqtt_server"))
     {
       f_TC_MQTT_BROKER_CONNACK_008();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The client is not authorized to connect. Password is invalid
+  *
+  * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
+  */
+  testcase TC_MQTT_BROKER_CONNACK_009() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_CONNACK_009();
+    }
+    f_cleanUp();
+  }
+
+  /*
+   * @purpose The Network Connection has been made but the MQTT service is unavailable
+   *
+   * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
+   */
+  testcase TC_MQTT_BROKER_CONNACK_010() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_CONNACK_009();
     }
     f_cleanUp();
   }

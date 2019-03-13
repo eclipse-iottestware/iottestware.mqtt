@@ -1054,9 +1054,135 @@ Package mts_tst_mqtt {
     }
   }
 
-
   Test Purpose {
     TP Id TP_MQTT_Broker_CONNACK_007
+
+    // Summary
+    Test objective
+    "The data in the username (or password) is malformed"
+    Reference
+      "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+    PICS Selection PICS_BROKER_BASIC and PICS_BROKER_AUTH
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a CONNECT message containing
+            header_flags indicating value '0000'B,
+            protocol_name corresponding to PROTOCOL_NAME,
+            protocol_level indicating value 0x04,
+            connect_flags containing
+                clean_session indicating value '0'B,
+                user_name_flag indicating value '1'B,
+                password_flag indicating value '1'B,
+                will_flag indicating value '0'B,
+                will_qos corresponding to AT_MOST_ONCE,
+                will_retain indicating value '0'B,
+                reserved_field indicating value '0'B;
+            ,
+            payload containing
+                client_identifier corresponding to PX_CLIENT_ID,
+                user_name corresponding to MQTT_USER_NAME_INVALID_UTF8,
+                password corresponding to PX_MQTT_PASSWORD;
+            ;
+        } then {
+            the IUT entity sends a CONNACK message containing
+            header_flags indicating value '0000'B,
+            session_present_flag indicating value '0'B,
+            connect_return_code indicating value 0x04;
+
+            and the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+  
+    Test Purpose {
+    TP Id TP_MQTT_Broker_CONNACK_008
+
+    // Summary
+    Test objective
+    "The client is not authorized to connect. Username is invalid"
+    Reference
+      "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+    PICS Selection PICS_BROKER_BASIC and PICS_BROKER_AUTH
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a CONNECT message containing
+            header_flags indicating value '0000'B,
+            protocol_name corresponding to PROTOCOL_NAME,
+            protocol_level indicating value 0x04,
+            connect_flags containing
+                clean_session indicating value '0'B,
+                user_name_flag indicating value '1'B,
+                password_flag indicating value '1'B,
+                will_flag indicating value '0'B,
+                will_qos corresponding to AT_MOST_ONCE,
+                will_retain indicating value '0'B,
+                reserved_field indicating value '0'B;
+            ,
+            payload containing
+                client_identifier corresponding to PX_CLIENT_ID,
+                user_name corresponding to MQTT_USER_NAME_INVALID,
+                password corresponding to PX_MQTT_PASSWORD;
+            ;
+        } then {
+            the IUT entity sends a CONNACK message containing
+            header_flags indicating value '0000'B,
+            session_present_flag indicating value '0'B,
+            connect_return_code indicating value 0x05;
+
+            and the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+  
+  Test Purpose {
+    TP Id TP_MQTT_Broker_CONNACK_009
+
+    // Summary
+    Test objective
+    "The client is not authorized to connect. Password is invalid"
+    Reference
+      "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+    PICS Selection PICS_BROKER_BASIC and PICS_BROKER_AUTH
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a CONNECT message containing
+            header_flags indicating value '0000'B,
+            protocol_name corresponding to PROTOCOL_NAME,
+            protocol_level indicating value 0x04,
+            connect_flags containing
+                clean_session indicating value '0'B,
+                user_name_flag indicating value '1'B,
+                password_flag indicating value '1'B,
+                will_flag indicating value '0'B,
+                will_qos corresponding to AT_MOST_ONCE,
+                will_retain indicating value '0'B,
+                reserved_field indicating value '0'B;
+            ,
+            payload containing
+                client_identifier corresponding to PX_CLIENT_ID,
+                user_name corresponding to PX_MQTT_USER_NAME,
+                password corresponding to MQTT_PASSWORD_INVALID;
+            ;
+        } then {
+            the IUT entity sends a CONNACK message containing
+            header_flags indicating value '0000'B,
+            session_present_flag indicating value '0'B,
+            connect_return_code indicating value 0x05;
+
+            and the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
+  // TODO: possible to implement? TTCN-3 implementation returns always inconclusive here!
+  Test Purpose {
+    TP Id TP_MQTT_Broker_CONNACK_010
 
     // Summary
     Test objective
@@ -1064,7 +1190,6 @@ Package mts_tst_mqtt {
     Reference
       "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
     PICS Selection PICS_BROKER_BASIC
-
 
     Initial conditions
     with {
@@ -1095,49 +1220,6 @@ Package mts_tst_mqtt {
             header_flags indicating value '0000'B,
             session_present_flag indicating value '0'B,
             connect_return_code indicating value 0x03;
-
-            and the IUT entity closes the TCP_CONNECTION
-        }
-    }
-  }
-
-  Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_008
-
-    // Summary
-    Test objective
-    "The data in the username or password is malformed"
-    Reference
-      "[MQTT-3.1.2-19], [MQTT-3.1.2-21], [MQTT-3.2.2-4], [MQTT-3.2.2-5]"
-    PICS Selection PICS_BROKER_BASIC and PICS_BROKER_AUTH
-
-
-    Expected behaviour
-    ensure that {
-        when {
-            the IUT entity receives a CONNECT message containing
-            header_flags indicating value '0000'B,
-            protocol_name corresponding to PROTOCOL_NAME,
-            protocol_level indicating value 0x04,
-            connect_flags containing
-                clean_session indicating value '0'B,
-                user_name_flag indicating value '1'B,
-                password_flag indicating value '1'B,
-                will_flag indicating value '0'B,
-                will_qos corresponding to AT_MOST_ONCE,
-                will_retain indicating value '0'B,
-                reserved_field indicating value '0'B;
-            ,
-            payload containing
-                client_identifier corresponding to PX_CLIENT_ID,
-                user_name corresponding to MQTT_USER_NAME_INVALID,
-                password corresponding to MQTT_PASSWORD_INVALID;
-            ;
-        } then {
-            the IUT entity sends a CONNACK message containing
-            header_flags indicating value '0000'B,
-            session_present_flag indicating value '0'B,
-            connect_return_code indicating value 0x04;
 
             and the IUT entity closes the TCP_CONNECTION
         }
@@ -1226,7 +1308,7 @@ Package mts_tst_mqtt {
       }
     }
   }
-  
+
   Test Purpose {
     TP Id TP_MQTT_Broker_PUBLISH_004
 
@@ -2042,10 +2124,10 @@ Package mts_tst_mqtt {
      *     |                    | SUBACK                |
      *     |                    |---------------------->|
      *     |                    |                       |
-      *     |                    | PUBLISH(PAYLOAD)      |
-      *     |                    |---------------------->|
-      *     |                    |                       |
-      **/
+     *     |                    | PUBLISH(PAYLOAD)      |
+     *     |                    |---------------------->|
+     *     |                    |                       |
+     **/
 
     // Summary
     Test objective

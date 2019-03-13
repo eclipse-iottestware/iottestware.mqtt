@@ -303,7 +303,7 @@ group connackGroup
     }
   }
 
-  template MQTT_v3_1_1_Message tw_connack_bad_credentials(BIT1n p_session_present := '0'B)
+  template MQTT_v3_1_1_Message tw_connack_malformed_username(BIT1n p_session_present := '0'B)
   modifies tw_connack :=
   {
     msg :=
@@ -311,6 +311,18 @@ group connackGroup
       connack :=
       {
         connect_return_code := 4
+      }
+    }
+  }
+
+  template MQTT_v3_1_1_Message tw_connack_not_authorized(BIT1n p_session_present := '0'B)
+  modifies tw_connack :=
+  {
+    msg :=
+    {
+      connack :=
+      {
+        connect_return_code := 5
       }
     }
   }

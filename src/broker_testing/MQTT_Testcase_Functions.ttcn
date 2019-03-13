@@ -971,34 +971,31 @@ group connackFunctionsGroup
 
     function f_TC_MQTT_BROKER_CONNACK_007() runs on MQTT_Client
     {
-      // TODO: Test Case not implemented yet!
-    }
+      // build malformed username
+      // Note: password is an octetstring and can't be malformed
+      const octetstring c_oD800 := 'EDA080'O; // UTF-8 for U+D800
+      const UCHAR0_65535 c_ucD800 := oct2unichar(c_oD800);
 
-    function f_TC_MQTT_BROKER_CONNACK_008() runs on MQTT_Client
-    {
-      // build invalid credentials
-      const universal charstring c_uc_invalid_username := "invalid_username";
-      const octetstring c_invalid_password_string := '113355'O;
+      var UTF8EncodedString v_username_utf8 := f_getUsername();
+      var universal charstring v_username := v_username_utf8.stringItem
+      var UTF8EncodedString v_username_malformed := { stringLength := lengthof(v_username & c_ucD800), stringItem := (v_username & c_ucD800) };
 
       var UTF8EncodedString v_clientId := f_getClientId();
-      const UTF8EncodedString c_invalid_username := { stringLength := lengthof(c_uc_invalid_username), stringItem := c_uc_invalid_username};
-      const OctStringWithLength c_invalid_password := { stringLength := lengthof(c_invalid_password_string), stringItem := c_invalid_password_string };
+      var OctStringWithLength v_password := f_getPassword();
 
-      var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_credentials(v_clientId, c_invalid_username, c_invalid_password));
+      var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_credentials(v_clientId, v_username_malformed, v_password));
       f_send(v_conMsg);
 
       // wait for CONNACK with return_code := 0x04
-      var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_bad_credentials };
+      var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_malformed_username };
       var IPL4_Response v_response := f_receive();
 
       if(match(v_response, v_expected))
       {
-        setverdict(pass, "IUT answered correctly with ACK and return code 0x04");
-
         // wait IUT to close the Network Connection
         if(f_receiveNetworkClosedEvent())
         {
-          setverdict(pass, "IUT closed the Network Connection correctly after refusing connection");
+          setverdict(pass, "IUT closed the Network Connection correctly after CONNACK(rc=0x04)");
         }
         else
         {
@@ -1008,19 +1005,134 @@ group connackFunctionsGroup
       }
       else
       {
-        // TODO: how to handle brokers which don't require credentials??
         v_expected := { receivedMsg :=  tw_connack };
         if(match(v_response, v_expected))
         {
-          setverdict(inconc, "IUT does not require credentials");
+          // Note: Broker might not require credentials. However, username is malformed and thus MUST be rejected
+          setverdict(fail, "IUT does not check credentials");
+          f_disconnectMqtt();
+        }
+        else if(match(v_response, t_connection_closed))
+        {
+          setverdict(fail, "IUT closed connection without CONNACK(rc=0x04)")
         }
         else
         {
           setverdict(fail, "IUT answered incorrectly with ", v_response);
+          f_disconnectMqtt();
         }
-
-        f_disconnectMqtt();
       }
+    }
+
+    function f_TC_MQTT_BROKER_CONNACK_008() runs on MQTT_Client
+    {
+      // build invalid username
+      const UCHAR0_65535 c_postfix := "_invalid";
+
+      var UTF8EncodedString v_username_utf8 := f_getUsername();
+      var universal charstring v_username := v_username_utf8.stringItem
+      var UTF8EncodedString v_username_invalid := { stringLength := lengthof(v_username & c_postfix), stringItem := (v_username & c_postfix) };
+
+      var UTF8EncodedString v_clientId := f_getClientId();
+      var OctStringWithLength v_password := f_getPassword();
+
+      var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_credentials(v_clientId, v_username_invalid, v_password));
+      f_send(v_conMsg);
+
+      // wait for CONNACK with return_code := 0x05
+      var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_not_authorized };
+      var IPL4_Response v_response := f_receive();
+
+      if(match(v_response, v_expected))
+      {
+        // wait IUT to close the Network Connection
+        if(f_receiveNetworkClosedEvent())
+        {
+          setverdict(pass, "IUT closed the Network Connection correctly after CONNACK(rc=0x05)");
+        }
+        else
+        {
+          setverdict(fail, "IUT MUST close the Network Connection after refusing connection");
+          f_disconnectMqtt();
+        }
+      }
+      else
+      {
+        v_expected := { receivedMsg :=  tw_connack };
+        if(match(v_response, v_expected))
+        {
+          // Note: Broker might not require credentials.
+          setverdict(inconc, "IUT does not require credentials");
+          f_disconnectMqtt();
+        }
+        else if(match(v_response, t_connection_closed))
+        {
+          setverdict(fail, "IUT closed connection without CONNACK(rc=0x05)")
+        }
+        else
+        {
+          setverdict(fail, "IUT answered incorrectly with ", v_response);
+          f_disconnectMqtt();
+        }
+      }
+    }
+
+    function f_TC_MQTT_BROKER_CONNACK_009() runs on MQTT_Client
+    {
+      // build invalid password
+      const OCT0_65535 c_postfix := unichar2oct("_invalid");
+
+      var UTF8EncodedString v_clientId := f_getClientId();
+      var UTF8EncodedString v_username := f_getUsername();
+
+      var OctStringWithLength v_password_valid := f_getPassword();
+      var OCT0_65535 v_password := v_password_valid.stringItem;
+      var OctStringWithLength v_password_invalid := { stringLength := lengthof(v_password & c_postfix), stringItem := (v_password & c_postfix) };
+
+      var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_credentials(v_clientId, v_username, v_password_invalid));
+      f_send(v_conMsg);
+
+      // wait for CONNACK with return_code := 0x05
+      var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_not_authorized };
+      var IPL4_Response v_response := f_receive();
+
+      if(match(v_response, v_expected))
+      {
+        // wait IUT to close the Network Connection
+        if(f_receiveNetworkClosedEvent())
+        {
+          setverdict(pass, "IUT closed the Network Connection correctly after CONNACK(rc=0x05)");
+        }
+        else
+        {
+          setverdict(fail, "IUT MUST close the Network Connection after refusing connection");
+          f_disconnectMqtt();
+        }
+      }
+      else
+      {
+        v_expected := { receivedMsg :=  tw_connack };
+        if(match(v_response, v_expected))
+        {
+          // Note: Broker might not require credentials.
+          setverdict(inconc, "IUT does not require credentials");
+          f_disconnectMqtt();
+        }
+        else if(match(v_response, t_connection_closed))
+        {
+          setverdict(fail, "IUT closed connection without CONNACK(rc=0x05)")
+        }
+        else
+        {
+          setverdict(fail, "IUT answered incorrectly with ", v_response);
+          f_disconnectMqtt();
+        }
+      }
+    }
+
+    function f_TC_MQTT_BROKER_CONNACK_010() runs on MQTT_Client
+    {
+      setverdict(inconc, "unable to test CONNACK return_code=0x03")
     }
 } // connackFunctionsGroup
 
