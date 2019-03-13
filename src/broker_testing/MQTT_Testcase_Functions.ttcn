@@ -11,6 +11,7 @@
 *******************************************************************************/
 module MQTT_Testcase_Functions {
 
+
 import from MQTT_TestSystem all;
 import from MQTT_TypesAndValues all;
 import from MQTT_Functions all;
@@ -1022,6 +1023,105 @@ group connackFunctionsGroup
       }
     }
 } // connackFunctionsGroup
+
+group publishFunctionsGroup
+{
+  function f_TC_MQTT_BROKER_PUBLISH_001() runs on MQTT_Client
+  {
+    f_connectMqtt();
+
+    var integer v_pid := f_randomPacketId();
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+    var octetstring v_payload := 'A0A0'O;
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('1'B, AT_MOST_ONCE_DELIVERY))
+    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+    f_send(v_publish)
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+  }
+
+
+  function f_TC_MQTT_BROKER_PUBLISH_002() runs on MQTT_Client
+  {
+    f_connectMqtt();
+
+    var integer v_pid := f_randomPacketId();
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+    var octetstring v_payload := 'A0A0'O;
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, RESERVED))
+    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+    f_send(v_publish)
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_003() runs on MQTT_Client
+  {
+    const octetstring c_oUN := 'EDA080'O; // UTF-8 for U+D800
+    const UCHAR0_65535 c_ucUN := oct2unichar(c_oUN);
+
+    f_connectMqtt();
+
+    var integer v_pid := f_randomPacketId();
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName(c_ucUN);
+    var octetstring v_payload := 'A0A0'O;
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
+    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+    f_send(v_publish)
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_004() runs on MQTT_Client
+  {
+    f_connectMqtt();
+
+    var integer v_pid := f_randomPacketId();
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("#");
+    var octetstring v_payload := 'A0A0'O;
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
+    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+    f_send(v_publish)
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+  }
+} // publishFunctionsGroup
 
 group subscribeFunctionsGroup
 {

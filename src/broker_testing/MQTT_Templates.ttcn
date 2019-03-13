@@ -393,6 +393,13 @@ group publishGroup
     qos_level := p_qos
   }
 
+  template MQTT_v3_1_1_PublishHeader tw_publish_header_qos_dup(QoS p_qos, BIT1n p_dup_flag)
+  modifies tw_publishHeader :=
+  {
+    dup_flag := p_dup_flag,
+    qos_level := p_qos
+  }
+
   template MQTT_v3_1_1_Message tw_publish_basic :=
   {
     msg :=
