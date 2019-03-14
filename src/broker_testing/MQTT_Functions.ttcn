@@ -3,7 +3,7 @@
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html 
+* http://www.eclipse.org/legal/epl-v10.html
 *
 * Contributors:
 *   Alexander Kaiser
@@ -29,17 +29,17 @@ import from IPL4asp_Types all;
 /*
 group MqttMTC_FunctionsGroup
 {
-  function f_clientInit(in charstring p_clientId, in charstring p_serverId) runs on MQTT_MTC 
+  function f_clientInit(in charstring p_clientId, in charstring p_serverId) runs on MQTT_MTC
   return integer
   {
     var integer v_clientIdx := -1;
     v_clientIdx := f_clientCreate(p_clientId);
-    
+
     mqttClients[v_clientIdx].start(f_init(p_clientId, p_serverId));
     mqttClients[v_clientIdx].done;
 
     return v_clientIdx;
-  }  
+  }
 
   function f_clientConnectNetwork(in integer p_clientIdx, in charstring p_serverId) runs on MQTT_MTC
   return ReturnBoolean
@@ -75,8 +75,8 @@ group MqttMTC_FunctionsGroup
   function f_clientDisconnectNetwork(in integer p_clientIdx) runs on MQTT_MTC
   return boolean
   {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];     
-    if (v_client == null) { log("No mqtt client found"); return false; }   
+    var MQTT_Client v_client := mqttClients[p_clientIdx];
+    if (v_client == null) { log("No mqtt client found"); return false; }
     f_isRunningGuard(v_client);
 
     v_client.start(f_disconnectIPL4());
@@ -93,11 +93,11 @@ group MqttMTC_FunctionsGroup
     }
   }
 
-  function f_clientCleanUp(in integer p_clientIdx) runs on MQTT_MTC 
+  function f_clientCleanUp(in integer p_clientIdx) runs on MQTT_MTC
   return boolean
   {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];     
-    if (v_client == null) { log("No mqtt client found"); return false; }   
+    var MQTT_Client v_client := mqttClients[p_clientIdx];
+    if (v_client == null) { log("No mqtt client found"); return false; }
     f_isRunningGuard(v_client);
 
     v_client.start(f_cleanUp());
@@ -127,9 +127,9 @@ group MqttMTC_FunctionsGroup
 
   function f_sendMqttMessage(in integer p_clientIdx, in MQTT_v3_1_1_Message p_msg) runs on MQTT_MTC
   {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];     
-    if (v_client != null) 
-    { 
+    var MQTT_Client v_client := mqttClients[p_clientIdx];
+    if (v_client != null)
+    {
       f_isRunningGuard(v_client);
 
       if(v_client.alive)
@@ -145,18 +145,18 @@ group MqttMTC_FunctionsGroup
     }
     else
     {
-      log("No mqtt client found"); 
+      log("No mqtt client found");
     }
   }
 
   function f_receiveMqttMessage(in integer p_clientIdx) runs on MQTT_MTC
   return IPL4_Response
   {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];  
-    var IPL4_Response v_response;   
+    var MQTT_Client v_client := mqttClients[p_clientIdx];
+    var IPL4_Response v_response;
 
-    if (v_client != null) 
-    { 
+    if (v_client != null)
+    {
       f_isRunningGuard(v_client);
 
       if(v_client.alive)
@@ -220,10 +220,10 @@ group MqttPTC_FunctionsGroup
       }
 
       map(self:IPL4_PCO, system:IPL4_PCO);
-      
+
       var boolean v_connect_state := f_connectNetwork(p_serverId);
       var integer v_current_retries := 0;
-      
+
       // if connection failed wait and retry
       while (not(v_connect_state) and (v_current_retries < connect_retries)) {
         v_current_retries := v_current_retries + 1;
@@ -245,7 +245,7 @@ group MqttPTC_FunctionsGroup
   }
 
   function f_connectNetwork(in charstring p_serverId) runs on MQTT_Client
-  return boolean 
+  return boolean
   {
     log("started for ", ctx.localHost, ":", ctx.localPort);
 
@@ -254,7 +254,7 @@ group MqttPTC_FunctionsGroup
 
     var NamedHostPort v_serverAddr;
 
-    // set the remote Host 
+    // set the remote Host
     if(f_lookupAddress(p_serverId, v_serverAddr))
     {
       ctx.remoteHost := v_serverAddr.hostName;
@@ -268,13 +268,13 @@ group MqttPTC_FunctionsGroup
       ctx.connId := -1;
       v_connectState := false;
     } else {
-      var integer v_cid := vl_result.connId 
+      var integer v_cid := vl_result.connId
       var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
       f_IPL4_setGetMsgLen(IPL4_PCO, v_cid, getMsg_Func, {});
-  
+
       ctx.connId := vl_result.connId;
     }
-    
+
     return v_connectState;
   }
 
@@ -301,11 +301,11 @@ group MqttPTC_FunctionsGroup
       else if(ispresent(vl_result.connId))
       {
         log("CONN ID: " & int2str(vl_result.connId));
-      } 
-      else if(ispresent(vl_result.os_error_code))    
+      }
+      else if(ispresent(vl_result.os_error_code))
       {
         log("OS Error Code: ", vl_result.os_error_code);
-      } 
+      }
       else if(ispresent(vl_result.os_error_text))
       {
         log("OS Error Text: ", vl_result.os_error_text);
@@ -319,7 +319,7 @@ group MqttPTC_FunctionsGroup
   {
     // disconnect IPL4 connection first
     f_disconnectIPL4();
-    
+
     log("Cleanup started");
 
     unmap(self:IPL4_PCO, system:IPL4_PCO);
@@ -515,7 +515,7 @@ group MqttPTC_FunctionsGroup
   }
 
   /*
-  * This group contains generic functions wrapping IPL4asp for sending and receiving 
+  * This group contains generic functions wrapping IPL4asp for sending and receiving
   * all kinds of MQTT Messages
   */
   group SendReceive_FunctionsGroup
@@ -527,7 +527,7 @@ group MqttPTC_FunctionsGroup
 
       var ASP_Send vl_send;
 
-      if(ctx.connId > 0) 
+      if(ctx.connId > 0)
       {
         vl_send.connId := ctx.connId;
         //vl_send.remName := ctx.remoteHost;
@@ -537,15 +537,43 @@ group MqttPTC_FunctionsGroup
         vl_send.msg := v_encoded;
 
         IPL4_PCO.send(vl_send);
-      } 
-      else 
+      }
+      else
       {
         log("send MQTT Message not possible because of connId := " & int2str(ctx.connId));
       }
     }
 
     /*
-    * TODO: 
+     * Note: f_MQTT_enc_negtest and f_send_negtest are required for negtest
+     */
+    external function f_MQTT_enc_negtest(in MQTT_v3_1_1_Message msg) return octetstring
+      with { extension "prototype(convert) encode(RAW) errorbehavior(NEGTEST_CONFL:WARNING)" };
+
+    function f_send_negtest(in MQTT_v3_1_1_Message p_msg) runs on MQTT_Client
+    {
+      var octetstring v_encoded := f_MQTT_enc_negtest(p_msg);
+      v_encoded := f_adjustLength(f_calcRemLength(v_encoded));
+
+      var ASP_Send vl_send;
+
+      if(ctx.connId > 0)
+      {
+        vl_send.connId := ctx.connId;
+        vl_send.proto := {tcp := {}}
+
+        vl_send.msg := v_encoded;
+
+        IPL4_PCO.send(vl_send);
+      }
+      else
+      {
+        log("send MQTT Message not possible because of connId := " & int2str(ctx.connId));
+      }
+    }
+
+    /*
+    * TODO:
     * This function is a workaround: calling f_MQTT_enc(..) seems not to calculate the remLength field
     */
     function f_calcRemLength(in octetstring p_os) return octetstring
@@ -558,11 +586,11 @@ group MqttPTC_FunctionsGroup
     }
 
     /*
-    this is a blocking function that waits for the response from IPL4_PCO. 
-    
-    @return IPL4_Response 
+    this is a blocking function that waits for the response from IPL4_PCO.
+
+    @return IPL4_Response
     */
-    function f_receive() runs on MQTT_Client 
+    function f_receive() runs on MQTT_Client
     return IPL4_Response
     {
       timer t_Timeout := maxResponseTime;
@@ -584,7 +612,7 @@ group MqttPTC_FunctionsGroup
 
           if (ischosen(v_mqttMsg.msg)) {
             v_response.receivedMsg := v_mqttMsg;
-            log("MQTT PDU: ", v_mqttMsg.msg);    
+            log("MQTT PDU: ", v_mqttMsg.msg);
           }
           else {
             // The received data seems to be not decoded??
@@ -613,7 +641,7 @@ group MqttPTC_FunctionsGroup
 
       return f_checkNetworkClosedEvent(v_response)
     }
-  
+
   function f_checkNetworkClosedEvent(IPL4_Response p_response) runs on MQTT_Client
     return boolean
     {
@@ -622,7 +650,7 @@ group MqttPTC_FunctionsGroup
       if(ischosen(p_response.aspEvent))
       {
         // Note:
-        // connection closed is sometimes signalised with connClosed 
+        // connection closed is sometimes signalised with connClosed
         // and sometimes with Result.ERROR_SOCKET
         if(ischosen(p_response.aspEvent.connClosed))
         {
@@ -655,7 +683,7 @@ group MqttPTC_FunctionsGroup
     function f_setContext(in MqttClientContext p_ctx) runs on MQTT_Client
     {
       ctx := p_ctx;
-    }  
+    }
 
     function f_getCredentials() runs on MQTT_Client
     return MqttClientCredentials
@@ -696,7 +724,7 @@ group MqttPTC_FunctionsGroup
     return UTF8EncodedString
     {
       // TODO: check the ending of base topic name for a slash
-      // TODO: check the beginning of p_appendix for a slash 
+      // TODO: check the beginning of p_appendix for a slash
       return { stringLength := lengthof(credentials.topicName & p_appendix), stringItem := credentials.topicName & p_appendix };
     }
   }
@@ -751,7 +779,7 @@ group Common_FunctionsGroup {
         }
       }
     }
-  }  
+  }
 
   // this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
   function f_lookupAddress(in charstring p_id, out NamedHostPort v_addr)

@@ -523,7 +523,7 @@ group connackGroup
   {
     if(f_init("mqtt_client", "mqtt_server"))
     {
-      f_TC_MQTT_BROKER_CONNACK_009();
+      f_TC_MQTT_BROKER_CONNACK_010();
     }
     f_cleanUp();
   }
@@ -532,7 +532,9 @@ group connackGroup
 group publishGroup
 {
   /*
-  * TODO
+  * @purpose The DUP flag MUST be set to 0 for all QoS 0 messages
+  *
+  * @reference [MQTT-3.3.1-2]
   */
   testcase TC_MQTT_BROKER_PUBLISH_001() runs on MQTT_Client
   {
@@ -544,7 +546,9 @@ group publishGroup
   }
 
   /*
-  * TODO
+  * @purpose A PUBLISH packet MUST NOT have both QoS bits set to 1. QoS level corresponding to '11'B is considered invalid
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-3.3.1-4]
   */
   testcase TC_MQTT_BROKER_PUBLISH_002() runs on MQTT_Client
   {
@@ -556,7 +560,9 @@ group publishGroup
   }
 
   /*
-  * TODO
+  * @purpose The Topic Name MUST be a UTF-8 encoded string and be present as the first field in the variable header
+  *
+  * @reference [MQTT-3.3.2-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_003() runs on MQTT_Client
   {
@@ -568,13 +574,43 @@ group publishGroup
   }
 
   /*
-  * TODO
+  * @purpose The Topic Name in the PUBLISH Packet MUST NOT contain wildcard characters
+  *
+  * @reference [MQTT-3.3.2-2]
   */
   testcase TC_MQTT_BROKER_PUBLISH_004() runs on MQTT_Client
   {
     if(f_init("mqtt_client", "mqtt_server"))
     {
       f_TC_MQTT_BROKER_PUBLISH_004();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose In case of QoS = 1 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
+  *
+  * @reference [MQTT-2.3.1-1]
+  */
+  testcase TC_MQTT_BROKER_PUBLISH_005() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_PUBLISH_005();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose In case of QoS = 2 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
+  *
+  * @reference [MQTT-2.3.1-1]
+  */
+  testcase TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_PUBLISH_006();
     }
     f_cleanUp();
   }
@@ -593,6 +629,48 @@ group subscribeGroup
     if(f_init("mqtt_client", "mqtt_server"))
     {
       f_TC_MQTT_BROKER_SUBSCRIBE_001();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose SUBSCRIBE Control Packet MUST contain a non-zero 16-bit Packet Identifier
+  *
+  * @reference [MQTT-2.3.1-1]
+  */
+  testcase TC_MQTT_BROKER_SUBSCRIBE_002() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_002();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The Topic Filters in a Subscribe packet payload MUST be UTF-8 encoded strings. This data MUST NOT include encodings of code points between U+D800 and U+DFFF
+  *
+  * @reference [MQTT-1.5.3-1], [MQTT-3.8.3-1]
+  */
+  testcase TC_MQTT_BROKER_SUBSCRIBE_003() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_003();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The Topic Filters in a Subscribe packet payload MUST be UTF-8 encoded strings. A UTF-8 encoded string MUST NOT include an encoding of the null character U+0000.
+  *
+  * @reference [MQTT-1.5.3-2], [MQTT-3.8.3-1]
+  */
+  testcase TC_MQTT_BROKER_SUBSCRIBE_004() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_004();
     }
     f_cleanUp();
   }
@@ -619,8 +697,11 @@ group subscribeGroup
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_006() runs on MQTT_Client
   {
-    // NOTE: 6 reserved Bits in Requested QoS not available
-    setverdict(fail, "NOT IMPLEMENTED YET");
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_006();
+    }
+    f_cleanUp();
   }
 
   /*
@@ -755,6 +836,20 @@ group unsubscribeGroup
     if(f_init("mqtt_client", "mqtt_server"))
     {
       f_TC_MQTT_BROKER_UNSUBSCRIBE_002();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The Topic Filters in an Unsubscribe packet payload MUST be UTF-8 encoded strings. This data MUST NOT include encodings of code points between U+D800 and U+DFFF
+  *
+  * @reference [MQTT-1.5.3-1], [MQTT-3.10.3-1]
+  */
+  testcase TC_MQTT_BROKER_UNSUBSCRIBE_003() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_UNSUBSCRIBE_003();
     }
     f_cleanUp();
   }
