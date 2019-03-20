@@ -39,7 +39,7 @@ module MQTT_Defaults_SUBSCRIBE
 
   group BrokerDefaults
   {
-    altstep a_mqtt_subscribe_default(timer p_timer) runs on MQTT_Broker_PTC
+    altstep a_mqtt_subscribe_default(timer p_timer) runs on MQTT_Broker_MTC
     {
       var MQTTasp_Message v_received;
       var template MQTTasp_Message vt_subscribe_valid := mw_mqtt_message(mw_subscribe_valid);

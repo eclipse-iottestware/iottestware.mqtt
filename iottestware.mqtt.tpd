@@ -120,6 +120,7 @@
     <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn" relativeURI="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn"/>
     <FileResource projectRelativePath="src/framework/test_system/MQTT_TestSystem_Common.ttcn" relativeURI="src/framework/test_system/MQTT_TestSystem_Common.ttcn"/>
     <FileResource projectRelativePath="src/framework/utils/UTF8_Helper.ttcn" relativeURI="src/framework/utils/UTF8_Helper.ttcn"/>
+    <FileResource projectRelativePath="src/framework/utils/Random_Helper.ttcn" relativeURI="src/framework/utils/Random_Helper.ttcn"/>
     <FileResource projectRelativePath="start_mqtt_fuzzing.py" relativeURI="start_mqtt_fuzzing.py"/>
   </Files>
   <ActiveConfiguration>Default</ActiveConfiguration>

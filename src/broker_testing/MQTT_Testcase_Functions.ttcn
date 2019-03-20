@@ -786,7 +786,7 @@ group connackFunctionsGroup
       f_disconnectMqtt();
 
       /* Test Purpose */
-      f_connectNetwork("mqtt_server");
+      f_ipl4_connect_sut();
 
       const BIT1n c_cleanSession := '0'B;
       const BIT1n c_sessionPresent := '1'B;
@@ -841,7 +841,7 @@ group connackFunctionsGroup
       f_disconnectMqtt();
 
       /* Test Purpose */
-      f_connectNetwork("mqtt_server");
+      f_ipl4_connect_sut();
 
       const BIT1n c_cleanSession := '0'B;
       const BIT1n c_sessionPresent := '0'B;

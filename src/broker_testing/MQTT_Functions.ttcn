@@ -23,205 +23,33 @@ import from MQTT_v3_1_1_Types all;
 import from IPL4asp_PortType all;
 import from IPL4asp_Types all;
 
-/*
-* This group contains all functions running on MQTT_MTC component
-*/
-/*
-group MqttMTC_FunctionsGroup
-{
-  function f_clientInit(in charstring p_clientId, in charstring p_serverId) runs on MQTT_MTC
-  return integer
-  {
-    var integer v_clientIdx := -1;
-    v_clientIdx := f_clientCreate(p_clientId);
-
-    mqttClients[v_clientIdx].start(f_init(p_clientId, p_serverId));
-    mqttClients[v_clientIdx].done;
-
-    return v_clientIdx;
-  }
-
-  function f_clientConnectNetwork(in integer p_clientIdx, in charstring p_serverId) runs on MQTT_MTC
-  return ReturnBoolean
-  {
-    var ReturnBoolean v_return := false;
-
-    if(p_clientIdx < 0 or p_clientIdx >= sizeof(mqttClients))
-    {
-      return v_return;
-    }
-    else
-    {
-      mqttClients[p_clientIdx].start(f_connectNetwork(p_serverId));
-      mqttClients[p_clientIdx].done;
-
-      v_return := true;
-    }
-
-    return v_return;
-  }
-
-  // TODO:
-  // function f_clientConnectMqtt(in integer p_clientIdx)
-
-  function f_allClientsConnectNetwork(in charstring p_serverId) runs on MQTT_MTC
-  {
-    for(var integer i := 0; i < sizeof(mqttClients); i := i + 1)
-    {
-      f_clientConnectNetwork(i, p_serverId);
-    }
-  }
-
-  function f_clientDisconnectNetwork(in integer p_clientIdx) runs on MQTT_MTC
-  return boolean
-  {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];
-    if (v_client == null) { log("No mqtt client found"); return false; }
-    f_isRunningGuard(v_client);
-
-    v_client.start(f_disconnectIPL4());
-    v_client.done;
-
-    return true;
-  }
-
-  function f_allClientsDisconnectNetwork() runs on MQTT_MTC
-  {
-    for(var integer i := 0; i < sizeof(mqttClients); i := i + 1)
-    {
-      f_clientDisconnectNetwork(i);
-    }
-  }
-
-  function f_clientCleanUp(in integer p_clientIdx) runs on MQTT_MTC
-  return boolean
-  {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];
-    if (v_client == null) { log("No mqtt client found"); return false; }
-    f_isRunningGuard(v_client);
-
-    v_client.start(f_cleanUp());
-    v_client.done;
-
-    return true;
-  }
-
-  function f_allClientsCleanUp() runs on MQTT_MTC
-  {
-    for(var integer i := 0; i < sizeof(mqttClients); i := i + 1)
-    {
-      f_clientCleanUp(i);
-    }
-  }
-
-  private function f_clientCreate(in charstring p_clientId) runs on MQTT_MTC
-  return integer
-  {
-    var MQTT_Client v_client := MQTT_Client.create(p_clientId) alive;
-    var integer v_clientIdx := sizeof(mqttClients);
-
-    mqttClients[v_clientIdx] := v_client;
-
-    return v_clientIdx;
-  }
-
-  function f_sendMqttMessage(in integer p_clientIdx, in MQTT_v3_1_1_Message p_msg) runs on MQTT_MTC
-  {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];
-    if (v_client != null)
-    {
-      f_isRunningGuard(v_client);
-
-      if(v_client.alive)
-      {
-        v_client.start(f_send(p_msg));
-        v_client.done;
-      }
-      else
-      {
-        log("Could not send ", p_msg, " because client ", p_clientIdx, " is not alive");
-      }
-
-    }
-    else
-    {
-      log("No mqtt client found");
-    }
-  }
-
-  function f_receiveMqttMessage(in integer p_clientIdx) runs on MQTT_MTC
-  return IPL4_Response
-  {
-    var MQTT_Client v_client := mqttClients[p_clientIdx];
-    var IPL4_Response v_response;
-
-    if (v_client != null)
-    {
-      f_isRunningGuard(v_client);
-
-      if(v_client.alive)
-      {
-        v_client.start(f_receive());
-        v_client.done;
-
-        // TODO: get the received response from v_client
-        v_response := valueof(t_empty_response);
-      }
-      else
-      {
-        log("Could not receive from client ", p_clientIdx, " because client is not alive");
-      }
-    }
-    else
-    {
-      v_response := valueof(t_empty_response);
-    }
-    return v_response;
-  }
-
-  function f_receiveAndMatch(in integer p_clientIdx, in template IPL4_Response p_expected) runs on MQTT_MTC
-  return boolean
-  {
-    var boolean v_return := false;
-    var IPL4_Response v_response := f_receiveMqttMessage(p_clientIdx);
-
-    v_return := match(v_response, p_expected);
-
-    return v_return;
-  }
-
-}
+import from Random_Helper all;
 
 /*
 * This group contains all functions running on MQTT_Client component
 */
-group MqttPTC_FunctionsGroup
+group MqttMTC_FunctionsGroup
 {
 
-  function f_init(in charstring p_clientId, in charstring p_serverId) runs on MQTT_Client
+  function f_init(in integer p_client_idx := 0) runs on MQTT_Client
   return boolean
   {
-    log("started for ", p_clientId);
+    log("Initialize Client  ", p_client_idx);
 
     var boolean v_initState := true;
-    var NamedHostPort v_clientAddr;
 
     //set the local Host
-    if(f_lookupAddress(p_clientId, v_clientAddr))
+    if(p_client_idx >= 0 and p_client_idx < lengthof(PX_CLIENTS))
     {
       ctx.connId := -1;
-      ctx.localHost := v_clientAddr.hostName;
-      ctx.localPort := v_clientAddr.portNumber;
+      ctx.localHost := "0.0.0.0";
+      ctx.localPort := f_random_port_number();
 
-
-      if(ispresent(v_clientAddr.credentials))
-      {
-        credentials := v_clientAddr.credentials;
-      }
+      credentials := PX_CLIENTS[p_client_idx];
 
       map(self:IPL4_PCO, system:IPL4_PCO);
 
-      var boolean v_connect_state := f_connectNetwork(p_serverId);
+      var boolean v_connect_state := f_ipl4_connect_sut();
       var integer v_current_retries := 0;
 
       // if connection failed wait and retry
@@ -229,13 +57,13 @@ group MqttPTC_FunctionsGroup
         v_current_retries := v_current_retries + 1;
         log("Connection failed: retry ", v_current_retries, " of ", connect_retries, " in ", retry_delay, "s");
         f_sleep(retry_delay);
-        v_connect_state := f_connectNetwork(p_serverId);
+        v_connect_state := f_ipl4_connect_sut();
       }
       v_initState := v_connect_state;
     }
     else
     {
-      log("PTC ", p_clientId, " could not be initialized");
+      log("Client index ", p_client_idx, " is invalid");
       v_initState := false;
     }
 
@@ -244,22 +72,16 @@ group MqttPTC_FunctionsGroup
     return v_initState;
   }
 
-  function f_connectNetwork(in charstring p_serverId) runs on MQTT_Client
+  function f_ipl4_connect_sut() runs on MQTT_Client
   return boolean
   {
-    log("started for ", ctx.localHost, ":", ctx.localPort);
-
     const boolean c_reuseAddress := true;
     var boolean v_connectState := true;
 
-    var NamedHostPort v_serverAddr;
-
     // set the remote Host
-    if(f_lookupAddress(p_serverId, v_serverAddr))
-    {
-      ctx.remoteHost := v_serverAddr.hostName;
-      ctx.remotePort := v_serverAddr.portNumber;
-    }
+    ctx.remoteHost := PX_SUT_HOSTNAME;
+    ctx.remotePort := PX_SUT_PORT;
+    log("Connect to SUT: ", ctx.remoteHost, ":", ctx.remotePort, " from local Port: ", ctx.localPort);
 
     var Result vl_result := f_IPL4_connect(IPL4_PCO, ctx.remoteHost, ctx.remotePort, ctx.localHost, ctx.localPort, ctx.connId, {tcp := {}}, {{reuseAddress := {enable := c_reuseAddress}}});
 
@@ -333,9 +155,9 @@ group MqttPTC_FunctionsGroup
   group MqttControl_FunctionsGroup
   {
     function f_connectMqtt(in BIT1n p_cleanSession := '1'B) runs on MQTT_Client
-    return ReturnBoolean
+    return boolean
     {
-      var ReturnBoolean v_ret := false;
+      var boolean v_ret := false;
 
       var UTF8EncodedString v_clientId := f_getClientId();
       var UTF8EncodedString v_username := f_getUsername();
@@ -361,9 +183,9 @@ group MqttPTC_FunctionsGroup
     }
 
     function f_disconnectMqtt() runs on MQTT_Client
-    return ReturnBoolean
+    return boolean
     {
-      var ReturnBoolean v_ret := false;
+      var boolean v_ret := false;
 
       // disconnect
       f_send(valueof(t_disconnect));
@@ -381,9 +203,9 @@ group MqttPTC_FunctionsGroup
     }
 
     function f_subscribe(UCHAR0_65535 p_topic_filter, QoS p_requested_qos) runs on MQTT_Client
-    return ReturnBoolean
+    return boolean
     {
-      var ReturnBoolean v_ret := false;
+      var boolean v_ret := false;
       var integer v_packet_id := float2int(rnd() * 1000.0);
       var MQTT_v3_1_1_SubscribePayloadList v_sub_payload := { valueof(t_subscribe_payload(p_topic_filter, p_requested_qos)) };
       var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topiclist(p_packet_id := v_packet_id, p_topic_list := v_sub_payload));
@@ -437,9 +259,9 @@ group MqttPTC_FunctionsGroup
 
 
     private function f_publish_qos1(MQTT_v3_1_1_Message p_pub) runs on MQTT_Client
-    return ReturnBoolean
+    return boolean
     {
-      var ReturnBoolean v_ret := true;
+      var boolean v_ret := true;
       var IPL4_Response v_response;
       var integer v_packet_id := p_pub.msg.publish.packet_identifier;
 
@@ -462,9 +284,9 @@ group MqttPTC_FunctionsGroup
     }
 
     private function f_publish_qos2(MQTT_v3_1_1_Message p_pub) runs on MQTT_Client
-    return ReturnBoolean
+    return boolean
     {
-      var ReturnBoolean v_ret := true;
+      var boolean v_ret := true;
       var IPL4_Response v_response;
       var integer v_packet_id := p_pub.msg.publish.packet_identifier;
 
@@ -570,7 +392,7 @@ group MqttPTC_FunctionsGroup
     }
 
     /*
-    * TODO:
+    * TODO: check if f_calcRemLength is correct according to MQTT 2.2.3
     * This function is a workaround: calling f_MQTT_enc(..) seems not to calculate the remLength field
     */
     function f_calcRemLength(in octetstring p_os) return octetstring
@@ -778,6 +600,7 @@ group Common_FunctionsGroup {
     }
   }
 
+/*
   // this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
   function f_lookupAddress(in charstring p_id, out NamedHostPort v_addr)
   return boolean
@@ -792,7 +615,7 @@ group Common_FunctionsGroup {
       }
     }
     return false;
-  }
+  }*/
 
   // NOTE: move to generic helper functions in framework
   function f_randomPacketId()
@@ -800,20 +623,6 @@ group Common_FunctionsGroup {
   {
     var integer v_ret := float2int(rnd() * 65535.0);
     return v_ret;
-  }
-
-  // NOTE: move to generic helper functions in framework
-  function f_test_payload(integer p_length) return octetstring
-  {
-    var octetstring v_ret := 'A5A5'O  // initi with marker pattern
-
-    for(var integer i := 2; i < p_length; i := i + 1)
-    {
-      var octetstring v_appendix := int2oct((i mod 255), 1)
-      v_ret := v_ret & v_appendix
-    }
-
-    return v_ret
   }
 }
 

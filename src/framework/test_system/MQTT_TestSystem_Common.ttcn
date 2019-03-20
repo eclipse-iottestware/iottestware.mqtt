@@ -24,37 +24,21 @@ import from MQTT_Broker_TypesAndValues all;
 import from MQTT_Broker_Pixits all;
 
 group common_components {
-  /*
-  * Base PTC Test Component
-  */
-  type component MQTT_MTC {
-    // TODO: Base MTC component
-  }
 
   /*
-  * Base PTC Test Component
+  * Basic MTC (Main Test Component)
   */
-  type component MQTT_PTC
+  type component MQTT_MTC
   {
-    //port IPL4asp_PT IPL4_PCO; // TODO: needed?
     port MQTTasp_PT MQTT_PCO;
   }
 }
 
 group broker_components {
-  type component MQTT_Broker_MTC extends MQTT_MTC
-  {
-    /*
-    var MqttBrokerContext ctx := c_MqttBrokerContext_empty;
-    var ConnectionList conns := {}*/
-
-    //port IPL4asp_PT IPL4_PCO;
-  }
-
   /*
   * MQTT Broker Test Component contains capabilities and context of a MQTT Broker
   */
-  type component MQTT_Broker_PTC extends MQTT_PTC
+  type component MQTT_Broker_MTC extends MQTT_MTC
   {
     // timer locally available for MQTT_Broker_PTC; value retrieved from .cfg (PIXIT)
     timer tc_testcase_max := PX_MAX_TC_TIMER;
@@ -66,18 +50,22 @@ group broker_components {
 }
 
 group client_components {
-  type component MQTT_Client_MTC extends MQTT_MTC
+  type component MQTT_Client_TestSystem
   {
-    
+    port MQTTasp_PT MQTT_Publisher;
+    port MQTTasp_PT MQTT_Subscriber;
   }
 
   /*
    * MQTT Client Test Component contains capabilities and context of a MQTT Client
    */
-  type component MQTT_Client_PTC extends MQTT_PTC
+  type component MQTT_Client_MTC extends MQTT_MTC
   {
-    var MqttClientContext ctx := c_MqttClientContext_empty;
-    var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
+    //timer tc_testcase_max := 5.0;
+    //var default vc_timeout_default;
+
+    var MqttClientContext ctx;
+    var MqttClientCredentials credentials;
   }
 }
 

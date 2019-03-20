@@ -53,7 +53,7 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a PUBLISH
      */
-    function f_send_pubish(inout MQTT_Connection p_conn) runs on MQTT_PTC
+    function f_send_pubish(inout MQTT_Connection p_conn) runs on MQTT_MTC
     {
       // TODO: implement
       log("[NOIMPL](f_publish)")
@@ -62,48 +62,48 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a PUBACK
      */
-    function f_send_puback(inout MQTT_Connection p_conn, integer p_packet_id)  runs on MQTT_PTC
+    function f_send_puback(inout MQTT_Connection p_conn, integer p_packet_id)  runs on MQTT_MTC
     {
       var template MQTT_v3_1_1_Message vt_puback := m_puback(p_packet_id)
 
       // send PUBACK response
-      log("[MQTT_PTC](>>>)(PUBACK): ", vt_puback)
+      log("[MQTT_MTC](>>>)(PUBACK): ", vt_puback)
       f_send_mqtt(p_conn, vt_puback)
     }
 
     /*
      * @desc response with a PUBREC
      */
-    function f_send_pubrec(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_PTC
+    function f_send_pubrec(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_MTC
     {
       var template MQTT_v3_1_1_Message vt_pubrec := m_pubrec(p_packet_id)
 
       // send PUBREC response
-      log("[MQTT_PTC](>>>)(PUBREC): ", vt_pubrec)
+      log("[MQTT_MTC](>>>)(PUBREC): ", vt_pubrec)
       f_send_mqtt(p_conn, vt_pubrec)
     }
 
     /*
      * @desc response with a PUBREL
      */
-    function f_send_pubrel(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_PTC
+    function f_send_pubrel(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_MTC
     {
       var template MQTT_v3_1_1_Message vt_pubrel := m_pubrel(p_packet_id)
 
       // send PUBREL response
-      log("[MQTT_PTC](>>>)(PUBREL): ", vt_pubrel)
+      log("[MQTT_MTC](>>>)(PUBREL): ", vt_pubrel)
       f_send_mqtt(p_conn, vt_pubrel)
     }
 
     /*
      * @desc response with a PUBCOMP
      */
-    function f_send_pubcomp(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_PTC
+    function f_send_pubcomp(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_MTC
     {
       var template MQTT_v3_1_1_Message vt_pubcomp := m_pubcomp(p_packet_id)
 
       // send PUBCOMP response
-      log("[MQTT_PTC](>>>)(PUBCOMP): ", vt_pubcomp)
+      log("[MQTT_MTC](>>>)(PUBCOMP): ", vt_pubcomp)
       f_send_mqtt(p_conn, vt_pubcomp)
     }
 
@@ -114,20 +114,20 @@ module MQTT_Functions_Protocol
   *
   * @desc group of common functions for broker and client
   *
-  * @remark   runs on MQTT_PTC
+  * @remark   runs on MQTT_MTC
   */
   group PTC_Common
   {
     /*
      * @desc send a generic MQTT message
      */
-    function f_send_mqtt(inout MQTT_Connection p_conn, template MQTT_v3_1_1_Message p_msg) runs on MQTT_PTC
+    function f_send_mqtt(inout MQTT_Connection p_conn, template MQTT_v3_1_1_Message p_msg) runs on MQTT_MTC
     {
       var template MQTTasp_Message vt_msg := m_mqtt_message_conn(p_msg, p_conn)
 
       // send response
       MQTT_PCO.send(valueof(vt_msg))
-      log("[MQTT_PTC](send)(MQTT Message): ", vt_msg)
+      log("[MQTT_MTC](send)(MQTT Message): ", vt_msg)
     }
   } // group PTC_Common
 
@@ -144,7 +144,7 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a CONNACK
      */
-    function f_send_connack(inout MQTT_Connection p_conn, integer p_return_code := 0) runs on MQTT_Broker_PTC
+    function f_send_connack(inout MQTT_Connection p_conn, integer p_return_code := 0) runs on MQTT_Broker_MTC
     {
       var template MQTT_v3_1_1_Message vt_connack := m_connack_rc(p_return_code)
 
@@ -159,36 +159,36 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a SUBACK
      */
-    function f_send_suback(inout MQTT_Connection p_conn, integer p_packet_id, IntegerList p_return_codes) runs on MQTT_Broker_PTC
+    function f_send_suback(inout MQTT_Connection p_conn, integer p_packet_id, IntegerList p_return_codes) runs on MQTT_Broker_MTC
     {
       var template MQTT_v3_1_1_Message vt_suback := m_suback(p_packet_id, p_return_codes)
 
       // send SUBACK response
-      log("[MQTT_Broker_PTC](>>>)(SUBACK): ", vt_suback)
+      log("[MQTT_Broker_MTC](>>>)(SUBACK): ", vt_suback)
       f_send_mqtt(p_conn, vt_suback)
     }
 
     /*
      * @desc response with a UNSUBACK
      */
-    function f_send_unsuback(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_Broker_PTC
+    function f_send_unsuback(inout MQTT_Connection p_conn, integer p_packet_id) runs on MQTT_Broker_MTC
     {
       var template MQTT_v3_1_1_Message vt_unsuback := m_unsuback(p_packet_id)
 
       // send UNSUBACK response
-      log("[MQTT_Broker_PTC](>>>)(UNSUBACK): ", vt_unsuback)
+      log("[MQTT_Broker_MTC](>>>)(UNSUBACK): ", vt_unsuback)
       f_send_mqtt(p_conn, vt_unsuback)
     }
 
     /*
      * @desc response with a PINGRESP
      */
-    function f_send_ping_resp(inout MQTT_Connection p_conn) runs on MQTT_Broker_PTC
+    function f_send_ping_resp(inout MQTT_Connection p_conn) runs on MQTT_Broker_MTC
     {
       var template MQTT_v3_1_1_Message vt_ping_response := m_pingresp
 
       // send PINGRESP response
-      log("[MQTT_Broker_PTC](>>>)(PINGRESP): ", vt_ping_response)
+      log("[MQTT_Broker_MTC](>>>)(PINGRESP): ", vt_ping_response)
       f_send_mqtt(p_conn, vt_ping_response)
     }
 
@@ -197,7 +197,7 @@ module MQTT_Functions_Protocol
      * @mark the broker does NOT send a DISCONNECT but rather terminates the underlying IPL4 connection
      * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
      */
-     function f_disconnect_all() runs on MQTT_Broker_PTC
+     function f_disconnect_all() runs on MQTT_Broker_MTC
      {
        log("[DISCONNECT](Disconnect all active MQTT connections)")
 
@@ -213,14 +213,14 @@ module MQTT_Functions_Protocol
      /*
       * covers [MQTT-3.1.2-2], [MQTT-3.1.4-5], [MQTT-3.2.2-5]
       */
-     function f_unacceptable_protocol(inout MQTT_Connection p_conn) runs on MQTT_Broker_PTC
+     function f_unacceptable_protocol(inout MQTT_Connection p_conn) runs on MQTT_Broker_MTC
      {
        log("[MQTT_v4][exec]: {[MQTT-3.1.2-2], [MQTT-3.1.4-5], [MQTT-3.2.2-5]}")
        f_send_connack(p_conn, 1)
        f_ipl4_close(p_conn.ipl4.id)
      }
 
-     function f_terminate_due_invalid_header(inout MQTT_Connection p_conn) runs on MQTT_PTC
+     function f_terminate_due_invalid_header(inout MQTT_Connection p_conn) runs on MQTT_MTC
      {
        log("[MQTT_v4][exec]: {[MQTT-2.2.2-2]}")
        f_terminate_due_to_violation(p_conn)
@@ -229,7 +229,7 @@ module MQTT_Functions_Protocol
      /*
       * hides f_ipl4_close from user and enables logging of [MQTT-4.8.0-1] on each termination
       */
-     function f_terminate_due_to_violation(inout MQTT_Connection p_conn) runs on MQTT_PTC
+     function f_terminate_due_to_violation(inout MQTT_Connection p_conn) runs on MQTT_MTC
      {
        log("[MQTT_v4][exec]: {[MQTT-4.8.0-1]}")
        f_ipl4_close(p_conn.ipl4.id)
@@ -248,7 +248,7 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a CONNECT
      */
-    function f_send_connect(inout MQTT_Connection p_conn) runs on MQTT_Client_PTC
+    function f_send_connect(inout MQTT_Connection p_conn) runs on MQTT_Client_MTC
     {
       // TODO: implement
       log("[NOIMPL](f_connect_request)")
@@ -257,7 +257,7 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a SUBSCRIBE
      */
-    function f_send_subscribe(inout MQTT_Connection p_conn) runs on MQTT_Client_PTC
+    function f_send_subscribe(inout MQTT_Connection p_conn) runs on MQTT_Client_MTC
     {
       // TODO: implement
       log("[NOIMPL](f_connect_request)")
@@ -267,7 +267,7 @@ module MQTT_Functions_Protocol
      * @desc the client sends a DISCONNECT notification and closes the IPL4 connection
      * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349355
      */
-    function f_send_disconnect(inout MQTT_Connection p_conn) runs on MQTT_Client_PTC
+    function f_send_disconnect(inout MQTT_Connection p_conn) runs on MQTT_Client_MTC
     {
       /*
       if(ispresent(p_conn.client_state) and p_conn.client_state != Disconnected) {

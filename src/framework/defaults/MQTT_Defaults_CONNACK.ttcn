@@ -46,7 +46,7 @@ module MQTT_Defaults_CONNACK
      * [MQTT_v4]: regex keyword for all MQTT v.3.1.1 conformance statements
      * rest of line contains the covered conformance statements
      */
-    altstep a_mqtt_connack_default() runs on MQTT_Broker_PTC
+    altstep a_mqtt_connack_default() runs on MQTT_Broker_MTC
     {
       var MQTTasp_Message v_received;
       var template MQTTasp_Message vt_connect_valid := mw_mqtt_message(mdw_connect_valid_mqtt_x);

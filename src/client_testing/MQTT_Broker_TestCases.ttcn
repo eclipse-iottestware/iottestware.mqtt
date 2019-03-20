@@ -41,12 +41,12 @@ group connectGroup
   *
   * @reference [MQTT-2.2.2-1]
   */
-  testcase TC_MQTT_Client_CONNECT_01() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_01() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_01()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -54,12 +54,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-1]
   */
-  testcase TC_MQTT_Client_CONNECT_02() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_02() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_02()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -68,12 +68,12 @@ group connectGroup
    *
    * @reference [MQTT-3.1.2-2]
    */
-  testcase TC_MQTT_Client_CONNECT_03() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_03() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_03()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 }
 
@@ -83,12 +83,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-3]
   */
-  testcase TC_MQTT_Client_CONNECT_04() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_04() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_04()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -96,12 +96,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-9], [MQTT-3.1.2-14]
   */
-  testcase TC_MQTT_Client_CONNECT_05() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_05() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_05()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -109,12 +109,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-11], [MQTT-3.1.2-13], [MQTT-3.1.2-15]
   */
-  testcase TC_MQTT_Client_CONNECT_06() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_06() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_06()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -122,12 +122,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-18], [MQTT-3.1.2-20], [MQTT-3.1.2-22]
   */
-  testcase TC_MQTT_Client_CONNECT_07() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_07() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_07()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -135,12 +135,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-19]
   */
-  testcase TC_MQTT_Client_CONNECT_08() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_08() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_08()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -148,12 +148,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.2-21]
   */
-  testcase TC_MQTT_Client_CONNECT_09() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_09() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_09()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -161,12 +161,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.3-1]
   */
-  testcase TC_MQTT_Client_CONNECT_10() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_10() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_10()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -174,12 +174,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.3-4], [MQTT-1.5.3-1]
   */
-  testcase TC_MQTT_Client_CONNECT_11() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_11() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_11()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -187,12 +187,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.3-7]
   */
-  testcase TC_MQTT_Client_CONNECT_12() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_12() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_12()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -200,12 +200,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.3-10]
   */
-  testcase TC_MQTT_Client_CONNECT_13() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_13() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_13()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -213,12 +213,12 @@ group connectGroup
   *
   * @reference [MQTT-3.1.3-11]
   */
-  testcase TC_MQTT_Client_CONNECT_14() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_CONNECT_14() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_CONNECT_14()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -226,12 +226,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.1-2]
   */
-  testcase TC_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_01()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -239,12 +239,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.1-1]
   */
-  testcase TC_MQTT_Client_PUBLISH_02() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_02() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_02()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -252,12 +252,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.1-1]
   */
-  testcase TC_MQTT_Client_PUBLISH_03() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_03() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_03()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -265,12 +265,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.1-1]
   */
-  testcase TC_MQTT_Client_PUBLISH_04() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_04() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       //f_MQTT_Client_PUBLISH_04()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -278,12 +278,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.2-2]
   */
-  testcase TC_MQTT_Client_PUBLISH_05() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_05() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       //f_MQTT_Client_PUBLISH_05()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -291,12 +291,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.4-1]
   */
-  testcase TC_MQTT_Client_PUBLISH_06() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_06() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       //f_MQTT_Client_PUBLISH_06()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -304,12 +304,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.4-1]
   */
-  testcase TC_MQTT_Client_PUBLISH_07() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_07() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       //f_MQTT_Client_PUBLISH_07()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
   /*
@@ -317,12 +317,12 @@ group connectGroup
   *
   * @reference [MQTT-3.3.4-1]
   */
-  testcase TC_MQTT_Client_PUBLISH_08() runs on MQTT_Broker_PTC
+  testcase TC_MQTT_Client_PUBLISH_08() runs on MQTT_Broker_MTC
   {
-    if(f_init_broker_ptc()) {
+    if(f_init_broker()) {
       //f_MQTT_Client_PUBLISH_08()
     }
-    f_clear_broker_ptc();
+    f_clear_broker();
   }
 
 } // module

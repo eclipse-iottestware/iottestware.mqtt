@@ -5,11 +5,22 @@ module Playground
   import from MQTT_TestSystem_Common all;
   import from MQTT_v3_1_1_Types all;
   import from MQTT_Templates_CONNECT all;
+  import from MQTT_Defaults_Common all;
+  import from MQTT_Functions_Network all;
+
+  import from MQTTasp_PortType all;
+  import from MQTTasp_Types all;
+  import from MQTTasp_CtrlFunct all;
+
+  import from IPL4asp_PortType all;
+  import from IPL4asp_Types all;
+
+  import from Random_Helper all;
 
   /*
    * test matching bahviour used in f_MQTT_Client_CONNECT_08
    */
-  testcase TCU_Client_CONNECT_08() runs on MQTT_Broker_PTC
+  testcase TCU_Client_CONNECT_08() runs on MQTT_Broker_MTC
   {
     var MQTT_v3_1_1_ConnectPayload v_input :=
     {
@@ -48,8 +59,70 @@ module Playground
    * MTC (Main Test Component) controls multiple PTC (Parallel Test Component)
    */
 
-   testcase TC_Exp_MTC_01() runs on MQTT_Client_MTC system MQTT_Client_PTC
+   testcase TC_Exp_MTC_01() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
    {
-     // TODO:
+     var MQTT_Client_MTC publisher, subscriber;
+
+     publisher := MQTT_Client_MTC.create("Publisher")
+     subscriber := MQTT_Client_MTC.create("Subscriber")
+
+     map(publisher:MQTT_PCO, system:MQTT_Publisher)
+     map(subscriber:MQTT_PCO, system:MQTT_Subscriber)
+
+     publisher.start(f_behavior_01());
+     subscriber.start(f_behavior_01());
+
+     publisher.done;
+     subscriber.done;
+
+     unmap(publisher:MQTT_PCO, system:MQTT_Publisher)
+     unmap(subscriber:MQTT_PCO, system:MQTT_Subscriber)
+   }
+
+   function f_behavior_01() runs on MQTT_Client_MTC
+   {
+     timer t_timeout := 5.0;
+     t_timeout.start
+
+     if(f_ipl4_connect())
+     {
+       log("### BEHAVIOR 01: connected")
+
+       alt {
+         [] t_timeout.timeout {
+           setverdict(pass)
+           f_ipl4_close(ctx.connId)
+           break;
+         }
+       }
+     }
+     else
+     {
+       log("### BEHAVIOR 01: NOT connected")
+       setverdict(fail)
+     }
+   }
+
+   function f_behavior_02() runs on MQTT_Client_MTC
+   {
+     timer t_timeout := 5.0;
+     t_timeout.start
+
+     if(f_ipl4_connect())
+     {
+       log("+++ BEHAVIOR 02: connected")
+
+       alt {
+         [] t_timeout.timeout {
+           setverdict(pass)
+           break;
+         }
+       }
+     }
+     else
+     {
+       log("+++ BEHAVIOR 02: NOT connected")
+       setverdict(fail)
+     }
    }
 }

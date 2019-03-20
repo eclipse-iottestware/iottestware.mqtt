@@ -1,0 +1,54 @@
+/*******************************************************************************
+* Copyright (c) 2018
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Contributors:
+*   Alexander Kaiser
+*   Sascha Hackel
+*   Axel Rennoch
+*******************************************************************************/
+module Random_Helper
+{
+  /*
+  * @desc create a random non-zero MQTT Packet ID as described in MQTT 2.3.1
+  */
+  function f_random_packet_id() return integer
+  {
+    var integer v_ret := 0;
+    while(v_ret == 0)
+    {
+      v_ret := float2int(rnd() * 65535.0)
+    }
+    return v_ret;
+  }
+
+  /*
+  * @desc create a random port number between 1024 and 65535 (non-privileged ports)
+  */
+  function f_random_port_number() return integer
+  {
+    const float c_min := 1024.0;
+    const float c_max := 65535.0;
+    var integer v_ret := float2int(c_min + rnd() * (c_max - c_min))
+    return v_ret
+  }
+
+  /*
+  * @desc create a octetstring with a specified length to be used as payload.
+  *       The payload is marked with 'A5A5'O in the beginning
+  */
+  function f_test_payload(integer p_length) return octetstring
+  {
+    var octetstring v_ret := 'A5A5'O  // initi with marker pattern
+
+    for(var integer i := 2; i < p_length; i := i + 1)
+    {
+      var octetstring v_appendix := int2oct((i mod 255), 1)
+      v_ret := v_ret & v_appendix
+    }
+    return v_ret
+  }
+}

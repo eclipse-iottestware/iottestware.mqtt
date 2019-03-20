@@ -39,7 +39,7 @@ module MQTT_Defaults_DISCONNECT
     /*
      * implements valid broker bahaviour on receiption of DISCONNECT packets
      */
-    altstep a_mqtt_disconnect_default() runs on MQTT_Broker_PTC
+    altstep a_mqtt_disconnect_default() runs on MQTT_Broker_MTC
     {
       var MQTTasp_Message v_received;
       var template MQTTasp_Message vt_disconnect_req := mw_mqtt_message(mw_disconnect);

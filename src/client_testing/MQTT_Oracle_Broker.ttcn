@@ -28,9 +28,9 @@ import from MQTT_Templates_CONNECT all;
  * TODO: What is the Oracle Broker?
  *
  */
-testcase TC_MQTT_Oracle_Broker () runs on MQTT_Broker_PTC
+testcase TC_MQTT_Oracle_Broker () runs on MQTT_Broker_MTC
 {
-  if(f_init_broker_ptc()) {
+  if(f_init_broker()) {
     var default v_connack_default := activate(a_mqtt_connack_default());
     var default v_publish_default := activate(a_mqtt_publish_default());
     var default v_disconnect_default := activate(a_mqtt_disconnect_default());
@@ -48,7 +48,7 @@ testcase TC_MQTT_Oracle_Broker () runs on MQTT_Broker_PTC
     deactivate(v_disconnect_default)
   }
 
-  f_clear_broker_ptc();
+  f_clear_broker();
 }
 
 } // module

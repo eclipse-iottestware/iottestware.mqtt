@@ -46,7 +46,7 @@ module MQTT_Defaults_PUBLISH
 
   group CommonDefaults
   {
-    altstep a_mqtt_publish_default() runs on MQTT_PTC
+    altstep a_mqtt_publish_default() runs on MQTT_MTC
     {
       var MQTTasp_Message v_received;
       var template MQTTasp_Message vt_publish_all := mw_mqtt_message(mw_publish_all);

@@ -26,20 +26,13 @@ module MQTT_Functions_SetUp
 
   import from IPL4asp_Types all;
 
-  group MTC_Broker
-  {
-    function f_init_broker_mtc() runs on MQTT_Broker_MTC {
-      log("[INIT](Initialize MQTT Broker MTC)")
-    }
-  } // group MTC_Broker
-
   group PTC_Broker
   {
     /*
-    * initialize a broker PTC
+    * initialize a broker MTC
     * @return
     */
-    function f_init_broker_ptc() runs on MQTT_Broker_PTC return boolean
+    function f_init_broker() runs on MQTT_Broker_MTC return boolean
     {
       log("[INIT](Initialize MQTT Broker PTC)")
       map(self:MQTT_PCO, system:IPL4_PCO);
@@ -69,7 +62,7 @@ module MQTT_Functions_SetUp
       return true;
     }
 
-    function f_clear_broker_ptc() runs on MQTT_Broker_PTC
+    function f_clear_broker() runs on MQTT_Broker_MTC
     {
       log("[CLR](Clear MQTT Broker PTC)")
 

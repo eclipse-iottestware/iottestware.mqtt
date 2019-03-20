@@ -3,7 +3,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html 
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *   Alexander Kaiser
@@ -11,16 +11,20 @@
  *******************************************************************************/
 module MQTT_Pixits {
 
-import from MQTT_TypesAndValues all;
+    import from MQTT_TypesAndValues all;
 
-    modulepar Address_List tsp_addresses := {};
+    modulepar charstring PX_SUT_HOSTNAME := "127.0.0.1";
+    modulepar integer PX_SUT_PORT := 1883;
+
+    modulepar MqttClientCredentials_List PX_CLIENTS;
+
     modulepar float maxResponseTime := 5.0;
-    
+
     modulepar integer connect_retries := 3;
     modulepar float retry_delay := 1.0;
-    
+
     // PICS selection
-    type enumerated PICS 
+    type enumerated PICS
     {
       PICS_BROKER_BASIC(0),
       PICS_BROKER_QOS_1(1),
@@ -29,7 +33,7 @@ import from MQTT_TypesAndValues all;
       PICS_BROKER_RTND(4),
       PICS_BROKER_AUTH(5)
     }
-    
+
     type record of PICS PICS_Selection_Type;
     modulepar PICS_Selection_Type PICS_Selection := {
       PICS_BROKER_BASIC,
@@ -38,5 +42,5 @@ import from MQTT_TypesAndValues all;
       PICS_BROKER_LWT,
       PICS_BROKER_RTND,
       PICS_BROKER_AUTH
-    }; 
+    };
 }

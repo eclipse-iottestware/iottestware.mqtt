@@ -14,7 +14,7 @@ module MQTT_Defaults_Common {
 
 import from MQTT_TestSystem_Common all;
 
-altstep a_timeout_default(timer p_timer, boolean p_set_verdict := false, verdicttype p_verdict := inconc) runs on MQTT_PTC
+altstep a_timeout_default(timer p_timer, boolean p_set_verdict := false, verdicttype p_verdict := inconc) runs on MQTT_MTC
 {
   [] p_timer.timeout {
     if(p_set_verdict)

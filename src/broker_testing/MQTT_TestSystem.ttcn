@@ -20,14 +20,19 @@ import from MQTT_TypesAndValues all;
 group testComponentsGroup
 {
 
-  // @obsolete move to MQTT_Client_PTC where possible
+  /*
+  * @obsolete move to MQTT_Client_MTC where possible.
+  * All the old functions depend on MQTT_Client and port IPL4asp_PT IPL4_PCO.
+  * However, MQTT_Client_MTC is newer and uses port MQTTasp_PT MQTT_PCO.
+  * Therefore, old testcases will require bigger refactoring if moving to MQTT_Client_MTC
+  */
   /*
   MQTT Client Test Component contains capabilities and context of a MQTT Client
   */
-  type component MQTT_Client extends MQTT_PTC
+  type component MQTT_Client
   {
-    var MqttClientContext ctx := c_MqttClientContext_empty;
-    var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
+    var MqttClientContext ctx;
+    var MqttClientCredentials credentials;
 
     port IPL4asp_PT IPL4_PCO;
   }

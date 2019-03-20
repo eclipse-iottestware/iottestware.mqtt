@@ -13,14 +13,7 @@
 module MQTT_Functions_Network
 {
   import from MQTT_TestSystem_Common all;
-  /*
-  import from MQTT_Templates_MQTTasp all;
 
-  import from MQTT_Templates_CONNACK all;
-  import from MQTT_Templates_DISCONNECT all;
-
-  import from MQTT_Broker_Pixits all;
-  */
   import from MQTTasp_PortType all;
   import from MQTTasp_Types all;
   import from MQTTasp_CtrlFunct all;
@@ -28,37 +21,69 @@ module MQTT_Functions_Network
   import from IPL4asp_PortType all;
   import from IPL4asp_Types all;
 
+  import from Random_Helper all;
+
   /*
    * This is a wrapper of IPL4 functionality of MQTT: TODO: move to MQTT_Function_Protocol ?
    */
 
-  group PTC_Common
+  group Common
   {
-    function f_ipl4_close(integer p_idx) runs on MQTT_PTC return Result
+    function f_ipl4_close(integer p_idx) runs on MQTT_MTC return Result
     {
       log("[IPL4](close connection)(", p_idx, ")")
       var Result vl_result := MQTTasp_CtrlFunct.f_IPL4_close(MQTT_PCO, p_idx);
       return vl_result
     }
-  } // group PTC_Common
+  } // group Common
 
-  group PTC_Broker
+  group Broker
   {
-    function f_ipl4_listen(integer p_port := 1883, charstring p_loc_name := "0.0.0.0") runs on MQTT_Broker_PTC return Result
+    function f_ipl4_listen(integer p_port := 1883, charstring p_loc_name := "0.0.0.0") runs on MQTT_Broker_MTC return Result
     {
        log("[IPL4](listen on )(", p_loc_name, ":", p_port, ")")
        var Result vl_result := MQTTasp_CtrlFunct.f_IPL4_listen(MQTT_PCO, p_loc_name, p_port, {tcp := {}})
        return vl_result;
     }
-  } // group PTC_Broker
+  } // group Broker
 
-  group PTC_Client
+  group Client
   {
-    // TODO: merge from broker_testing
-    function f_ipl4_connection() runs on MQTT_Client_PTC
+    function f_ipl4_connect(integer p_local_port := -1) runs on MQTT_Client_MTC
+    return boolean
     {
-      // TODO:
+      var integer v_local_port := p_local_port;
+      if(v_local_port == -1)
+      {
+        v_local_port := f_random_port_number()
+      }
+
+      const boolean c_reuseAddress := false;
+      var boolean v_connectState := true;
+
+      ctx.remoteHost := "127.0.0.1";
+      ctx.remotePort := 1883;
+      ctx.localHost := "0.0.0.0";
+      ctx.localPort := v_local_port;
+      ctx.connId := -1;
+
+      log("IPL4 Connect: ", ctx.localHost, ":", ctx.localPort);
+
+      var Result vl_result := MQTTasp_CtrlFunct.f_IPL4_connect(MQTT_PCO, ctx.remoteHost, ctx.remotePort, ctx.localHost, ctx.localPort, ctx.connId, {tcp := {}}, {{reuseAddress := {enable := c_reuseAddress}}});
+
+      if (not(ispresent(vl_result.connId)))
+      {
+        ctx.connId := -1;
+        v_connectState := false;
+      } else {
+        var integer v_cid := vl_result.connId
+        //var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
+        //f_IPL4_setGetMsgLen(IPL4_PCO, v_cid, getMsg_Func, {});
+        ctx.connId := vl_result.connId;
+      }
+
+      return v_connectState;
     }
-  } // group PTC_Client
+  } // group Client
 
 } // module

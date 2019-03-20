@@ -101,7 +101,7 @@ private function f_dec_asp_event(in ASP_Event p_in, out charstring p_out) return
 } with {extension "prototype(backtrack)" }
 
 // TODO: pass vl_connections as inout paramater and remove runs on
-function f_add_connection(MQTT_Connection p_mqtt_con, MQTT_ClientState p_client_state := Wait_connack) runs on MQTT_Broker_PTC
+function f_add_connection(MQTT_Connection p_mqtt_con, MQTT_ClientState p_client_state := Wait_connack) runs on MQTT_Broker_MTC
 {
   f_change_connection_client_state(p_mqtt_con, p_client_state);
   var integer v_conn_id := p_mqtt_con.ipl4.id;
