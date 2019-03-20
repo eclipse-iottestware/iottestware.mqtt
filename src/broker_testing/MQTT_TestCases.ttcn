@@ -965,4 +965,21 @@ group disconnectGroup {
   }
 } // disconnectGroup
 
+group protocolFeaturesGroup {
+
+  /*
+  * @purpose Retained messages do not form part of the Session state in the IUT, they MUST NOT be deleted when the Session ends
+  *
+  * @reference [MQTT-3.1.2-7]
+  */
+  testcase TC_MQTT_BROKER_FEAT_RTND_001() runs on MQTT_Client
+  {
+    if(f_init("mqtt_client", "mqtt_server"))
+    {
+      f_TC_MQTT_BROKER_FEAT_RTND_001();
+    }
+    f_cleanUp();
+  }
+} // protocolFeaturesGroup
+
 } // module MQTT_TestCases

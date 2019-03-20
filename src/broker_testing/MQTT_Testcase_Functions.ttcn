@@ -1143,7 +1143,7 @@ group publishFunctionsGroup
     f_connectMqtt();
 
     var integer v_pid := f_randomPacketId();  // Note: encoder will filter v_pid out anyways [MQTT-2.3.1-1]
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('1'B, AT_MOST_ONCE_DELIVERY))
     var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
@@ -1167,7 +1167,7 @@ group publishFunctionsGroup
     f_connectMqtt();
 
     var integer v_pid := f_randomPacketId();
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, RESERVED))
     var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
@@ -1190,24 +1190,31 @@ group publishFunctionsGroup
     const octetstring c_oUN := 'EDA080'O; // UTF-8 for U+D800
     const UCHAR0_65535 c_ucUN := oct2unichar(c_oUN);
 
-    f_connectMqtt();
-
-    var integer v_pid := f_randomPacketId();
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName(c_ucUN);
-    var octetstring v_payload := 'A0A0'O;
-    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
-    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
-
-    f_send(v_publish)
-
-    if(f_receiveNetworkClosedEvent())
+    // TODO: move f_connectMqtt to MQTT_TestCases?
+    // TODO: return of f_connectMqtt must be always checked!!
+    if(f_connectMqtt())
     {
-      setverdict(pass, "IUT closed the Network Connection correctly");
+      var integer v_pid := f_randomPacketId();
+      var UTF8EncodedString v_topic := f_getConcatenatedTopicName(c_ucUN);
+      var octetstring v_payload := 'A0A0'O;
+      var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
+      var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+      f_send(v_publish)
+
+      if(f_receiveNetworkClosedEvent())
+      {
+        setverdict(pass, "IUT closed the Network Connection correctly");
+      }
+      else
+      {
+        setverdict(fail, "IUT MUST close the Network Connection");
+        f_disconnectMqtt();
+      }
     }
     else
     {
-      setverdict(fail, "IUT MUST close the Network Connection");
-      f_disconnectMqtt();
+      setverdict(fail, "IUT didn't accept connection")
     }
   }
 
@@ -1436,6 +1443,9 @@ group subscribeFunctionsGroup
          setverdict(fail, "IUT MUST close the Network Connection");
          f_disconnectMqtt();
        }
+
+       // clear codec manipulation
+       @update(t_subscribe_topic)
      }
 
      function f_TC_MQTT_BROKER_SUBSCRIBE_007() runs on MQTT_Client
@@ -1736,10 +1746,23 @@ group unsubscribeFunctionsGroup
       f_send(v_unsubscribe);
 
       var IPL4_Response v_response := f_receive();
+      var template MQTT_v3_1_1_Message v_expected_unsuback :=  tw_unsuback_packed_id(v_pid);
 
-      // The standard references in section 3.10.2 to section 2.3.1 which is not applicable to UNSUBSCRIBE
-      setverdict(inconc, "Standard inconclusive");
-      f_disconnectMqtt();
+      // The standard references in section 3.10.2 to section 2.3.1 which is not applicable to UNSUBSCRIBE because UNSUBSCRIBE has no QoS
+      if(ischosen(v_response.aspEvent))
+      {
+        setverdict(pass, "IUT closed the Network Connection");
+      }
+      else if(match(v_response.receivedMsg, v_expected_unsuback))
+      {
+        setverdict(pass, "IUT answered correctly with UNSUBACK");
+        f_disconnectMqtt();
+      }
+      else
+      {
+        f_disconnectMqtt();
+        setverdict(inconc, "IUT answered with ", v_response);
+      }
     }
 
     function f_TC_MQTT_BROKER_UNSUBSCRIBE_003() runs on MQTT_Client
@@ -1927,4 +1950,57 @@ group disconnectFunctionsGroup
     }
 } // disconnectFunctionsGroup
 
-}
+group protocolFeaturesFunctionsGroup
+{
+  function f_TC_MQTT_BROKER_FEAT_RTND_001() runs on MQTT_Client
+  {
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("retain");
+    var octetstring v_payload := 'A0A0'O;
+
+    f_connectMqtt();
+
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader(-, AT_MOST_ONCE_DELIVERY, '1'B))
+    var MQTT_v3_1_1_Message v_pub_send := valueof(t_publish_qos0(v_pub_header, v_topic.stringItem, v_payload))
+    f_send(v_pub_send)
+
+    var template MQTT_v3_1_1_Message v_expected := tw_publish_receive_qos0(tw_publishHeader_retained, v_topic.stringItem, v_payload)
+
+    var boolean v_subscribed := f_subscribe(v_topic.stringItem, AT_MOST_ONCE_DELIVERY)
+
+    if(v_subscribed)
+    {
+      var IPL4_Response v_response := f_receive();
+
+      if(match(v_response.receivedMsg.msg.publish.header, v_expected.msg.publish.header))
+      {
+        if(match(v_response.receivedMsg.msg.publish.topic_name, v_expected.msg.publish.topic_name))
+        {
+          if(match(v_response.receivedMsg.msg.publish.payload, v_expected.msg.publish.payload))
+          {
+            setverdict(pass, "Received retained message")
+          }
+          else
+          {
+            setverdict(fail, "PUBLISH payload does not match")
+          }
+        }
+        else
+        {
+          setverdict(fail, "PUBLISH topic does not match")
+        }
+      }
+      else
+      {
+        setverdict(fail, "PUBLISH header does not match")
+      }
+    }
+    else
+    {
+      setverdict(fail, "Failed to subscribe")
+    }
+
+    f_disconnectMqtt();
+  }
+} // protocolFeaturesFunctionsGroup
+
+} // MQTT_Testcase_Functions

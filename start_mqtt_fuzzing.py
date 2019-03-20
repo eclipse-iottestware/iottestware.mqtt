@@ -18,6 +18,9 @@ parser.add_argument("-n", "--runs", required=False, default=1, help="Specify how
 #parser.add_argument("-t", "--test_suite", required=True, help="Specify the path to the ETS")
 args = parser.parse_args()
 
+TITAN_BINARY = 'ttcn3_start'
+TESTSUITE_BINARY = './bin/iottestware.mqtt'
+
 MIN_RATIO_MIN = 0.0
 MAX_RATIO_MAX = 0.1     # flip maximally 10% of the packet
 
@@ -36,7 +39,7 @@ def main():
     if args.ratio:
         ratio = args.ratio
     else:
-        ratio = "0.0:0.035"
+        ratio = "0.0001:0.035"
 
     # TODO: add arguments for listen_port, destination_host and destination_port
     listen_port = 1884
@@ -121,7 +124,7 @@ def change_ratio(old_ratio):
     return str(ratio_min) + ':' + str(ratio_max)
 
 def start_test_suite(config):
-    args = ['ttcn3_start', './bin/mqtt', config]
+    args = ['ttcn3_start', TESTSUITE_BINARY, config]
     child = subprocess.Popen(args, stdout=subprocess.PIPE)
     return child
 

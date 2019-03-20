@@ -1870,7 +1870,7 @@ Package mts_tst_mqtt {
     Test objective
     "UNSUBSCRIBE Control Packet MUST contain a non-zero 16-bit Packet Identifier"
     Reference
-      "[MQTT-2.3.1-1] "
+      "[MQTT-2.3.1-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions

@@ -48,7 +48,7 @@ module Playground
    * MTC (Main Test Component) controls multiple PTC (Parallel Test Component)
    */
 
-   testcase TC_Exp_MTC_01() runs on MQTT_MTC
+   testcase TC_Exp_MTC_01() runs on MQTT_Client_MTC system MQTT_Client_PTC
    {
      // TODO:
    }

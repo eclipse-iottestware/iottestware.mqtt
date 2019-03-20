@@ -19,6 +19,7 @@ import from IPL4asp_PortType all;
 import from MQTTasp_Types all;
 import from MQTTasp_PortType all;
 
+import from MQTT_TypesAndValues all;  // MQTT_Client_TypesAndValues
 import from MQTT_Broker_TypesAndValues all;
 import from MQTT_Broker_Pixits all;
 
@@ -62,17 +63,22 @@ group broker_components {
     var MQTT_BrokerContext ctx;
     var MQTT_ConnectionList vl_connections;
   }
+}
+
+group client_components {
+  type component MQTT_Client_MTC extends MQTT_MTC
+  {
+    
+  }
 
   /*
    * MQTT Client Test Component contains capabilities and context of a MQTT Client
    */
   type component MQTT_Client_PTC extends MQTT_PTC
   {
-    // TODO:
+    var MqttClientContext ctx := c_MqttClientContext_empty;
+    var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
   }
 }
-
-
-
 
 } // module

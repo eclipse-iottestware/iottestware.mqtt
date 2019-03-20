@@ -3,7 +3,7 @@
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html 
+* http://www.eclipse.org/legal/epl-v10.html
 *
 * Contributors:
 *   Alexander Kaiser
@@ -16,55 +16,20 @@ import from MQTT_TestSystem_Common all;
 import from IPL4asp_PortType all;
 import from MQTT_TypesAndValues all;
 
-group portDefinitionsGroup
-{
-  // TODO:
-  // Translation Port: MQTT <-> IPL4
-  // The Feature with Translation Ports is not supported by the TITAN Designer yet.
-  // see MQTT_Functions.f_send: this function currently covers the Functionallity of 
-  // a Translation Port
-
-  //  type port MQTT_TCP_PT message map to IPL4asp_PT
-  //  {
-  //    out
-  //    MQTT_v3_1_1_Message to ASP_Send with f_enc_MQTT_v3_1_1_TranslationPort()
-  //    in
-  //    MQTT_v3_1_1_Message from ASP_RecvFrom with f_dec_MQTT_v3_1_1_TranslationPort(),
-  //    ASP_Event
-  //  }
-  //
-  //  function f_enc_MQTT_v3_1_1_TranslationPort(in MQTT_v3_1_1_Message p_in, out ASP_Send p_out)
-  //  {
-  //    var octetstring v_encoded := f_MQTT_enc(valueof(p_in));
-  //    v_encoded := f_adjustLength(f_calcRemLength(v_encoded));
-  //
-  //    p_out.connId := -1;
-  //    p_out.proto := { tcp := {}};
-  //    p_out.msg := v_encoded;
-  //
-  //    port.setstate(0);
-  //  } with {extension "prototype(fast)"}
-  //
-  //  function f_dec_MQTT_v3_1_1_TranslationPort(in ASP_RecvFrom p_in, out MQTT_v3_1_1_Message p_out)
-  //  {
-  //    port.setstate(0);
-  //  } with {extension "prototype(fast)"}
-}
 
 group testComponentsGroup
 {
 
-
+  // @obsolete move to MQTT_Client_PTC where possible
   /*
   MQTT Client Test Component contains capabilities and context of a MQTT Client
   */
   type component MQTT_Client extends MQTT_PTC
   {
-    var MqttClientContext ctx := c_MqttClientContext_empty; 
+    var MqttClientContext ctx := c_MqttClientContext_empty;
     var MqttClientCredentials credentials := c_MqttClientCredentials_empty;
-    
+
     port IPL4asp_PT IPL4_PCO;
   }
 }
 }
-

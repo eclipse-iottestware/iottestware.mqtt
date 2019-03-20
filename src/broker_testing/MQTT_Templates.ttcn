@@ -279,6 +279,19 @@ group connackGroup
     }
   }
 
+  template MQTT_v3_1_1_Message tw_connack_return_code(integer p_return_code) :=
+  {
+    msg :=
+    {
+      connack :=
+      {
+        header := tw_connackHeader,
+        session_present_flag := ?,
+        connect_return_code := p_return_code
+      }
+    }
+  }
+
   template MQTT_v3_1_1_Message tw_connack_unacceptable_version(BIT1n p_session_present := '0'B)
   modifies tw_connack :=
   {
@@ -347,6 +360,21 @@ group publishGroup
     }
   }
 
+  template MQTT_v3_1_1_Message t_publish_qos0(MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, octetstring p_payload) :=
+  {
+    msg :=
+    {
+      publish :=
+      {
+        header := p_header,
+        nameLength := 0,
+        topic_name := p_topic_name,
+        packet_identifier := omit,
+        payload := p_payload
+      }
+    }
+  }
+
   template MQTT_v3_1_1_Message t_publish(MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, integer p_packet_id, octetstring p_payload) :=
   {
     msg :=
@@ -399,6 +427,15 @@ group publishGroup
     remLength := ?
   }
 
+  template MQTT_v3_1_1_PublishHeader tw_publishHeader_retained :=
+  {
+    packetType := '0011'B,
+    dup_flag := ?,
+    qos_level := ?,
+    retain_flag := '1'B,
+    remLength := ?
+  }
+
   template MQTT_v3_1_1_PublishHeader tw_publish_header_qos(QoS p_qos)
   modifies tw_publishHeader :=
   {
@@ -437,6 +474,21 @@ group publishGroup
         nameLength := ?,
         topic_name := p_topic_name,
         packet_identifier := ?,
+        payload := p_payload
+      }
+    }
+  }
+
+  template MQTT_v3_1_1_Message tw_publish_receive_qos0(template MQTT_v3_1_1_PublishHeader p_header, UCHAR0_65535 p_topic_name, octetstring p_payload) :=
+  {
+    msg :=
+    {
+      publish :=
+      {
+        header := p_header,
+        nameLength := ?,
+        topic_name := p_topic_name,
+        packet_identifier := omit,
         payload := p_payload
       }
     }

@@ -345,7 +345,7 @@ group MqttPTC_FunctionsGroup
       f_send(v_conMsg);
 
       // wait for CONNACK with return_code := 0
-      var template IPL4_Response v_expected := { receivedMsg :=  t_connack };
+      var template IPL4_Response v_expected := { receivedMsg :=  tw_connack_return_code(0) };
       var IPL4_Response v_response := f_receive();
 
       if(match(v_response, v_expected))
@@ -400,7 +400,6 @@ group MqttPTC_FunctionsGroup
           v_ret := true;
         }
       }
-
 
       return v_ret;
     }
@@ -530,8 +529,6 @@ group MqttPTC_FunctionsGroup
       if(ctx.connId > 0)
       {
         vl_send.connId := ctx.connId;
-        //vl_send.remName := ctx.remoteHost;
-        //vl_send.remPort := ctx.remotePort;
         vl_send.proto := {tcp := {}}
 
         vl_send.msg := v_encoded;
@@ -797,11 +794,26 @@ group Common_FunctionsGroup {
     return false;
   }
 
+  // NOTE: move to generic helper functions in framework
   function f_randomPacketId()
   return integer
   {
     var integer v_ret := float2int(rnd() * 65535.0);
     return v_ret;
+  }
+
+  // NOTE: move to generic helper functions in framework
+  function f_test_payload(integer p_length) return octetstring
+  {
+    var octetstring v_ret := 'A5A5'O  // initi with marker pattern
+
+    for(var integer i := 2; i < p_length; i := i + 1)
+    {
+      var octetstring v_appendix := int2oct((i mod 255), 1)
+      v_ret := v_ret & v_appendix
+    }
+
+    return v_ret
   }
 }
 
