@@ -20,29 +20,29 @@ module MQTT_Broker_Pixits {
    modulepar IPL4_PortRange PX_LISTEN_PORT := 1883;
 
    /*
-    * @desc TODO
+    * @desc the Client Identifier which the SUT will use to authenticate
     */
-   modulepar charstring PX_CLIENT_ID := "TESTER_CLIENT_ID"
+   modulepar universal charstring PX_CLIENT_ID := "SUTCLIENTID"
+
+   /*
+    * @desc the username which the SUT will use to authenticate
+    */
+   modulepar universal charstring PX_USER_NAME := "SUT_USER_NAME"
+
+   /*
+    * @desc the password which the SUT will use to authenticate
+    */
+   modulepar universal charstring PX_PASSWORD := "SUT_PASSWORD"
 
    /*
     * @desc TODO
     */
-   modulepar charstring PX_USER_NAME := "TESTER_USER_NAME"
+   modulepar universal charstring PX_WILL_TOPIC := "testware/will/topic"
 
    /*
     * @desc TODO
     */
-   modulepar charstring PX_PASSWORD := "TESTER_PASSWORD"
-
-   /*
-    * @desc TODO
-    */
-   modulepar charstring PX_WILL_TOPIC := "testware/will/topic"
-
-   /*
-    * @desc TODO
-    */
-   modulepar charstring PX_WILL_MESSAGE := "TESTER'S LWT MESSAGE"
+   modulepar universal charstring PX_WILL_MESSAGE := "TESTER'S LWT MESSAGE"
 
 
    /**********************************************************************
@@ -80,6 +80,7 @@ module MQTT_Broker_Pixits {
     * default values will enable the strictest configuration
     **********************************************************************/
 
+    // TODO: move to common PIXITS because MQTT_Client also requires these PIXITS and might change from .cfg
     /*
      * @desc the conformance statement [MQTT-3.1.2-1] specifies that a broker MAY disconnect.
      *       If set to false, the TS broker will only accept 'MQTT' as valid protocol name

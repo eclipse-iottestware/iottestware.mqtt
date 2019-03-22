@@ -400,9 +400,9 @@ group connectGroup
 
     var UTF8EncodedString v_client_id := f_utf8_from_charstring(PX_CLIENT_ID);
     var UTF8EncodedString v_will_topic := f_utf8_from_charstring(PX_WILL_TOPIC);
-    var OctStringWithLength v_will_msg := { stringLength := lengthof(PX_WILL_MESSAGE), stringItem := char2oct(PX_WILL_MESSAGE) };
+    var OctStringWithLength v_will_msg := { stringLength := lengthof(PX_WILL_MESSAGE), stringItem := unichar2oct(PX_WILL_MESSAGE) };
     var UTF8EncodedString v_user_name := f_utf8_from_charstring(PX_USER_NAME);
-    var OctStringWithLength v_password := { stringLength := lengthof(PX_PASSWORD), stringItem := char2oct(PX_PASSWORD) }
+    var OctStringWithLength v_password := { stringLength := lengthof(PX_PASSWORD), stringItem := unichar2oct(PX_PASSWORD) }
 
     var template MQTT_v3_1_1_Message vt_conn_msg := m_connect_credentials_payload_lwt(v_client_id, v_will_topic, v_will_msg, v_user_name, v_password)
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);

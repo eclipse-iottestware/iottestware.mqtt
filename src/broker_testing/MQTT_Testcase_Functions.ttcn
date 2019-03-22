@@ -1246,7 +1246,7 @@ group publishFunctionsGroup
     f_connectMqtt();
 
     var integer v_pid := 0;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_LEAST_ONCE_DELIVERY))
     var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
@@ -1269,7 +1269,7 @@ group publishFunctionsGroup
     f_connectMqtt();
 
     var integer v_pid := 0;
-    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, EXACTLY_ONE_DELIVERY))
     var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
@@ -1298,7 +1298,7 @@ group subscribeFunctionsGroup
         const QoS c_qos := AT_MOST_ONCE_DELIVERY;
         const BIT4n c_header_flags := '1101'B;
 
-        var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+        var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
         var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_header_flags := c_header_flags, p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
         f_send(v_subscribe);
@@ -1322,7 +1322,7 @@ group subscribeFunctionsGroup
        const QoS c_qos := AT_MOST_ONCE_DELIVERY;
        const BIT4n c_header_flags := '0010'B;
 
-       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("/data");
+       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
        var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_header_flags := c_header_flags, p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
        f_send(v_subscribe);

@@ -23,8 +23,11 @@ type enumerated MQTT_ClientState { Idle, Wait_connack, Connected, Wait_suback, W
 
 type record IPL4_Connection {
   integer id,
-  charstring rem_name,
-  integer rem_port,
+  charstring remote_name, // the remote IP/hostname
+  integer remote_port,    // the remote port
+  charstring local_name,  // the local IP/hostname
+  integer local_port,     // the local port
+  boolean reuse_address,
   TCP_State tcp_state
 }
 

@@ -72,6 +72,15 @@ module MQTT_Templates_CONNECT
 
       group CONNECT_Payload_Group
       {
+        template MQTT_v3_1_1_ConnectPayload m_connect_payload_client_id(UTF8EncodedString p_client_id) :=
+        {
+          client_identifier := p_client_id,
+          will_topic := omit,
+          will_message := omit,
+          user_name := omit,
+          password := omit
+        }
+
         template MQTT_v3_1_1_ConnectPayload m_connect_payload_credentials(
           UTF8EncodedString p_client_id,
           UTF8EncodedString p_will_topic,
@@ -89,13 +98,29 @@ module MQTT_Templates_CONNECT
 
       group CONNECT_Message_Group
       {
+        template MQTT_v3_1_1_Message m_connect_message_base(UTF8EncodedString p_client_id) :=
+        {
+          msg :=
+          {
+            connect_msg :=
+            {
+              header := m_connect_header,
+              nameLength := 4,
+              name := "MQTT",
+              protocol_level := 4,
+              flags := m_connect_flags_basic,
+              keep_alive := 0,
+              payload := m_connect_payload_client_id(p_client_id)
+            }
+          }
+        }
+
         template MQTT_v3_1_1_Message m_connect_credentials_payload_lwt(
           UTF8EncodedString p_client_id,
           UTF8EncodedString p_will_topic,
           OctStringWithLength p_will_msg,
           UTF8EncodedString p_user_name,
-          OctStringWithLength p_password)
-        modifies mw_connect :=
+          OctStringWithLength p_password) :=
         {
           msg :=
           {

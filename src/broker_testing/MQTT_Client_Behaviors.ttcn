@@ -1,0 +1,59 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+ module MQTT_Client_Behaviors
+ {
+   import from MQTT_v3_1_1_Types all;
+   import from MQTTasp_Types all;
+
+   import from MQTT_Pixits all;
+   import from MQTT_TestSystem_Common all;
+   import from MQTT_Functions_SetUp all;
+   import from MQTT_Functions_Network all;
+   import from MQTT_Functions_Protocol all;
+   import from MQTT_Functions_Conformance all;
+
+   import from MQTT_Templates_MQTTasp all;
+   import from MQTT_Templates_CONNECT all;
+
+   import from UTF8_Helper all;
+
+   /*
+    * @desc f_mqtt_connect_01 sends a most basic MQTT Connect... no retain, no LWT etc...
+    */
+   function f_mqtt_connect_01() runs on MQTT_Client_MTC
+   {
+
+     // establish TCP connection
+     if(f_ipl4_connect())
+     {
+       var UTF8EncodedString v_client_id := f_utf8_from_charstring(credentials.clientId)
+       var template MQTT_v3_1_1_Message v_connect_packet := m_connect_message_base(v_client_id)
+       var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection);
+
+       MQTT_PCO.send(valueof(vt_connect))
+     }
+     else
+     {
+       setverdict(fail, "Client could not connect to ", PX_SUT_HOSTNAME, ":", PX_SUT_PORT)
+     }
+   }
+
+   /*
+    * @desc f_mqtt_connect_01 sends a most basic MQTT Connect... with retain, no LWT etc...
+    */
+   function f_mqtt_connect_02() runs on MQTT_Client_MTC
+   {
+
+   }
+
+} // module MQTT_Client_Behaviors

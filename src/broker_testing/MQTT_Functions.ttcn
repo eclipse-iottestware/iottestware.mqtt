@@ -12,10 +12,10 @@
 module MQTT_Functions {
 
 import from MQTT_TestSystem all;
-
 import from MQTT_TypesAndValues all;
 import from MQTT_Templates all;
 import from MQTT_Pixits all;
+import from MQTT_Functions_Conformance all;
 
 import from MQTT_v3_1_1_IPL4SizeFunction all;
 import from MQTT_v3_1_1_Types all;
@@ -38,34 +38,36 @@ group MqttMTC_FunctionsGroup
 
     var boolean v_initState := true;
 
-    //set the local Host
-    if(p_client_idx >= 0 and p_client_idx < lengthof(PX_CLIENTS))
+    // check if the given client index is valid and if enough PX_CLIENTS are given
+    if(not (p_client_idx >= 0 and p_client_idx < lengthof(PX_CLIENTS)))
     {
-      ctx.connId := -1;
-      ctx.localHost := "0.0.0.0";
-      ctx.localPort := f_random_port_number();
-
-      credentials := PX_CLIENTS[p_client_idx];
-
-      map(self:IPL4_PCO, system:IPL4_PCO);
-
-      var boolean v_connect_state := f_ipl4_connect_sut();
-      var integer v_current_retries := 0;
-
-      // if connection failed wait and retry
-      while (not(v_connect_state) and (v_current_retries < connect_retries)) {
-        v_current_retries := v_current_retries + 1;
-        log("Connection failed: retry ", v_current_retries, " of ", connect_retries, " in ", retry_delay, "s");
-        f_sleep(retry_delay);
-        v_connect_state := f_ipl4_connect_sut();
-      }
-      v_initState := v_connect_state;
+      setverdict(inconc, "Given Client Index ", p_client_idx, " is invalid")
+      return false
     }
-    else
-    {
-      log("Client index ", p_client_idx, " is invalid");
-      v_initState := false;
+
+    ctx.connId := -1;
+    ctx.localHost := "0.0.0.0";
+    ctx.localPort := f_random_port_number();
+
+    credentials := PX_CLIENTS[p_client_idx];
+
+    // check if PIXITS are valid
+    if(not f_check_pixits()) { return false }
+
+    map(self:IPL4_PCO, system:IPL4_PCO);
+
+    var boolean v_connect_state := f_ipl4_connect_sut();
+    var integer v_current_retries := 0;
+
+    // if connection failed wait and retry
+    while (not(v_connect_state) and (v_current_retries < PX_CONNECT_RETRIES)) {
+      v_current_retries := v_current_retries + 1;
+      log("Connection failed: retry ", v_current_retries, " of ", PX_CONNECT_RETRIES, " in ", PX_RETRY_DELAY, "s");
+      f_sleep(PX_RETRY_DELAY);
+      v_connect_state := f_ipl4_connect_sut();
     }
+    v_initState := v_connect_state;
+
 
     if (not v_initState) { f_noConnection() }
 
@@ -98,6 +100,40 @@ group MqttMTC_FunctionsGroup
     }
 
     return v_connectState;
+  }
+
+  /*
+  * checks the given PIXITS from .cfg as otherwise faulty values might break some verdicts
+  */
+  private function f_check_pixits() runs on MQTT_Client
+  return boolean {
+    // check if given client ID is valid
+    var UTF8EncodedString v_client_identifier := f_getClientId();
+    if(not f_client_id_valid(v_client_identifier))
+    {
+      log("Check the given Client ID: ", v_client_identifier)
+      setverdict(inconc, "Given Client ID is invalid")
+      return false
+    }
+
+    // check if the given username is valid
+    var UTF8EncodedString v_username := f_getUsername();
+    if(not f_username_valid(v_username))
+    {
+      log("Check the given Username: ", v_username)
+      setverdict(inconc, "Given Username is invalid")
+      return false
+    }
+
+    var UTF8EncodedString v_base_topic := f_getBaseTopicName()
+    if(not f_topic_valid(v_base_topic, true))
+    {
+      log("Check the given Topic: ", v_base_topic)
+      setverdict(inconc, "Given Topic is invalid")
+      return false
+    }
+
+    return true
   }
 
   /*
@@ -412,8 +448,8 @@ group MqttMTC_FunctionsGroup
     function f_receive() runs on MQTT_Client
     return IPL4_Response
     {
-      timer t_Timeout := maxResponseTime;
-      if (maxResponseTime > 0.0) { t_Timeout.start; }
+      timer t_Timeout := PX_MAX_RESPONSE_TIME;
+      if (PX_MAX_RESPONSE_TIME > 0.0) { t_Timeout.start; }
 
       var ASP_RecvFrom v_ipl4Recv;
 
@@ -445,7 +481,7 @@ group MqttMTC_FunctionsGroup
         }
         [] t_Timeout.timeout
         {
-          v_response.timeoutEvent := maxResponseTime;
+          v_response.timeoutEvent := PX_MAX_RESPONSE_TIME;
           log("Timeout while waiting for Message");
         }
       }

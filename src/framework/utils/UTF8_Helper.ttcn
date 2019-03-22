@@ -14,7 +14,7 @@ module UTF8_Helper {
 
   import from MQTT_v3_1_1_Types all;
 
-  function f_utf8_from_charstring(charstring p_in) return UTF8EncodedString
+  function f_utf8_from_charstring(universal charstring p_in) return UTF8EncodedString
   {
     return { stringLength := lengthof(p_in), stringItem := p_in }
   }

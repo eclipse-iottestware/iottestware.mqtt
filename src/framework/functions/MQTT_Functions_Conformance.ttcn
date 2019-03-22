@@ -163,15 +163,46 @@ module MQTT_Functions_Conformance
 
   /*
    * check if the given Topic is valid (check only UTF-8 ?)
-   * see [MQTT-3.1.3-10]
+   * see [MQTT-3.1.3-10], [MQTT-4.7.1-1]
+   *
+   * @param p_topic is the topic name or filter
+   * @param p_is_name defines if the p_topic is a Topic Name or Topic Filter
    */
-  function f_topic_valid(UTF8EncodedString p_topic) return boolean
+  function f_topic_valid(UTF8EncodedString p_topic, boolean p_is_name := true) return boolean
   {
     // check UTF-8
     log("[MQTT_v4][checked]: {[MQTT-3.1.3-10]}")
-    var boolean v_return := f_is_valid_utf8(p_topic)
+    if(not f_is_valid_utf8(p_topic)) { return false }
 
-    return v_return
+    // check if topic contains spaces; conformance statement?
+    var template charstring mw_wildcard_space := "((*)(\s)(*))"
+    var universal charstring v_reg := regexp(p_topic.stringItem, mw_wildcard_space, 0)
+    if(v_reg != "")
+    {
+      log("Topic name contains spaces")
+      return false
+    }
+
+    // check if topic contains wildcards
+    log("[MQTT_v4][checked]: {[MQTT-4.7.1-1]}")
+    var template charstring mw_wildcard_pattern := "((*)([\#]|[\+])(*))"
+    v_reg := regexp(p_topic.stringItem, mw_wildcard_pattern, 0)
+    if(v_reg != "")
+    {
+      //log("Topic contains wildcard")
+      // topic names MUST NOT contain wildcards
+      if(p_is_name) { return false }
+
+      // does topic filter contain invalid multi-level wildcards
+      log("[MQTT_v4][checked]: {[MQTT-4.7.1-2]}")
+      var template charstring mw_wildcard_multi_neg := "((*[\#][/]?+)|(*[\#][\w]?+)|(*[\w][\#]))"
+      v_reg := regexp(p_topic.stringItem, mw_wildcard_multi_neg, 0)
+      if(v_reg != "") { return false }
+
+      // TODO: check single-level wildcards 
+    }
+
+    return true
   }
 
   /*

@@ -48,7 +48,7 @@ module MQTT_Functions_Protocol
   *
   * @remark   Direction: Client <-> Server
   */
-  group PTC_Publish
+  group Publish_Functions
   {
     /*
      * @desc response with a PUBLISH
@@ -107,7 +107,7 @@ module MQTT_Functions_Protocol
       f_send_mqtt(p_conn, vt_pubcomp)
     }
 
-  } // group PTC_Publish
+  } // group Publish_Functions
 
   /*
   * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
@@ -116,7 +116,7 @@ module MQTT_Functions_Protocol
   *
   * @remark   runs on MQTT_MTC
   */
-  group PTC_Common
+  group Common_Functions
   {
     /*
      * @desc send a generic MQTT message
@@ -129,7 +129,7 @@ module MQTT_Functions_Protocol
       MQTT_PCO.send(valueof(vt_msg))
       log("[MQTT_MTC](send)(MQTT Message): ", vt_msg)
     }
-  } // group PTC_Common
+  } // group Common_Functions
 
   /*
   * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
@@ -243,7 +243,7 @@ module MQTT_Functions_Protocol
   *
   * @remark   Direction: Client <- Server
   */
-  group PTC_Client
+  group Client_Functions
   {
     /*
      * @desc response with a CONNECT
@@ -287,6 +287,6 @@ module MQTT_Functions_Protocol
       }*/
     }
 
-  } // group PTC_Client
+  } // group Client_Functions
 
 } // module

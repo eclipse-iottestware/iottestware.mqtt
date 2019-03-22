@@ -52,8 +52,8 @@ group broker_components {
 group client_components {
   type component MQTT_Client_TestSystem
   {
-    port MQTTasp_PT MQTT_Publisher;
-    port MQTTasp_PT MQTT_Subscriber;
+    port MQTTasp_PT mqtt_client_1;
+    port MQTTasp_PT mqtt_client_2;
   }
 
   /*
@@ -61,10 +61,7 @@ group client_components {
    */
   type component MQTT_Client_MTC extends MQTT_MTC
   {
-    //timer tc_testcase_max := 5.0;
-    //var default vc_timeout_default;
-
-    var MqttClientContext ctx;
+    var MQTT_Connection connection;
     var MqttClientCredentials credentials;
   }
 }

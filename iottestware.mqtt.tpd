@@ -66,6 +66,7 @@
     <FileResource projectRelativePath="oracle_broker_demo.sh" relativeURI="oracle_broker_demo.sh"/>
     <FileResource projectRelativePath="selftest.sh" relativeURI="selftest.sh"/>
     <FileResource projectRelativePath="src/broker_testing/MQTT_Functions.ttcn" relativeURI="src/broker_testing/MQTT_Functions.ttcn"/>
+    <FileResource projectRelativePath="src/broker_testing/MQTT_Client_Behaviors.ttcn" relativeURI="src/broker_testing/MQTT_Client_Behaviors.ttcn"/>
     <FileResource projectRelativePath="src/broker_testing/MQTT_Pixits.ttcn" relativeURI="src/broker_testing/MQTT_Pixits.ttcn"/>
     <FileResource projectRelativePath="src/broker_testing/MQTT_Templates.ttcn" relativeURI="src/broker_testing/MQTT_Templates.ttcn"/>
     <FileResource projectRelativePath="src/broker_testing/MQTT_TestCases.ttcn" relativeURI="src/broker_testing/MQTT_TestCases.ttcn"/>

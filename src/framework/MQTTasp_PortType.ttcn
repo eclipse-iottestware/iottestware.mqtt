@@ -44,8 +44,8 @@ private function f_enc_mqtt(in MQTTasp_Message p_in, out ASP_SendTo p_out) retur
   v_encoded := f_adjustLength(f_calc_rem_length(v_encoded));
 
   p_out.connId := p_in.conn.ipl4.id;
-  p_out.remName := p_in.conn.ipl4.rem_name;
-  p_out.remPort := p_in.conn.ipl4.rem_port;
+  p_out.remName := p_in.conn.ipl4.remote_name;
+  p_out.remPort := p_in.conn.ipl4.remote_port;
   p_out.proto := {tcp := {}}    // TDOO: add proto to IPL4_Connection?
   p_out.msg := v_encoded;
 
@@ -71,8 +71,8 @@ private function f_dec_mqtt(in ASP_RecvFrom p_in, out MQTTasp_Message p_out) ret
   if (ischosen(v_mqttMsg.msg)) {
     p_out.msg := v_mqttMsg;
     p_out.conn.ipl4.id := p_in.connId;
-    p_out.conn.ipl4.rem_name := p_in.remName;
-    p_out.conn.ipl4.rem_port := p_in.remPort;
+    p_out.conn.ipl4.remote_name := p_in.remName;
+    p_out.conn.ipl4.remote_port := p_in.remPort;
     p_out.conn.ipl4.tcp_state := Connected
     p_out.conn.client_state := omit
     log("[TRPO](Decoded MQTT message): ", p_out)

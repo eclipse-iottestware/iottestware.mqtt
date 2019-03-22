@@ -7,6 +7,7 @@ module Playground
   import from MQTT_Templates_CONNECT all;
   import from MQTT_Defaults_Common all;
   import from MQTT_Functions_Network all;
+  import from MQTT_Functions_Conformance all;
 
   import from MQTTasp_PortType all;
   import from MQTTasp_Types all;
@@ -15,114 +16,138 @@ module Playground
   import from IPL4asp_PortType all;
   import from IPL4asp_Types all;
 
+  import from UTF8_Helper all;
   import from Random_Helper all;
 
   /*
-   * test matching bahviour used in f_MQTT_Client_CONNECT_08
+   * test regexp matching of topic filter and topic name required in MQTT_Functions_Conformance.f_topic_valid
    */
-  testcase TCU_Client_CONNECT_08() runs on MQTT_Broker_MTC
+  testcase TC_topic_filter_regexp() runs on MQTT_Client_MTC
   {
-    var MQTT_v3_1_1_ConnectPayload v_input :=
-    {
-      client_identifier :=
-      {
-        stringLength := 23,
-        stringItem := "TS7QVyCxbSK+aDkbDT3Zy5A"
-      },
-      will_topic := omit,
-      will_message := omit,
-      user_name := omit,
-      password := omit
-    }
+    var template charstring mw_wildcard_pattern := "((*)([\#]|[\+])(*))"
+    var template charstring mw_wildcard_space := "((*)(\s)(*))"
+    var template charstring mw_wildcard_multi_neg := "((*[\#][/]?+)|(*[\#][\w]?+)|(*[\w][\#]))"
 
-    log("[TEMPL]: ", mw_connect_payload)
-    log("[INPUT]:", v_input)
-    log("[TEMPL]: ", mw_connect_payload_credentials_empty)
-    //if(match(v_input, mw_connect_payload_credentials_empty))
-    if(match(valueof(v_input), mw_connect_payload))
-    {
-      setverdict(pass)
-    } else {
-      setverdict(fail)
-    }
+    const charstring v_topic_name_01 := "sport/tennis/player1/score/wimbledon";
+    const charstring v_topic_filter_01 := "#";
+    const charstring v_topic_filter_02 := "sport/#";
+    const charstring v_topic_filter_03 := "sport/tennis/#";
+    const charstring v_topic_filter_031 := "sport/tennis/#/"
+    const charstring v_topic_filter_04 := "sport /tennis/#"
+    const charstring v_topic_filter_05 := "sport/tennis#"
+    const charstring v_topic_filter_06 := "sport/tennis/#/ranking"
+    const charstring v_topic_filter_07 := "sport/tennis/#ranking"
+    const charstring v_topic_filter_08 := "sport/tennis/##"
+    const charstring v_topic_filter_09 := "#/sport/tennis/"
+    const charstring v_topic_filter_10 := "#sport/tennis/"
+
+    var universal charstring v_reg := regexp(v_topic_name_01, mw_wildcard_pattern, 0)
+    log(v_topic_name_01, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_01, mw_wildcard_pattern, 0)
+    log("Wildcard: ", v_topic_filter_01, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_02, mw_wildcard_pattern, 0)
+    log("Wildcard: ", v_topic_filter_02, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_03, mw_wildcard_pattern, 0)
+    log("Wildcard: ", v_topic_filter_03, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_03, mw_wildcard_space, 0)
+    log("Space: ", v_topic_filter_03, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_04, mw_wildcard_space, 0)
+    log("Space: ", v_topic_filter_04, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_01, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_01, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_03, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_03, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_031, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_031, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_05, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_05, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_06, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_06, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_07, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_07, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_08, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_08, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_09, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_09, " --> ", v_reg)
+
+    v_reg := regexp(v_topic_filter_10, mw_wildcard_multi_neg, 0)
+    log("Mult negative: ", v_topic_filter_10, " --> ", v_reg)
   }
 
-  /*
-   * test case for building a mtc controlled test
-   *
-   *    +----------------+              +----------------+
-   *    |                |            * |                |
-   *    |      MTC       +-------------->      PTC       |
-   *    |                |              |                |
-   *    +----------------+              +----------------+
-   *
-   * MTC (Main Test Component) controls multiple PTC (Parallel Test Component)
-   */
+  testcase TC_check_valid_topic() runs on MQTT_Client_MTC
+  {
+    // valid topic name
+    var UTF8EncodedString v_utf8_topic_name_01 := f_utf8_from_charstring("sport/tennis/player1/score/wimbledon")
 
-   testcase TC_Exp_MTC_01() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
-   {
-     var MQTT_Client_MTC publisher, subscriber;
+    // valid topic filter with multi-level wildcard
+    var UTF8EncodedString v_utf8_topic_filter_01 := f_utf8_from_charstring("#")
+    var UTF8EncodedString v_utf8_topic_filter_02 := f_utf8_from_charstring("sport/#")
+    var UTF8EncodedString v_utf8_topic_filter_03 := f_utf8_from_charstring("sport/tennis/#")
 
-     publisher := MQTT_Client_MTC.create("Publisher")
-     subscriber := MQTT_Client_MTC.create("Subscriber")
+    // invalid topic filter with multi-level wildcard
+    var UTF8EncodedString v_utf8_topic_filter_04 := f_utf8_from_charstring("sport/tennis#")
+    var UTF8EncodedString v_utf8_topic_filter_05 := f_utf8_from_charstring("sport/tennis/#/ranking")
 
-     map(publisher:MQTT_PCO, system:MQTT_Publisher)
-     map(subscriber:MQTT_PCO, system:MQTT_Subscriber)
+    // valid topic filter with single-level wildcard
+    var UTF8EncodedString v_utf8_topic_filter_06 := f_utf8_from_charstring("+")
+    var UTF8EncodedString v_utf8_topic_filter_07 := f_utf8_from_charstring("+/tennis/#")
+    var UTF8EncodedString v_utf8_topic_filter_08 := f_utf8_from_charstring("sport/+/player1")
 
-     publisher.start(f_behavior_01());
-     subscriber.start(f_behavior_01());
+    // invalid topic filter with single-level wildcard
+    //var UTF8EncodedString v_utf8_topic_filter_09 := f_utf8_from_charstring("sport+")  // TODO
 
-     publisher.done;
-     subscriber.done;
+    // invalid due to space
+    var UTF8EncodedString v_utf8_topic_filter_10 := f_utf8_from_charstring("sport/tennis/play er1/score/wimbledon")
 
-     unmap(publisher:MQTT_PCO, system:MQTT_Publisher)
-     unmap(subscriber:MQTT_PCO, system:MQTT_Subscriber)
-   }
+    // TODO: what about topic filters like "#/tennis/+" or "#/+/#" etc.
 
-   function f_behavior_01() runs on MQTT_Client_MTC
-   {
-     timer t_timeout := 5.0;
-     t_timeout.start
+    // check with MQTT_Functions_Conformance.f_topic_valid
+    if(not f_topic_valid(v_utf8_topic_name_01, true)) { setverdict(fail, "check: v_topic_name_01 as topic name failed") }
+    if(not f_topic_valid(v_utf8_topic_name_01, false)) { setverdict(fail, "check: v_topic_name_01 as topic filter failed") }
 
-     if(f_ipl4_connect())
-     {
-       log("### BEHAVIOR 01: connected")
+    if(f_topic_valid(v_utf8_topic_filter_01, true)) { setverdict(fail, "check: v_topic_filter_01 as topic name failed") }
+    if(not f_topic_valid(v_utf8_topic_filter_01, false)) { setverdict(fail, "check: v_topic_filter_01 as topic filter failed") }
 
-       alt {
-         [] t_timeout.timeout {
-           setverdict(pass)
-           f_ipl4_close(ctx.connId)
-           break;
-         }
-       }
-     }
-     else
-     {
-       log("### BEHAVIOR 01: NOT connected")
-       setverdict(fail)
-     }
-   }
+    if(f_topic_valid(v_utf8_topic_filter_02, true)) { setverdict(fail, "check: v_topic_filter_02 as topic name failed") }
+    if(not f_topic_valid(v_utf8_topic_filter_02, false)) { setverdict(fail, "check: v_topic_filter_02 as topic filter failed") }
 
-   function f_behavior_02() runs on MQTT_Client_MTC
-   {
-     timer t_timeout := 5.0;
-     t_timeout.start
+    if(f_topic_valid(v_utf8_topic_filter_03, true)) { setverdict(fail, "check: v_topic_filter_03 as topic name failed") }
+    if(not f_topic_valid(v_utf8_topic_filter_03, false)) { setverdict(fail, "check: v_topic_filter_03 as topic filter failed") }
 
-     if(f_ipl4_connect())
-     {
-       log("+++ BEHAVIOR 02: connected")
+    if(f_topic_valid(v_utf8_topic_filter_04, true)) { setverdict(fail, "check: v_topic_filter_04 as topic name failed") }
+    if(f_topic_valid(v_utf8_topic_filter_04, false)) { setverdict(fail, "check: v_topic_filter_04 as topic filter failed") }
 
-       alt {
-         [] t_timeout.timeout {
-           setverdict(pass)
-           break;
-         }
-       }
-     }
-     else
-     {
-       log("+++ BEHAVIOR 02: NOT connected")
-       setverdict(fail)
-     }
-   }
+    if(f_topic_valid(v_utf8_topic_filter_05, true)) { setverdict(fail, "check: v_topic_filter_05 as topic name failed") }
+    if(f_topic_valid(v_utf8_topic_filter_05, false)) { setverdict(fail, "check: v_topic_filter_05 as topic filter failed") }
+
+    if(f_topic_valid(v_utf8_topic_filter_06, true)) { setverdict(fail, "check: v_topic_filter_06 as topic name failed") }
+    if(not f_topic_valid(v_utf8_topic_filter_06, false)) { setverdict(fail, "check: v_topic_filter_06 as topic filter failed") }
+
+    if(f_topic_valid(v_utf8_topic_filter_07, true)) { setverdict(fail, "check: v_topic_filter_07 as topic name failed") }
+    if(not f_topic_valid(v_utf8_topic_filter_07, false)) { setverdict(fail, "check: v_topic_filter_07 as topic filter failed") }
+
+    if(f_topic_valid(v_utf8_topic_filter_08, true)) { setverdict(fail, "check: v_topic_filter_08 as topic name failed") }
+    if(not f_topic_valid(v_utf8_topic_filter_08, false)) { setverdict(fail, "check: v_topic_filter_08 as topic filter failed") }
+
+    //if(f_topic_valid(v_utf8_topic_filter_09, true)) { setverdict(fail, "check: v_topic_filter_09 as topic name failed") }
+    //if(f_topic_valid(v_utf8_topic_filter_09, false)) { setverdict(fail, "check: v_topic_filter_09 as topic filter failed") }
+
+    if(f_topic_valid(v_utf8_topic_filter_10, true)) { setverdict(fail, "check: v_topic_filter_10 as topic name failed") }
+    if(f_topic_valid(v_utf8_topic_filter_10, false)) { setverdict(fail, "check: v_topic_filter_10 as topic filter failed") }
+
+    if(getverdict == none) { setverdict(pass, "Passed all checks") }
+  }
 }

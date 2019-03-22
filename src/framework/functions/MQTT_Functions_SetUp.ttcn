@@ -26,7 +26,7 @@ module MQTT_Functions_SetUp
 
   import from IPL4asp_Types all;
 
-  group PTC_Broker
+  group Broker
   {
     /*
     * initialize a broker MTC
@@ -75,8 +75,40 @@ module MQTT_Functions_SetUp
       map(self:MQTT_PCO, system:IPL4_PCO);
       self.stop;
     }
-  } // group PTC_Broker
+  } // group Broker
 
+  group Client
+  {
+    import from MQTT_Pixits all;
 
+    function f_init_client(in integer p_client_idx) runs on MQTT_Client_MTC
+    {
+      if(p_client_idx < 0 or p_client_idx >= lengthof(PX_CLIENTS))
+      {
+        log("Client Index ", p_client_idx, " is out of range")
+        self.kill
+      }
+
+      connection := {
+        ipl4 := {
+          id := -1,
+          remote_name := PX_SUT_HOSTNAME,
+          remote_port := PX_SUT_PORT,
+          local_name := PX_LOCAL_HOST_ADDRESS,
+          local_port := -1,
+          reuse_address := PX_REUSE_ADDRESS,
+          tcp_state := Disconnected
+        },
+        client_state := Disconnected
+      }
+
+      credentials := PX_CLIENTS[p_client_idx]
+    }
+
+    function f_clear_client() runs on MQTT_Client_MTC return boolean
+    {
+      return true // TODO
+    }
+  } // group Client
 
 } // module

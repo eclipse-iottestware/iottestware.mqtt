@@ -49,40 +49,51 @@ module MQTT_Functions_Network
 
   group Client
   {
-    function f_ipl4_connect(integer p_local_port := -1) runs on MQTT_Client_MTC
+    function f_ipl4_connect() runs on MQTT_Client_MTC
     return boolean
     {
-      var integer v_local_port := p_local_port;
-      if(v_local_port == -1)
+      if(connection.ipl4.local_port == -1)
       {
-        v_local_port := f_random_port_number()
+        connection.ipl4.local_port := f_random_port_number()
       }
+      var charstring v_remote_host := connection.ipl4.remote_name
+      var integer v_remote_port := connection.ipl4.remote_port
+      var charstring v_local_host := connection.ipl4.local_name
+      var integer v_local_port := connection.ipl4.local_port
+      var boolean v_reuse_address := connection.ipl4.reuse_address;
+      var integer v_connection_id := connection.ipl4.id
 
-      const boolean c_reuseAddress := false;
-      var boolean v_connectState := true;
+      var boolean v_connectState := false;
 
-      ctx.remoteHost := "127.0.0.1";
-      ctx.remotePort := 1883;
-      ctx.localHost := "0.0.0.0";
-      ctx.localPort := v_local_port;
-      ctx.connId := -1;
+      var Result vl_result := MQTTasp_CtrlFunct.f_IPL4_connect(MQTT_PCO, v_remote_host, v_remote_port, v_local_host, v_local_port, v_connection_id, {tcp := {}}, {{reuseAddress := {enable := v_reuse_address}}});
 
-      log("IPL4 Connect: ", ctx.localHost, ":", ctx.localPort);
-
-      var Result vl_result := MQTTasp_CtrlFunct.f_IPL4_connect(MQTT_PCO, ctx.remoteHost, ctx.remotePort, ctx.localHost, ctx.localPort, ctx.connId, {tcp := {}}, {{reuseAddress := {enable := c_reuseAddress}}});
-
-      if (not(ispresent(vl_result.connId)))
+      if (ispresent(vl_result.connId))
       {
-        ctx.connId := -1;
-        v_connectState := false;
-      } else {
-        var integer v_cid := vl_result.connId
-        //var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
-        //f_IPL4_setGetMsgLen(IPL4_PCO, v_cid, getMsg_Func, {});
-        ctx.connId := vl_result.connId;
+        v_connectState := true;
+        connection.ipl4.id := vl_result.connId
+        connection.ipl4.tcp_state := Connected
+        connection.client_state := Disconnected
       }
 
       return v_connectState;
+    }
+
+    function f_ipl4_disconnect() runs on MQTT_Client_MTC
+    return boolean
+    {
+      var integer v_connection_id := connection.ipl4.id
+      var Result vl_result := f_ipl4_close(v_connection_id)
+
+      if (ispresent(vl_result.connId))
+      {
+        connection.ipl4.tcp_state := Disconnected
+        connection.client_state := Disconnected
+        return true
+      }
+      else
+      {
+        return false
+      }
     }
   } // group Client
 

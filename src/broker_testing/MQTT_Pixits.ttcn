@@ -13,16 +13,48 @@ module MQTT_Pixits {
 
     import from MQTT_TypesAndValues all;
 
+    /*
+     * @desc the hostname / ip address of the SUT
+     */
     modulepar charstring PX_SUT_HOSTNAME := "127.0.0.1";
+
+    /*
+     * @desc the port of the SUT
+     */
     modulepar integer PX_SUT_PORT := 1883;
 
+
+    /*
+     * @desc a list of client credentials which the TS will use for communication with the SUT
+     */
     modulepar MqttClientCredentials_List PX_CLIENTS;
 
-    modulepar float maxResponseTime := 5.0;
+    /*
+     * @desc defines the time in seconds how long the TS will wait for responses from the SUT
+     */
+    modulepar float PX_MAX_RESPONSE_TIME := 5.0;
 
-    modulepar integer connect_retries := 3;
-    modulepar float retry_delay := 1.0;
+    /*
+     * @desc how often should the TS try to reconnect if connection fails.
+     */
+    modulepar integer PX_CONNECT_RETRIES := 1;
 
+    /*
+     * @desc how long should the TS wait between the reconnects
+     */
+    modulepar float PX_RETRY_DELAY := 1.0;
+
+    /*
+     * @desc define a specific local host address if required
+     */
+    modulepar charstring PX_LOCAL_HOST_ADDRESS := "0.0.0.0"
+
+    /*
+     * @desc define if reuseAddress feature of IPL4 PortType should be used
+     */
+    modulepar boolean PX_REUSE_ADDRESS := false
+
+    /* @obsolete: selection of Test-cases via Dashboard makes this modulepar obsolete
     // PICS selection
     type enumerated PICS
     {
@@ -42,5 +74,5 @@ module MQTT_Pixits {
       PICS_BROKER_LWT,
       PICS_BROKER_RTND,
       PICS_BROKER_AUTH
-    };
+    };*/
 }
