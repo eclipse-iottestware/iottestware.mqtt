@@ -26,13 +26,41 @@ module MQTT_Templates_SUBSCRIBE
   {
     group fixedHeaderGroup
     {
-    template Header m_subscribe_header(BIT4n p_flags := '0010'B) :=
+      template Header m_subscribe_header(BIT4n p_flags := '0010'B) :=
       {
         packetType := '1000'B,
         flags := p_flags,
         remLength := '00000000'O
       }
     } // group fixedHeaderGroup
+
+    group SUBSCRIBE_Payload_Group
+    {
+      template MQTT_v3_1_1_SubscribePayload m_subscribe_payload(UCHAR0_65535 p_topic_filter, QoS p_requested_qos) :=
+      {
+        filterLength := lengthof(p_topic_filter),
+        topic_filter := p_topic_filter,
+        requested_qos := p_requested_qos
+      }
+
+      /* TODO: how to template a List?
+      template MQTT_v3_1_1_SubscribePayloadList m_subscribe_payload_list_1(UCHAR0_65535 p_topic_filter, QoS p_requested_qos) :=
+      {
+        {
+          m_subscribe_payload(p_topic_filter, p_requested_qos)
+        }
+      }*/
+    }
+
+    group SUBSCRIBE_Group
+    {
+      template MQTT_v3_1_1_Subscribe m_subscribe_packet(integer p_packet_id, MQTT_v3_1_1_SubscribePayloadList p_payload) :=
+      {
+        header := m_subscribe_header,
+        packet_identifier := p_packet_id,
+        payload := p_payload
+      }
+    }
 
     group SUBSCRIBE_MessageGroup
     {

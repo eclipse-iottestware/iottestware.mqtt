@@ -24,10 +24,8 @@ import from UTF8_Helper all;
 
 // MQTT TS Framework
 import from MQTT_TestSystem_Common all;
-import from MQTT_Functions_Network all;
 import from MQTT_Functions_SetUp all;
-import from MQTT_Client_Behaviors all;
-import from MQTT_Templates_CONNECT all;
+import from MQTT_Functions_Network all;
 
 // MQTT 3.1.1 Protocol Modules
 import from MQTT_v3_1_1_Types all;
@@ -994,33 +992,7 @@ group protocolFeaturesGroup {
     f_cleanUp();
   }
 
-  /*
-  * first TC with configuration 02!
-  * For now does not implement TP_MQTT_BROKER_FEAT_RTND_002!!
 
-  +-----------+                +-----+                   +-------------+
-  | Publisher |                | SUT |                   | Subscriber  |
-  +-----------+                +-----+                   +-------------+
-        | ------------------\     |                             |
-        |-| sleep for 5 sec |     |                             |
-        | |-----------------|     |                             |
-        |                         |                             |
-        | CONNECT(client_id_1)    |                             |
-        |------------------------>|                             |
-        |                         |         ------------------\ |
-        |                         |         | sleep for 5 sec |-|
-        |                         |         |-----------------| |
-        |                         |                             |
-        |                         |        CONNECT(client_id_2) |
-        |                         |<----------------------------|
-        |                         |                             |
-        | TCP(FIN, ACK)           |                             |
-        |------------------------>|                             |
-        |                         |                             |
-        |                         |               TCP(FIN, ACK) |
-        |                         |<----------------------------|
-        |                         |                             |
-  */
   testcase TC_MQTT_BROKER_FEAT_RTND_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     var MQTT_Client_MTC publisher, subscriber;
@@ -1031,36 +1003,14 @@ group protocolFeaturesGroup {
     map(publisher:MQTT_PCO, system:mqtt_client_1)
     map(subscriber:MQTT_PCO, system:mqtt_client_2)
 
-    publisher.start(f_init_client(0));  // initialize with credentials from idx 0
-    subscriber.start(f_init_client(1)); // initialize with credentials from idx 1 NOTE: idx := 2 will lead to self.kill for testing purpose
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
 
-    //publisher.done;
-    //subscriber.done;
     all component.done
 
     if(all component.alive)
     {
-      // outsource to f_MQTT_BRoker_FEAT_RTND_001(publisher, subscriber)
-      timer t_timeout := 5.0;
-      t_timeout.start
-      alt {
-        [] t_timeout.timeout {
-          setverdict(pass)
-          publisher.start(f_mqtt_connect_01())
-          publisher.done;
-          break;
-        }
-      }
-
-      t_timeout.start
-      alt {
-        [] t_timeout.timeout {
-          setverdict(pass)
-          subscriber.start(f_mqtt_connect_01())
-          subscriber.done;
-          break;
-        }
-      }
+      f_TC_MQTT_BROKER_FEAT_RTND_002(publisher, subscriber)
     }
     else
     {
@@ -1071,6 +1021,41 @@ group protocolFeaturesGroup {
     publisher.start(f_ipl4_disconnect())
     subscriber.start(f_ipl4_disconnect())
     all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  testcase TC_MQTT_BROKER_FEAT_RTND_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_FEAT_RTND_003(publisher, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
 
     unmap(publisher:MQTT_PCO, system:mqtt_client_1)
     unmap(subscriber:MQTT_PCO, system:mqtt_client_2)

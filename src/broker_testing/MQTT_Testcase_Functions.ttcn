@@ -16,6 +16,17 @@ import from MQTT_TestSystem all;
 import from MQTT_TypesAndValues all;
 import from MQTT_Functions all;
 import from MQTT_Templates all;
+import from MQTT_Pixits all;
+
+// MQTT TS Framework
+import from MQTTasp_Types all;
+import from MQTT_TestSystem_Common all;
+//import from MQTT_Functions_Network all;
+//import from MQTT_Functions_SetUp all;
+import from MQTT_Client_Behaviors all;
+import from MQTT_Templates_MQTTasp all;
+import from MQTT_Templates_CONNECT all;
+import from MQTT_Templates_PUBLISH all;
 
 import from MQTT_v3_1_1_Types all;
 
@@ -2000,6 +2011,48 @@ group protocolFeaturesFunctionsGroup
     }
 
     f_disconnectMqtt();
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_RTND_002(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    // publish retained message
+    var BIT1n v_retain_flag := '1'B
+    var QoS v_qos_level := AT_LEAST_ONCE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header)))
+    p_publisher.done;
+
+    // subscribe and check if retained message received
+    var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_retain_qos0('1'B)
+    p_subscriber.start(f_mqtt_subscribe_retained(AT_MOST_ONCE_DELIVERY, v_expected))
+    p_subscriber.done
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_RTND_003(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    // subscribe to topic
+    p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done
+
+    // publish retained message
+    var BIT1n v_retain_flag := '1'B
+    var QoS v_qos_level := AT_LEAST_ONCE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header)))
+    p_publisher.done;
+
+    // receive the published message without retained flag
+    var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_retain_qos0('0'B)
+    p_subscriber.start(f_mqtt_receive_publish(v_expected))
+    p_subscriber.done
   }
 } // protocolFeaturesFunctionsGroup
 

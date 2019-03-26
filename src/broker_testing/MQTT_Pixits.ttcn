@@ -30,6 +30,13 @@ module MQTT_Pixits {
     modulepar MqttClientCredentials_List PX_CLIENTS;
 
     /*
+     * @desc the topic which will be used for publishing
+     */
+    modulepar charstring PX_TOPIC_NAME := "eclipse/iot/testware/"
+
+    // modulepar charstring PX_TOPIC_FILTER := PX_TOPIC_NAME & "/#"
+
+    /*
      * @desc defines the time in seconds how long the TS will wait for responses from the SUT
      */
     modulepar float PX_MAX_RESPONSE_TIME := 5.0;

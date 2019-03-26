@@ -56,8 +56,6 @@ def main():
         proxy = start_fuzzing_proxy(seed, ratio, listen_port, destination)
         test_suite = start_test_suite(config)
 
-        # TODO: read stdout of test_suite and count the verdicts!
-
         line = '..'
         while line != '':
             line = test_suite.stdout.readline().decode("utf-8")

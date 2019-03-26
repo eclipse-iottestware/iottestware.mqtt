@@ -24,15 +24,19 @@
 
    import from MQTT_Templates_MQTTasp all;
    import from MQTT_Templates_CONNECT all;
+   import from MQTT_Templates_CONNACK all;
+   import from MQTT_Templates_PUBLISH all;
+   import from MQTT_Templates_SUBSCRIBE all;
+   import from MQTT_Templates_SUBACK all;
 
    import from UTF8_Helper all;
+   import from Random_Helper all;
 
    /*
     * @desc f_mqtt_connect_01 sends a most basic MQTT Connect... no retain, no LWT etc...
     */
-   function f_mqtt_connect_01() runs on MQTT_Client_MTC
+   function f_mqtt_connect_01(integer p_return_code := 0) runs on MQTT_Client_MTC
    {
-
      // establish TCP connection
      if(f_ipl4_connect())
      {
@@ -41,6 +45,23 @@
        var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection);
 
        MQTT_PCO.send(valueof(vt_connect))
+
+       var template MQTTasp_Message v_receive := mw_mqtt_message(mw_connack_rc(p_return_code))
+       timer t_timeout := PX_MAX_RESPONSE_TIME;
+       t_timeout.start
+       alt {
+         [] MQTT_PCO.receive(v_receive) {
+           break;
+         }
+         [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) {
+           setverdict(fail, "CONNACK contains wrong return code")
+           break
+         }
+         [] t_timeout.timeout {
+           setverdict(fail, "No CONNACK received")
+           break;
+         }
+       }
      }
      else
      {
@@ -48,12 +69,121 @@
      }
    }
 
-   /*
-    * @desc f_mqtt_connect_01 sends a most basic MQTT Connect... with retain, no LWT etc...
-    */
-   function f_mqtt_connect_02() runs on MQTT_Client_MTC
+   function f_mqtt_send_publish(MQTT_v3_1_1_PublishHeader p_header, octetstring p_payload := 'A5A5A5'O) runs on MQTT_Client_MTC
    {
+     var universal charstring v_topic_string := PX_TOPIC_NAME
+     var UTF8EncodedString v_topic := { stringLength := lengthof(v_topic_string), stringItem := v_topic_string }
+     var template MQTT_v3_1_1_Publish v_publish;
 
+     if(p_header.qos_level == AT_MOST_ONCE_DELIVERY)
+     {
+       v_publish := t_publish_packet_qos_0(p_header, v_topic, p_payload)
+     }
+     else
+     {
+       var integer v_packet_id := f_random_packet_id()
+       v_publish := t_publish_packet(p_header, v_packet_id, v_topic, p_payload)
+     }
+
+     f_send_pubish(connection, valueof(v_publish))
    }
 
+   function f_mqtt_receive_publish(template MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expect := mw_mqtt_message({msg := { publish := p_publish }})
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect) {
+         setverdict(pass, "Received PUBLISH")
+         break;
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "Received unexpected message ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No PUBLISH received")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   function f_mqtt_subscribe(QoS p_requested_qos) runs on MQTT_Client_MTC
+   {
+     var integer v_packet_id := f_random_packet_id()
+     var universal charstring v_topic_filter := PX_TOPIC_NAME
+     var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(PX_TOPIC_NAME, p_requested_qos)
+     var MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := {valueof(v_subscribe_payload)}
+     var template MQTT_v3_1_1_Subscribe v_subscribe := m_subscribe_packet(v_packet_id, v_subscribe_payload_list)
+
+     f_send_subscribe(connection, valueof(v_subscribe))
+
+     // wait for suback
+     var template MQTTasp_Message v_expect_suback := mw_mqtt_message(mw_suback_packet_id(v_packet_id))
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect_suback) {
+         break;
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "SUBACK was expected, received ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No SUBACK received for ", v_packet_id)
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   /*
+    * @desc subscribe to PX_TOPIC_NAME and expect a retained message
+    */
+   function f_mqtt_subscribe_retained(QoS p_requested_qos, template MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+   {
+     var integer v_packet_id := f_random_packet_id()
+     var universal charstring v_topic_filter := PX_TOPIC_NAME
+     var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(PX_TOPIC_NAME, p_requested_qos)
+     var MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := {valueof(v_subscribe_payload)}
+     var template MQTT_v3_1_1_Subscribe v_subscribe := m_subscribe_packet(v_packet_id, v_subscribe_payload_list)
+
+     f_send_subscribe(connection, valueof(v_subscribe))
+
+     // wait for suback
+     var template MQTTasp_Message v_expect_suback := mw_mqtt_message(mw_suback_packet_id(v_packet_id))
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect_suback) {
+         // after SUBACK wait for the retained message
+         var template MQTTasp_Message v_expect_retain_pub := mw_mqtt_message({msg := { publish := p_publish }})
+         alt {
+           [] MQTT_PCO.receive(v_expect_retain_pub) {
+             setverdict(pass, "Received retained message")
+           }
+           [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+             setverdict(fail, "Retained PUBLISH was expected, received ", v_received)
+           }
+           [] t_timeout.timeout {
+             setverdict(fail, "No retained PUBLISH received")
+             break;
+           }
+         }
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received{
+         setverdict(fail, "SUBACK was expected, received ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No SUBACK received for ", v_packet_id)
+         break;
+       }
+     }
+
+     t_timeout.stop
+   }
 } // module MQTT_Client_Behaviors

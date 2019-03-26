@@ -572,7 +572,7 @@ group MqttMTC_FunctionsGroup
     function f_getBaseTopicName() runs on MQTT_Client
     return UTF8EncodedString
     {
-      return { stringLength := lengthof(credentials.topicName), stringItem := credentials.topicName };
+      return { stringLength := lengthof(PX_TOPIC_NAME), stringItem := PX_TOPIC_NAME };
     }
 
     function f_getConcatenatedTopicName(UCHAR0_65535 p_appendix) runs on MQTT_Client
@@ -580,7 +580,7 @@ group MqttMTC_FunctionsGroup
     {
       // TODO: check the ending of base topic name for a slash
       // TODO: check the beginning of p_appendix for a slash
-      return { stringLength := lengthof(credentials.topicName & p_appendix), stringItem := credentials.topicName & p_appendix };
+      return { stringLength := lengthof(PX_TOPIC_NAME & p_appendix), stringItem := PX_TOPIC_NAME & p_appendix };
     }
   }
 }
@@ -635,23 +635,6 @@ group Common_FunctionsGroup {
       }
     }
   }
-
-/*
-  // this function is taken from the example given in https://www.eclipse.org/forums/index.php/t/1085007/
-  function f_lookupAddress(in charstring p_id, out NamedHostPort v_addr)
-  return boolean
-  {
-
-    for (var integer i:=0; i<sizeof(tsp_addresses); i:=i+1)
-    {
-      if (tsp_addresses[i].id == p_id)
-      {
-        v_addr := tsp_addresses[i];
-        return true;
-      }
-    }
-    return false;
-  }*/
 
   // NOTE: move to generic helper functions in framework
   function f_randomPacketId()

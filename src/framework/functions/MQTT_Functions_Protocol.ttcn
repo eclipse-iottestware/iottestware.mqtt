@@ -53,10 +53,11 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a PUBLISH
      */
-    function f_send_pubish(inout MQTT_Connection p_conn) runs on MQTT_MTC
+    function f_send_pubish(MQTT_Connection p_conn, MQTT_v3_1_1_Publish p_publish) runs on MQTT_MTC
     {
-      // TODO: implement
-      log("[NOIMPL](f_publish)")
+      var template MQTT_v3_1_1_Message v_message := {msg := { publish := p_publish }}
+
+      f_send_mqtt(p_conn, v_message)
     }
 
     /*
@@ -257,10 +258,11 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a SUBSCRIBE
      */
-    function f_send_subscribe(inout MQTT_Connection p_conn) runs on MQTT_Client_MTC
+    function f_send_subscribe(inout MQTT_Connection p_conn, MQTT_v3_1_1_Subscribe p_subscribe) runs on MQTT_Client_MTC
     {
-      // TODO: implement
-      log("[NOIMPL](f_connect_request)")
+      var template MQTT_v3_1_1_Message v_message := {msg := { subscribe := p_subscribe }}
+
+      f_send_mqtt(p_conn, v_message)
     }
 
     /*

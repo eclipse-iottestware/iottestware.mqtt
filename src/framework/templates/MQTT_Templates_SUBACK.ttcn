@@ -95,6 +95,19 @@ module MQTT_Templates_SUBACK
             suback := ?
           }
         }
+
+        template MQTT_v3_1_1_Message mw_suback_packet_id(integer p_packet_id) :=
+        {
+          msg :=
+          {
+            suback :=
+            {
+              header := mw_suback_header,
+              packet_identifier := p_packet_id,
+              payload := ?
+            }
+          }
+        }
       }
     }
   }

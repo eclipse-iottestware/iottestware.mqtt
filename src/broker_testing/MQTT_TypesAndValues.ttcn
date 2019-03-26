@@ -19,8 +19,7 @@ type record MqttClientCredentials
 {
   UCHAR0_65535 clientId,
   UCHAR0_65535 username,
-  UCHAR0_65535 password,
-  UCHAR0_65535 topicName
+  UCHAR0_65535 password
 }
 
 type record MqttClientContext

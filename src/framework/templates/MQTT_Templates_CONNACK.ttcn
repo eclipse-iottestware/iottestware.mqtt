@@ -103,6 +103,19 @@ group SendingTemplates
             connack := ?
           }
         }
+
+        template MQTT_v3_1_1_Message mw_connack_rc(integer p_rc) :=
+        {
+          msg :=
+          {
+            connack :=
+            {
+              header := mw_connack_header,
+              session_present_flag := ?,
+              connect_return_code := p_rc
+            }
+          }
+        }
       }
     }
   }
