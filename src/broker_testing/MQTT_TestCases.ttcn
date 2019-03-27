@@ -364,9 +364,9 @@ group connectGroup
   }
 
   /*
-  * @purpose The user name MUST be a well-formed UTF-8 encoded string
+  * @purpose The wildcard characters can be used in Topic Filters, but MUST NOT be used within a Topic Name
   *
-  * @reference [MQTT-1.5.3-1], [MQTT-3.1.3-11]
+  * @reference [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_024() runs on MQTT_Client
   {
@@ -378,15 +378,71 @@ group connectGroup
   }
 
   /*
-  * @purpose The user name MUST be a well-formed UTF-8 encoded string
+  * @purpose The wildcard characters can be used in Topic Filters, but MUST NOT be used within a Topic Name
   *
-  * @reference [MQTT-1.5.3-2], [MQTT-3.1.3-11]
+  * @reference [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_025() runs on MQTT_Client
   {
     if(f_init())
     {
       f_TC_MQTT_BROKER_CONNECT_025();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The user name MUST be a well-formed UTF-8 encoded string
+  *
+  * @reference [MQTT-1.5.3-1], [MQTT-3.1.3-11]
+  */
+  testcase TC_MQTT_BROKER_CONNECT_026() runs on MQTT_Client
+  {
+    if(f_init())
+    {
+      f_TC_MQTT_BROKER_CONNECT_026();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The user name MUST be a well-formed UTF-8 encoded string
+  *
+  * @reference [MQTT-1.5.3-2], [MQTT-3.1.3-11]
+  */
+  testcase TC_MQTT_BROKER_CONNECT_027() runs on MQTT_Client
+  {
+    if(f_init())
+    {
+      f_TC_MQTT_BROKER_CONNECT_027();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose After a Network Connection is established by a Client to a Server, the first Packet sent from the Client to the Server MUST be a CONNECT Packet"
+  *
+  * @reference [MQTT-3.1.0-1]
+  */
+  testcase TC_MQTT_BROKER_CONNECT_028() runs on MQTT_Client
+  {
+    if(f_init())
+    {
+      f_TC_MQTT_BROKER_CONNECT_028();
+    }
+    f_cleanUp();
+  }
+
+  /*
+  * @purpose The Server MUST process a second CONNECT Packet sent from a Client as a protocol violation and disconnect the Client"
+  *
+  * @reference [MQTT-3.1.0-2]
+  */
+  testcase TC_MQTT_BROKER_CONNECT_029() runs on MQTT_Client
+  {
+    if(f_init())
+    {
+      f_TC_MQTT_BROKER_CONNECT_029();
     }
     f_cleanUp();
   }
@@ -992,7 +1048,11 @@ group protocolFeaturesGroup {
     f_cleanUp();
   }
 
-
+  /*
+  * @purpose If the Retain Flag is set to 1, in a PUBLISH Control Packet sent by a Client to the IUT, the IUT MUST store the Application Message and its QoS, so that It can be delivered to future subscribers."
+  *
+  * @reference [MQTT-3.3.1-5], [MQTT-3.3.1-6], [MQTT-3.3.1-8]
+  */
   testcase TC_MQTT_BROKER_FEAT_RTND_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     var MQTT_Client_MTC publisher, subscriber;
@@ -1026,6 +1086,11 @@ group protocolFeaturesGroup {
     unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
   }
 
+  /*
+  * @purpose The IUT MUST set the Retain Flag to 0 when a PUBLISH Control Packet is sent to a Client because it matches an established subscription regardless of how the flag was set in the message it received."
+  *
+  * @reference [MQTT-3.3.1-9]
+  */
   testcase TC_MQTT_BROKER_FEAT_RTND_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     var MQTT_Client_MTC publisher, subscriber;
@@ -1060,6 +1125,13 @@ group protocolFeaturesGroup {
     unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
   }
 
+  /*
+  * @purpose A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as normal by the Server and sent to Clients
+  *          with a subscription matching the topic name. (Additionally any existing retained message with the same topic name MUST be removed and any
+  *          future subscribers for the topic will not receive a retained message)"
+  *
+  * @reference [MQTT-3.3.1-10]
+  */
   testcase TC_MQTT_BROKER_FEAT_RTND_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     var MQTT_Client_MTC publisher, subscriber;
@@ -1094,6 +1166,13 @@ group protocolFeaturesGroup {
     unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
   }
 
+  /*
+  * @purpose (A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as normal by the Server and sent to Clients
+  *          with a subscription matching the topic name). Additionally any existing retained message with the same topic name MUST be removed and any
+  *          future subscribers for the topic will not receive a retained message. A zero byte retained message MUST NOT be stored as a retained message on the Server."
+  *
+  * @reference [MQTT-3.3.1-10], [MQTT-3.3.1-11]
+  */
   testcase TC_MQTT_BROKER_FEAT_RTND_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     var MQTT_Client_MTC publisher, subscriber;
@@ -1128,6 +1207,12 @@ group protocolFeaturesGroup {
     unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
   }
 
+  /*
+  * @purpose If the RETAIN flag is 0, in a PUBLISH Packet sent by a Client to a Server, the Server MUST NOT store the message and
+  *          MUST NOT remove or replace any existing retained message."
+  *
+  * @reference [MQTT-3.3.1-12]
+  */
   testcase TC_MQTT_BROKER_FEAT_RTND_006() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     var MQTT_Client_MTC publisher, subscriber;

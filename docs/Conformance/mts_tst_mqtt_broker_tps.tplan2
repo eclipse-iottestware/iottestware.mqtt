@@ -672,7 +672,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_CONNECT_022
 
-
     Test objective
     "The Will Topic MUST be a UTF-8 encoded string"
     Reference
@@ -707,7 +706,6 @@ Package mts_tst_mqtt {
 
   Test Purpose {
     TP Id TP_MQTT_Broker_CONNECT_023
-
 
     Test objective
     "The Will Topic MUST be a UTF-8 encoded string"
@@ -744,6 +742,64 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_CONNECT_024
 
+    Test objective
+    "The wildcard characters can be used in Topic Filters, but MUST NOT be used within a Topic Name"
+    Reference
+    "[MQTT-4.7.1-1]"
+    PICS Selection PICS_BROKER_LWT
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a CONNECT message containing
+            connect_flags containing
+                will_flag indicating value '1'B,
+                will_qos corresponding to AT_MOST_ONCE,
+                will_retain indicating value '0'B,
+                reserved_field indicating value '0'B;
+            ,
+            payload containing
+                will_topic indicating value TOPIC_FILTER_SINGLE_LEVEL,
+                will_message corresponding to PX_WILL_MESSAGE;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_CONNECT_025
+
+    Test objective
+    "The wildcard characters can be used in Topic Filters, but MUST NOT be used within a Topic Name"
+    Reference
+    "[MQTT-4.7.1-1]"
+    PICS Selection PICS_BROKER_LWT
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a CONNECT message containing
+            connect_flags containing
+                will_flag indicating value '1'B,
+                will_qos corresponding to AT_MOST_ONCE,
+                will_retain indicating value '0'B,
+                reserved_field indicating value '0'B;
+            ,
+            payload containing
+                will_topic indicating value TOPIC_FILTER_MULTI_LEVEL,
+                will_message corresponding to PX_WILL_MESSAGE;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_CONNECT_026
+
 
     Test objective
     "The User Name MUST be a UTF-8 encoded string."
@@ -778,9 +834,8 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    // TODO: differentiate MQTT_USER_NAME_INVALID_UTF8 to distinguish from _CONNECT_024
-    TP Id TP_MQTT_Broker_CONNECT_025
-
+    // TODO: differentiate MQTT_USER_NAME_INVALID_UTF8 to distinguish from _CONNECT_025
+    TP Id TP_MQTT_Broker_CONNECT_027
 
     Test objective
     "The User Name MUST be a UTF-8 encoded string."
@@ -811,6 +866,54 @@ Package mts_tst_mqtt {
         } then {
             the IUT entity closes the TCP_CONNECTION
         }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_CONNECT_028
+
+    Test objective
+    "After a Network Connection is established by a Client to a Server, the first Packet sent from the Client to the Server MUST be a CONNECT Packet"
+    Reference
+    "[MQTT-3.1.0-1]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a TCP_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message
+      } then {
+        the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_CONNECT_029
+
+    Test objective
+    "The Server MUST process a second CONNECT Packet sent from a Client as a protocol violation and disconnect the Client"
+    Reference
+    "[MQTT-3.1.0-2]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a CONNECT message
+      } then {
+        the IUT entity closes the TCP_CONNECTION
+      }
     }
   }
 

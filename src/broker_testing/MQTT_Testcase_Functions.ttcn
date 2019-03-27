@@ -681,6 +681,74 @@ group connectFunctionsGroup
 
       function f_TC_MQTT_BROKER_CONNECT_024() runs on MQTT_Client
       {
+        const BIT1n c_wr := '0'B;                     // Will Retain Flag
+        const QoS c_qos := AT_MOST_ONCE_DELIVERY;     // Will QoS
+        const BIT1n c_wf := '1'B;                     // Will Flag
+
+        const universal charstring c_wm := "Will Message";
+        const octetstring c_os_wm := unichar2oct(c_wm);
+        const OctStringWithLength c_willMsg := { stringLength := lengthof(c_os_wm), stringItem := c_os_wm};
+
+        var UTF8EncodedString v_willTopic := f_getConcatenatedTopicName("+")
+
+        var UTF8EncodedString v_clientId := f_getClientId();
+        var UTF8EncodedString v_username := f_getUsername();
+        var OctStringWithLength v_password := f_getPassword();
+
+        var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_wr, p_will_qos := c_qos, p_will_flag := c_wf));
+
+        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, v_willTopic, c_willMsg));
+
+        var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
+        f_send(v_conMsg);
+
+        if(f_receiveNetworkClosedEvent())
+        {
+          setverdict(pass, "IUT closed the Network Connection correctly");
+        }
+        else
+        {
+          setverdict(fail, "IUT MUST close the Network Connection");
+          f_disconnectMqtt();
+        }
+      }
+
+      function f_TC_MQTT_BROKER_CONNECT_025() runs on MQTT_Client
+      {
+        const BIT1n c_wr := '0'B;                     // Will Retain Flag
+        const QoS c_qos := AT_MOST_ONCE_DELIVERY;     // Will QoS
+        const BIT1n c_wf := '1'B;                     // Will Flag
+
+        const universal charstring c_wm := "Will Message";
+        const octetstring c_os_wm := unichar2oct(c_wm);
+        const OctStringWithLength c_willMsg := { stringLength := lengthof(c_os_wm), stringItem := c_os_wm};
+
+        var UTF8EncodedString v_willTopic := f_getConcatenatedTopicName("#")
+
+        var UTF8EncodedString v_clientId := f_getClientId();
+        var UTF8EncodedString v_username := f_getUsername();
+        var OctStringWithLength v_password := f_getPassword();
+
+        var MQTT_v3_1_1_ConnectFlags v_conFlags := valueof(t_connectFlags_lwt(p_will_retain := c_wr, p_will_qos := c_qos, p_will_flag := c_wf));
+
+        var MQTT_v3_1_1_ConnectPayload v_conPayload := valueof(t_connect_payload_lwt(v_clientId, v_username, v_password, v_willTopic, c_willMsg));
+
+        var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
+        f_send(v_conMsg);
+
+        if(f_receiveNetworkClosedEvent())
+        {
+          setverdict(pass, "IUT closed the Network Connection correctly");
+        }
+        else
+        {
+          setverdict(fail, "IUT MUST close the Network Connection");
+          f_disconnectMqtt();
+        }
+      }
+
+      function f_TC_MQTT_BROKER_CONNECT_026() runs on MQTT_Client
+      {
         var UTF8EncodedString v_clientId := f_getClientId();
 
         const octetstring c_oUN := 'EDA080'O; // UTF-8 for U+D800
@@ -708,7 +776,7 @@ group connectFunctionsGroup
         }
       }
 
-      function f_TC_MQTT_BROKER_CONNECT_025() runs on MQTT_Client
+      function f_TC_MQTT_BROKER_CONNECT_027() runs on MQTT_Client
       {
         var UTF8EncodedString v_clientId := f_getClientId();
 
@@ -725,6 +793,53 @@ group connectFunctionsGroup
 
         var MQTT_v3_1_1_Message v_conMsg := valueof(t_connect_with_payload(v_conFlags, v_conPayload));
         f_send(v_conMsg);
+
+        if(f_receiveNetworkClosedEvent())
+        {
+          setverdict(pass, "IUT closed the Network Connection correctly");
+        }
+        else
+        {
+          setverdict(fail, "IUT MUST close the Network Connection");
+          f_disconnectMqtt();
+        }
+      }
+
+      function f_TC_MQTT_BROKER_CONNECT_028() runs on MQTT_Client
+      {
+        /* initial condition */
+        //f_ipl4_connect_sut(); // is done implicitly while f_init()
+
+        /* expected bahaviour */
+        var integer v_pid := f_randomPacketId();
+        var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+        var octetstring v_payload := 'A0A0'O;
+        var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
+        var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+        f_send(v_publish)
+
+        if(f_receiveNetworkClosedEvent())
+        {
+          setverdict(pass, "IUT closed the Network Connection correctly");
+        }
+        else
+        {
+          setverdict(fail, "IUT MUST close the Network Connection");
+          f_disconnectMqtt();
+        }
+      }
+
+      function f_TC_MQTT_BROKER_CONNECT_029() runs on MQTT_Client
+      {
+        /* initial condition */
+        f_connectMqtt();
+
+        /* expected bahaviour */
+        var UTF8EncodedString v_clientId := f_getClientId();
+
+        var template MQTT_v3_1_1_Message v_conMsg := t_connect(p_client_id := v_clientId);
+        f_send(valueof(v_conMsg));
 
         if(f_receiveNetworkClosedEvent())
         {

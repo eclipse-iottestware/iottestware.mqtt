@@ -76,6 +76,8 @@ Package mts_mqtt_commons {
 
         // topics and topic filters
         UTF8String TOPIC_FILTER_VALID;              // valid topic filter should also match the PIXIT TOPIC
+        UTF8String TOPIC_FILTER_SINGLE_LEVEL;       // valid topic filter with single level wild card e.g. abc/+/def
+        UTF8String TOPIC_FILTER_MULTI_LEVEL;        // valid topic filter with multi level wild card e.g. abc/def/#
         UTF8String TOPIC_FILTER_INVALID;            // invalid topic filter according to MQTT: e.g. abc/#/def
         UTF8String TOPIC_NAME_VALID;                // valid topic name according to spec. (e.g. no wildcards)
         UTF8String TOPIC_NAME_INVALID;              // valid UTF-8 but invalid topic name (e.g. contains wildcards)
