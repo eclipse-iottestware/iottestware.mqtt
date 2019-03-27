@@ -150,6 +150,18 @@ module MQTT_Templates_PUBLISH
         payload := ?
       }
 
+      template MQTT_v3_1_1_Publish mw_publish_packet_zero_payload_qos0(BIT1n p_retain_flag := '1'B)
+      modifies mw_publish_packet_retain_qos0 :=
+      {
+        payload := ''O
+      }
+
+      template MQTT_v3_1_1_Publish mw_publish_packet_alternative_payload_qos0(BIT1n p_retain_flag := '1'B, octetstring p_payload)
+      modifies mw_publish_packet_retain_qos0 :=
+      {
+        payload := p_payload
+      }
+
       template MQTT_v3_1_1_Publish mw_publish_packet_retain(QoS p_qos_level, BIT1n p_retain_flag) :=
       {
         header := mdw_publish_header_retain(p_qos_level, p_retain_flag),

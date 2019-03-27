@@ -2054,6 +2054,106 @@ group protocolFeaturesFunctionsGroup
     p_subscriber.start(f_mqtt_receive_publish(v_expected))
     p_subscriber.done
   }
+
+  function f_TC_MQTT_BROKER_FEAT_RTND_004(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done
+
+    /* Expected behaviour */
+    // publish retained message with zero byte payload
+    var BIT1n v_retain_flag := '1'B
+    var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
+    var octetstring v_zero_byte_payload := ''O
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_zero_byte_payload))
+    p_publisher.done;
+
+    // receive the published message without retained flag and zero byte payload
+    var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_zero_payload_qos0('0'B)
+    p_subscriber.start(f_mqtt_receive_publish(v_expected))
+    p_subscriber.done
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_RTND_005(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    /* Expected behaviour */
+    // send a retained message with payload
+    var BIT1n v_retain_flag := '1'B
+    var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header)))
+    p_publisher.done;
+
+    // now send a retained message with zero byte payload -> delete retained message
+    var octetstring v_zero_byte_payload := ''O
+    v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_zero_byte_payload))
+    p_publisher.done;
+
+    timer t_timeout := 0.5;
+    t_timeout.start
+    alt {
+      [] t_timeout.timeout {
+        // wait until publish is sent out from queue!
+        // otherwise the following subscription arrives before the previous publish (?)
+        break;
+      }
+    }
+
+    // subscribe to topic and check if retained message was removed
+    p_subscriber.start(f_mqtt_subscribe_no_retained(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_RTND_006(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    /* Expected behaviour */
+    // send a retained message with payload
+    var BIT1n v_retain_flag := '1'B
+    var octetstring v_payload_1 := 'A5A5A5A5A5A5'O
+    var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_payload_1))
+    p_publisher.done;
+
+    // now send a non-retained message with alternative payload
+    v_retain_flag := '0'B
+    var octetstring v_payload_2 := 'FFEEDDCCBBAA'O
+    v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_payload_2))
+    p_publisher.done;
+
+    timer t_timeout := 0.5;
+    t_timeout.start
+    alt {
+      [] t_timeout.timeout {
+        // wait until publish is sent out from queue!
+        // otherwise the following subscription arrives before the previous publish (?)
+        break;
+      }
+    }
+
+    // receive the published message with retained flag and first payload
+    var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_alternative_payload_qos0('1'B, v_payload_1)
+    p_subscriber.start(f_mqtt_receive_publish(v_expected))
+    p_subscriber.done
+  }
 } // protocolFeaturesFunctionsGroup
 
 } // MQTT_Testcase_Functions

@@ -2135,8 +2135,10 @@ Package mts_tst_mqtt {
 
     Initial conditions
     with {
-        the IUT entity having a UTF8_MESSAGE_VALID in the RETAIN_TOPIC entity and
-        the CLIENT entity having a MQTT_CONNECTION to the IUT entity and
+        the IUT entity having a UTF8_MESSAGE_VALID in the RETAIN_TOPIC entity
+        and
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+        and
         the CLIENT entity having a CLEAN_SESSION
     }
 
@@ -2201,7 +2203,8 @@ Package mts_tst_mqtt {
                topic_name corresponding to PX_PUBLISH_TOPIC,
             packet_identifier corresponding to PACKET_ID_1,
             payload corresponding to PAYLOAD;
-           to the IUT entity and
+           to the IUT entity
+           and
            the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
     }
 
@@ -2250,9 +2253,11 @@ Package mts_tst_mqtt {
 
     Initial conditions
     with {
-        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity and
-        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity and
-        the CLIENT_2 entity subscribed the PIXIT_TOPIC containing
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
             qos_level corresponding to AT_MOST_ONCE;
     }
 
@@ -2287,4 +2292,160 @@ Package mts_tst_mqtt {
         }
     }
   }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_RTND_004
+
+    Test objective
+    "A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as normal by the Server and sent to Clients
+    with a subscription matching the topic name. (Additionally any existing retained message with the same topic name MUST be removed and any
+    future subscribers for the topic will not receive a retained message)"
+
+    Reference
+    "[MQTT-3.3.1-10]"
+
+    PICS Selection PICS_BROKER_RTND
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+            qos_level corresponding to AT_MOST_ONCE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '1'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        payload corresponding to PAYLOAD_ZERO_BYTE;
+        ;
+        from the CLIENT_1 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '0'B,
+        payload corresponding to PAYLOAD_ZERO_BYTE;
+        ;
+        to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_RTND_005
+
+    Test objective
+    "(A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as normal by the Server and sent to Clients
+    with a subscription matching the topic name). Additionally any existing retained message with the same topic name MUST be removed and any
+    future subscribers for the topic will not receive a retained message. A zero byte retained message MUST NOT be stored as a retained message on the Server."
+
+    Reference
+    "[MQTT-3.3.1-10], [MQTT-3.3.1-11]"
+
+    PICS Selection PICS_BROKER_RTND
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '1'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        payload corresponding to PAYLOAD;
+        ;
+        from the CLIENT_1 entity
+        and
+        the IUT entity receives a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '1'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        payload corresponding to PAYLOAD_ZERO_BYTE;
+        ;
+        from the CLIENT_1 entity
+        and
+        the IUT entity receives a SUBSCRIBE message containing
+        payload containing
+          topic_filter corresponding to PX_PUBLISH_TOPIC,
+          requested_qos corresponding to AT_MOST_ONCE;
+        ;
+      } then {
+        the IUT entity sends no PUBLISH message to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_RTND_006
+
+    Test objective
+    "If the RETAIN flag is 0, in a PUBLISH Packet sent by a Client to a Server, the Server MUST NOT store the message and
+    MUST NOT remove or replace any existing retained message."
+
+    Reference
+    "[MQTT-3.3.1-12]"
+
+    PICS Selection PICS_BROKER_RTND
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '1'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        payload corresponding to PAYLOAD;
+        ;
+        from the CLIENT_1 entity
+        and
+        the IUT entity receives a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '0'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        payload corresponding to PAYLOAD_2;
+        ;
+        from the CLIENT_1 entity
+        and
+        the IUT entity receives a SUBSCRIBE message containing
+        payload containing
+          topic_filter corresponding to PX_PUBLISH_TOPIC,
+          requested_qos corresponding to AT_MOST_ONCE;
+        ;
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '1'B,
+        payload corresponding to PAYLOAD;
+        ;
+        to the CLIENT_2 entity
+      }
+    }
+  }
+
 }

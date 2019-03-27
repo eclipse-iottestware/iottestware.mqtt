@@ -92,6 +92,8 @@ Package mts_mqtt_commons {
         //UTF8String WILL_MESSAGE_VALID; -> obsolete
         UTF8String UTF8_MESSAGE_VALID;
         Octetstring PAYLOAD;
+        Octetstring PAYLOAD_2;               // alternative PAYLOAD if required to distinguish to PAYLOAD
+        Octetstring PAYLOAD_ZERO_BYTE;       // zero byte PAYLOAD has special semantic for retained messages
         UTF8String PROTOCOL_NAME;            // MUST be MQTT
         UTF8String PROTOCOL_NAME_INVALID;    // MUST be != PROTOCOL_NAME
 

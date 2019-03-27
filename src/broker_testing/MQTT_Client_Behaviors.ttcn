@@ -186,4 +186,52 @@
 
      t_timeout.stop
    }
+
+   /*
+    * @desc subscribe to PX_TOPIC_NAME and check there is no retained message
+    */
+   function f_mqtt_subscribe_no_retained(QoS p_requested_qos) runs on MQTT_Client_MTC
+   {
+     var integer v_packet_id := f_random_packet_id()
+     var universal charstring v_topic_filter := PX_TOPIC_NAME
+     var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(PX_TOPIC_NAME, p_requested_qos)
+     var MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := {valueof(v_subscribe_payload)}
+     var template MQTT_v3_1_1_Subscribe v_subscribe := m_subscribe_packet(v_packet_id, v_subscribe_payload_list)
+
+     f_send_subscribe(connection, valueof(v_subscribe))
+
+     // wait for suback
+     var template MQTTasp_Message v_expect_suback := mw_mqtt_message(mw_suback_packet_id(v_packet_id))
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME
+
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect_suback) {
+         // after SUBACK wait for the retained message
+         var template MQTTasp_Message v_publish_all := mw_mqtt_message(mw_publish_all)
+         alt {
+           [] MQTT_PCO.receive(v_publish_all) {
+             setverdict(fail, "Received unexpected retained message")
+           }
+           [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+             setverdict(fail, "No message was expected, received ", v_received)
+           }
+           [] t_timeout.timeout {
+             setverdict(pass, "Retained message removed correctly")
+             break;
+           }
+         }
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received{
+         setverdict(fail, "SUBACK was expected, received ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No SUBACK received for ", v_packet_id)
+         break;
+       }
+     }
+
+     t_timeout.stop
+   }
 } // module MQTT_Client_Behaviors
