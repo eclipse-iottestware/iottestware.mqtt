@@ -510,9 +510,12 @@ group connectGroup
           setverdict(fail, "Client ID is not empty")
         }
       }
-      [] MQTT_PCO.receive(?) -> value v_received{
+      [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
         log("Received unexpected PDU: ", v_received)
         setverdict(fail, "received unexpected PDU")
+      }
+      [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+        setverdict(fail, "received unexpected ASP Event")
       }
     }
   }
@@ -558,9 +561,12 @@ group connectGroup
           setverdict(fail, "Will flag is not set")
         }
       }
-      [] MQTT_PCO.receive(?) -> value v_received{
+      [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
         log("Received unexpected PDU: ", v_received)
         setverdict(fail, "received unexpected PDU")
+      }
+      [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+        setverdict(fail, "received unexpected ASP Event")
       }
     }
   }
@@ -605,9 +611,12 @@ group connectGroup
           setverdict(fail, "Username flag is not set")
         }
       }
-      [] MQTT_PCO.receive(?) -> value v_received{
+      [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
         log("Received unexpected PDU: ", v_received)
         setverdict(fail, "received unexpected PDU")
+      }
+      [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+        setverdict(fail, "received unexpected ASP Event")
       }
     }
   }

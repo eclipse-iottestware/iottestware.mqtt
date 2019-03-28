@@ -24,7 +24,7 @@ TESTSUITE_BINARY = './bin/iottestware.mqtt'
 MIN_RATIO_MIN = 0.0
 MAX_RATIO_MAX = 0.1     # flip maximally 10% of the packet
 
-ratio_change_max = 0.005
+ratio_change_max = 0.001
 ratio_change_min = -(2 * ratio_change_max)
 
 r_verdict_stats = r'Verdict statistics:\s(.*)'
@@ -39,7 +39,7 @@ def main():
     if args.ratio:
         ratio = args.ratio
     else:
-        ratio = "0.0001:0.035"
+        ratio = "0.0:0.0"   # start without any fuzzing if no ratio given
 
     # TODO: add arguments for listen_port, destination_host and destination_port
     listen_port = 1884
@@ -80,8 +80,12 @@ def main():
         test_suite.wait()
 
         # terminate the proxy
-        # TODO: check if proxy terminated correctly!
         proxy.terminate()
+        # check socat to be terminated
+        socat = subprocess.run(['pidof', 'socat'], stdout=subprocess.PIPE)
+        pids = socat.stdout.decode("utf-8").rstrip('\n')
+        kill = subprocess.run(['kill', pids], stdout=subprocess.PIPE)
+        #result = kill.stdout.decode("utf-8")
 
         # slightly adapt the seed and the ratio to add some diversification
         if args.seed is None:
@@ -103,15 +107,11 @@ def change_ratio(old_ratio):
     ratio_min = float(ratio_boundaries[0]) + random.uniform(ratio_change_min, ratio_change_max)
     ratio_max = float(ratio_boundaries[1]) + random.uniform(ratio_change_min, ratio_change_max)
 
-    if ratio_min < MIN_RATIO_MIN:
+    if ratio_min < MIN_RATIO_MIN or ratio_min > MAX_RATIO_MAX:
         ratio_min = MIN_RATIO_MIN
-    elif ratio_min >= MAX_RATIO_MAX:
-        ratio_min = MIN_RATIO_MIN   # turn over
 
-    if ratio_max < MIN_RATIO_MIN:
-        ratio_max = MAX_RATIO_MAX   # turn over
-    elif ratio_max >= MAX_RATIO_MAX:
-        ratio_max = MAX_RATIO_MAX
+    if ratio_max < MIN_RATIO_MIN or ratio_max > MAX_RATIO_MAX:
+        ratio_max = (MAX_RATIO_MAX / 2.0)   # turn over
 
     # flip ratios if max < min
     if ratio_max < ratio_min:

@@ -32,6 +32,7 @@ Package mts_mqtt_commons {
         - closes
         - having
         - published
+        - delivered   // published with QoS > 0 and performed PUBACK / PUBREC / PUBREL / PUBCOMP
         - subscribed
         - checks_that
         ;

@@ -55,6 +55,18 @@ module MQTT_Templates_PUBREC
             }
           }
         }
+
+        template MQTT_v3_1_1_Message m_pubrec_flags(integer p_packet_id, BIT4n p_flags := '0000'B) :=
+        {
+          msg :=
+          {
+            pubrec :=
+            {
+              header := m_pubrec_header(p_flags),
+              packet_identifier := p_packet_id
+            }
+          }
+        }
       }
     }
   }
@@ -89,6 +101,18 @@ module MQTT_Templates_PUBREC
           msg :=
           {
             pubrec := ?
+          }
+        }
+
+        template MQTT_v3_1_1_Message mw_pubrec_packet_id(integer p_packetId) :=
+        {
+          msg :=
+          {
+            pubrec :=
+            {
+              header := mw_pubrec_header,
+              packet_identifier := p_packetId
+            }
           }
         }
       }

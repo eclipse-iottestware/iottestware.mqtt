@@ -26,6 +26,10 @@
    import from MQTT_Templates_CONNECT all;
    import from MQTT_Templates_CONNACK all;
    import from MQTT_Templates_PUBLISH all;
+   import from MQTT_Templates_PUBACK all;
+   import from MQTT_Templates_PUBREC all;
+   import from MQTT_Templates_PUBREL all;
+   import from MQTT_Templates_PUBCOMP all;
    import from MQTT_Templates_SUBSCRIBE all;
    import from MQTT_Templates_SUBACK all;
 
@@ -104,6 +108,210 @@
        }
        [] t_timeout.timeout {
          setverdict(fail, "No PUBLISH received")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   /*
+   * @desc wati for a PUBLISH message with QoS 1 and response with PUBACK and invalid header flags
+   */
+   function f_mqtt_response_invalid_puback() runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expect := mw_mqtt_message(mdw_publish_qos(AT_LEAST_ONCE_DELIVERY))
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect) -> value v_received {
+         // get packet_id
+         var integer v_packet_id := v_received.msg.msg.publish.packet_identifier
+         // create PUBACK with invalid header_flags
+         var BIT4n v_puback_flags := '1111'B
+         var template MQTT_v3_1_1_Message v_puback := m_puback_flags(v_packet_id, v_puback_flags)
+         var template MQTTasp_Message v_response := m_mqtt_message_conn(v_puback, connection)
+         MQTT_PCO.send(v_response)
+
+         var MQTT_ASP_Event v_asp_event
+         alt {
+           [] MQTT_PCO.receive(MQTT_ASP_Event:?) -> value v_asp_event {
+             setverdict(pass, "IUT closed network connection correctly")
+             break;
+           }
+           [] t_timeout.timeout {
+             setverdict(fail, "IUT must close network connection")
+             break;
+           }
+         }
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "Received unexpected message ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No PUBLISH received")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   /*
+   * @desc wati for a PUBLISH message with QoS 2 and response with PUBREC and invalid header flags
+   */
+   function f_mqtt_response_invalid_pubrec() runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expect := mw_mqtt_message(mdw_publish_qos(EXACTLY_ONE_DELIVERY))
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect) -> value v_received {
+         // get packet_id
+         var integer v_packet_id := v_received.msg.msg.publish.packet_identifier
+         // create PUBREC with invalid header_flags
+         var BIT4n v_pubrec_flags := '1111'B
+         var template MQTT_v3_1_1_Message v_pubrec := m_pubrec_flags(v_packet_id, v_pubrec_flags)
+         var template MQTTasp_Message v_response := m_mqtt_message_conn(v_pubrec, connection)
+         MQTT_PCO.send(v_response)
+
+         var MQTT_ASP_Event v_asp_event
+         alt {
+           [] MQTT_PCO.receive(MQTT_ASP_Event:?) -> value v_asp_event {
+             setverdict(pass, "IUT closed network connection correctly")
+             break;
+           }
+           [] t_timeout.timeout {
+             setverdict(fail, "IUT must close network connection")
+             break;
+           }
+         }
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "Received unexpected message ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No PUBLISH received")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+
+   /*
+   * @desc wati for a PUBLISH message with QoS 2 and response with PUBCOMP and invalid header flags
+   */
+   function f_mqtt_response_invalid_pubcomp() runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expect := mw_mqtt_message(mdw_publish_qos(EXACTLY_ONE_DELIVERY))
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect) -> value v_received {
+         // get packet_id
+         var integer v_packet_id := v_received.msg.msg.publish.packet_identifier
+         // create PUBREC with invalid header_flags
+         var BIT4n v_pubrec_flags := '0000'B
+         var template MQTT_v3_1_1_Message v_pubrec := m_pubrec_flags(v_packet_id, v_pubrec_flags)
+         var template MQTTasp_Message v_response := m_mqtt_message_conn(v_pubrec, connection)
+         MQTT_PCO.send(v_response)
+
+         // receive PUBREL
+         v_expect := mw_mqtt_message(mw_pubrel_packet_id(v_packet_id))
+         alt {
+           [] MQTT_PCO.receive(v_expect) {
+             // create PUBCOMP with invalid header_flags
+             var BIT4n v_pubcomp_flags := '1111'B
+             var template MQTT_v3_1_1_Message v_pubcomp := m_pubcomp_flags(v_packet_id, v_pubcomp_flags)
+             v_response := m_mqtt_message_conn(v_pubcomp, connection)
+             MQTT_PCO.send(v_response)
+
+             // wait for network close from IUT
+             var MQTT_ASP_Event v_asp_event
+             alt {
+               [] MQTT_PCO.receive(MQTT_ASP_Event:?) -> value v_asp_event {
+                 setverdict(pass, "IUT closed network connection correctly")
+                 break;
+               }
+               [] t_timeout.timeout {
+                 setverdict(fail, "IUT must close network connection")
+                 break;
+               }
+             }
+           }
+           [] MQTT_PCO.receive(mw_mqtt_message(mw_pubrel)) {
+             setverdict(fail, "Received PUBREL with wrong packet ID")
+             break
+           }
+           [] t_timeout.timeout {
+             setverdict(fail, "No PUBREL received")
+             break;
+           }
+         }
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "Received unexpected message ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No PUBLISH received")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   /*
+   * @desc wati for a PUBLISH message with QoS 2 and response with PUBREL and invalid header flags
+   */
+   function f_mqtt_response_invalid_pubrel() runs on MQTT_Client_MTC
+   {
+     var integer v_packet_id := f_random_packet_id()
+     var QoS v_qos_level := EXACTLY_ONE_DELIVERY
+     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, '0'B))
+     var octetstring v_payload := 'A5A5A5'O
+
+     var universal charstring v_topic_string := PX_TOPIC_NAME
+     var UTF8EncodedString v_topic := { stringLength := lengthof(v_topic_string), stringItem := v_topic_string }
+     var template MQTT_v3_1_1_Message v_publish := m_publish_message(v_pub_header, v_packet_id, v_topic, v_payload)
+     var template MQTTasp_Message vt_msg := m_mqtt_message_conn(v_publish, connection)
+
+     // send PUBLISH
+     MQTT_PCO.send(valueof(vt_msg))
+
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+
+     // await PUBREC
+     var template MQTTasp_Message v_expect := mw_mqtt_message(mw_pubrec_packet_id(v_packet_id))
+     alt {
+       [] MQTT_PCO.receive(v_expect) {
+         // received PUBREC, now send PUBREL with invalid header_flags
+         var BIT4n v_pubrel_flags := '1101'B
+         var template MQTT_v3_1_1_Message v_pubrel := m_pubrel_flags(v_packet_id, v_pubrel_flags)
+         var template MQTTasp_Message v_response := m_mqtt_message_conn(v_pubrel, connection)
+         MQTT_PCO.send(valueof(v_response))
+
+         // wait for network close from IUT
+         var MQTT_ASP_Event v_asp_event
+         alt {
+           [] MQTT_PCO.receive(MQTT_ASP_Event:?) -> value v_asp_event {
+             setverdict(pass, "IUT closed network connection correctly")
+             break;
+           }
+           [] t_timeout.timeout {
+             setverdict(fail, "IUT must close network connection")
+             break;
+           }
+         }
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) {
+         setverdict(fail, "unexpected message received")
+         break;
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No PUBREC received for ", v_packet_id)
          break;
        }
      }

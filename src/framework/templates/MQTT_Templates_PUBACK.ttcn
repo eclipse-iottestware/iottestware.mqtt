@@ -54,6 +54,18 @@ module MQTT_Templates_PUBACK
             }
           }
         }
+
+        template MQTT_v3_1_1_Message m_puback_flags(integer p_packet_id, BIT4n p_flags := '0000'B)
+        modifies m_puback :=
+        {
+          msg :=
+          {
+            puback :=
+            {
+              header := m_puback_header(p_flags)
+            }
+          }
+        }
       } // group PUBACK_MessageGroup
     } // PUBACK_Group
   } // group SendingTemplates

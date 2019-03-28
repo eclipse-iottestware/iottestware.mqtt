@@ -1497,6 +1497,175 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
+    TP Id TP_MQTT_Broker_PUBACK_001
+
+    Test objective
+    "The IUT closes the network connection if fixed header flags in PUBACK Control Packet are invalid"
+    Reference
+    "[MQTT-2.2.2-1], [MQTT-2.2.2-2]"
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+            qos_level corresponding to AT_LEAST_ONCE;
+        and
+        the CLIENT_1 entity delivered a PUBLISH message containing
+            qos_level corresponding to AT_LEAST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC;
+        to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+      the IUT entity sends a PUBLISH message containing
+      header containing
+        qos_level corresponding to AT_LEAST_ONCE,
+      topic_name corresponding to PX_PUBLISH_TOPIC;
+      ;
+      to the CLIENT_2 entity
+      and
+      the IUT entity receives a PUBACK message containing
+      header_flags indicating value '1111'B;
+      from the CLIENT_2 entity
+      } then {
+          the IUT entity closes the TCP_CONNECTION to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBREC_001
+
+    Test objective
+    "The IUT closes the network connection if fixed header flags in PUBREC Control Packet are invalid"
+    Reference
+    "[MQTT-2.2.2-1], [MQTT-2.2.2-2]"
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+            qos_level corresponding to EXACTLY_ONCE;
+        and
+        the CLIENT_1 entity delivered a PUBLISH message containing
+            qos_level corresponding to EXACTLY_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC;
+        to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+      the IUT entity sends a PUBLISH message containing
+      header containing
+        qos_level corresponding to EXACTLY_ONCE,
+      topic_name corresponding to PX_PUBLISH_TOPIC;
+      ;
+      to the CLIENT_2 entity
+      and
+      the IUT entity receives a PUBREC message containing
+      header_flags indicating value '1111'B;
+      from the CLIENT_2 entity
+      } then {
+          the IUT entity closes the TCP_CONNECTION to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBREL_001
+
+    Test objective
+    "The IUT closes the network connection if fixed header flags in PUREL Control Packet are invalid"
+    Reference
+    "[MQTT-2.2.2-1], [MQTT-2.2.2-2]"
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+      the IUT entity receives a PUBLISH message containing
+      header containing
+        qos_level corresponding to EXACTLY_ONCE,
+      topic_name corresponding to PX_PUBLISH_TOPIC;;
+      from the CLIENT_1 entity
+      and
+      the IUT entity sends a PUBREC message
+      from the CLIENT_1 entity
+      and
+      the IUT entity receives a PUBREL message containing
+      header_flags indicating value '1111'B;
+      from the CLIENT_1 entity
+      } then {
+          the IUT entity closes the TCP_CONNECTION to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBCOMP_001
+
+    Test objective
+    "The IUT closes the network connection if fixed header flags in PUBCOMP Control Packet are invalid"
+    Reference
+    "[MQTT-2.2.2-1], [MQTT-2.2.2-2]"
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+            qos_level corresponding to EXACTLY_ONCE;
+        and
+        the CLIENT_1 entity delivered a PUBLISH message containing
+            qos_level corresponding to EXACTLY_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC;
+        to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+      the IUT entity sends a PUBLISH message containing
+      header containing
+        qos_level corresponding to EXACTLY_ONCE,
+      topic_name corresponding to PX_PUBLISH_TOPIC;;
+      to the CLIENT_2 entity
+      and
+      the IUT entity receives a PUBREC message
+      from the CLIENT_2 entity
+      and
+      the IUT entity sends a PUBREL message
+      to the CLIENT_2 entity
+      and
+      the IUT entity receives a PUBCOMP message containing
+      header_flags indicating value '1111'B;
+      from the CLIENT_2 entity
+      } then {
+          the IUT entity closes the TCP_CONNECTION to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
     TP Id TP_MQTT_Broker_SUBSCRIBE_001
 
     // Summary

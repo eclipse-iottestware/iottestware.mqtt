@@ -1414,6 +1414,77 @@ group publishFunctionsGroup
   }
 } // publishFunctionsGroup
 
+group publishResponseFunctionsGroup
+{
+  function f_TC_MQTT_BROKER_PUBACK_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(AT_LEAST_ONCE_DELIVERY))
+    p_subscriber.done
+
+    var QoS v_qos_level := AT_LEAST_ONCE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, '0'B))
+    p_publisher.start(f_mqtt_send_publish(v_pub_header))
+
+    /* expected bahaviour */
+    p_subscriber.start(f_mqtt_response_invalid_puback())
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_PUBREC_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(EXACTLY_ONE_DELIVERY))
+    p_subscriber.done
+
+    var QoS v_qos_level := EXACTLY_ONE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, '0'B))
+    p_publisher.start(f_mqtt_send_publish(v_pub_header))
+
+    /* expected bahaviour */
+    p_subscriber.start(f_mqtt_response_invalid_pubrec())
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_PUBREL_001(MQTT_Client_MTC p_publisher) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_01())
+    p_publisher.done;
+
+    /* expected bahaviour */
+    p_publisher.start(f_mqtt_response_invalid_pubrel())
+    p_publisher.done;
+  }
+
+  function f_TC_MQTT_BROKER_PUBCOMP_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(EXACTLY_ONE_DELIVERY))
+    p_subscriber.done
+
+    var QoS v_qos_level := EXACTLY_ONE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, '0'B))
+    p_publisher.start(f_mqtt_send_publish(v_pub_header))
+
+    /* expected bahaviour */
+    p_subscriber.start(f_mqtt_response_invalid_pubcomp())
+    all component.done;
+  }
+}
+
 group subscribeFunctionsGroup
 {
      function f_TC_MQTT_BROKER_SUBSCRIBE_001() runs on MQTT_Client

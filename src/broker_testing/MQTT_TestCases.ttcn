@@ -683,6 +683,159 @@ group publishGroup
   }
 } // publishGroup
 
+group publishResponseGroup
+{
+  /*
+  * @purpose The IUT closes the network connection if fixed header flags in PUBACK Control Packet are invalid
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
+  */
+  testcase TC_MQTT_BROKER_PUBACK_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_PUBACK_001(publisher, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The IUT closes the network connection if fixed header flags in PUBREC Control Packet are invalid
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
+  */
+  testcase TC_MQTT_BROKER_PUBREC_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_PUBREC_001(publisher, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The IUT closes the network connection if fixed header flags in PUBREL Control Packet are invalid
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
+  */
+  testcase TC_MQTT_BROKER_PUBREL_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+
+    publisher.start(f_init_client(0));
+    publisher.done
+
+    if(publisher.alive)
+    {
+      f_TC_MQTT_BROKER_PUBREL_001(publisher)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    publisher.done
+    publisher.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+  }
+
+  /*
+  * @purpose The IUT closes the network connection if fixed header flags in PUBCOMP Control Packet are invalid
+  *
+  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
+  */
+  testcase TC_MQTT_BROKER_PUBCOMP_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_PUBCOMP_001(publisher, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+}
+
 group subscribeGroup
 {
   /*

@@ -55,6 +55,18 @@ module MQTT_Templates_PUBCOMP
             }
           }
         }
+
+        template MQTT_v3_1_1_Message m_pubcomp_flags(integer p_packet_id, BIT4n p_flags) :=
+        {
+          msg :=
+          {
+            pubcomp :=
+            {
+              header := m_pubcomp_header(p_flags),
+              packet_identifier := p_packet_id
+            }
+          }
+        }
       }
     }
   }
@@ -92,6 +104,19 @@ module MQTT_Templates_PUBCOMP
             pubcomp := ?
           }
         }
+
+        template MQTT_v3_1_1_Message mw_pubcomp_packet_id(integer p_packetId) :=
+        {
+          msg :=
+          {
+            pubcomp :=
+            {
+              header := mw_pubcomp_header,
+              packet_identifier := p_packetId
+            }
+          }
+        }
+
       }
     }
   }

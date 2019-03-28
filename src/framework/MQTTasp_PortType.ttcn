@@ -24,6 +24,7 @@ import from MQTTasp_Types all;
 //Dual faced port
 type port MQTTasp_PT message {
   out charstring
+  in MQTT_ASP_Event
   inout MQTTasp_Message
 } with {
   extension "user IPL4asp_PT
@@ -32,7 +33,7 @@ type port MQTTasp_PT message {
   charstring      -> ASP_Send     : function(f_enc_asp_send)
   )in(
   ASP_RecvFrom -> MQTTasp_Message  : function(f_dec_mqtt);
-  ASP_Event    ->                    - : discard;
+  ASP_Event    -> MQTT_ASP_Event   : function(f_dec_asp_event);
   ASP_ConnId_ReadyToRelease ->       - : discard
   )"
 }
@@ -91,10 +92,10 @@ private function f_enc_asp_send(in charstring p_in, out ASP_Send p_out) return i
   //} with {extension "prototype(fast)"}
 } with {extension "prototype(backtrack)" }
 
-private function f_dec_asp_event(in ASP_Event p_in, out charstring p_out) return integer
+private function f_dec_asp_event(in ASP_Event p_in, out MQTT_ASP_Event p_out) return integer
 {
   log("[TRPO](Decode ASP Event): ", p_in)
-  p_out := "NO ASP_Event Decoder"
+  p_out := p_in
 
   return 0;
   //} with {extension "prototype(fast)"}
