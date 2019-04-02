@@ -180,6 +180,15 @@ module MQTT_Templates_PUBLISH
         payload := p_payload
       }
 
+      template MQTT_v3_1_1_Publish mw_publish_packet_payload_qos0(octetstring p_payload) :=
+      {
+        header := mw_publish_header,
+        nameLength := ?,
+        topic_name := ?,
+        packet_identifier := omit,  // QoS 0 publish does not have a packet_identifier
+        payload := p_payload
+      }
+
       template MQTT_v3_1_1_Publish mw_publish_packet_retain(QoS p_qos_level, BIT1n p_retain_flag) :=
       {
         header := mdw_publish_header_retain(p_qos_level, p_retain_flag),

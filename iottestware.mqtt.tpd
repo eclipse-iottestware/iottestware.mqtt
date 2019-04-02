@@ -10,6 +10,7 @@
   <ReferencedProjects>
     <ReferencedProject name="IPL4asp_CNL113531" projectLocationURI="../../TestPorts/IPL4asp/IPL4asp_CNL113531.tpd"/>
     <ReferencedProject name="MQTT_v3.1.1_CNL113831" projectLocationURI="../../ProtocolModules/MQTT/MQTT_v3.1.1_CNL113831.tpd"/>
+    <ReferencedProject name="TCCUsefulFunctions_CNL113472_Common" projectLocationURI="../../Libraries/TCCUsefulFunctions_CNL113472/TCCUsefulFunctions_CNL113472_Common.tpd"/>
   </ReferencedProjects>
   <Folders>
     <FolderResource projectRelativePath="cfg" relativeURI="cfg"/>
@@ -121,6 +122,7 @@
     <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn" relativeURI="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn"/>
     <FileResource projectRelativePath="src/framework/test_system/MQTT_TestSystem_Common.ttcn" relativeURI="src/framework/test_system/MQTT_TestSystem_Common.ttcn"/>
     <FileResource projectRelativePath="src/framework/utils/UTF8_Helper.ttcn" relativeURI="src/framework/utils/UTF8_Helper.ttcn"/>
+    <FileResource projectRelativePath="src/framework/utils/Data.payload" relativeURI="src/framework/utils/Data.payload"/>
     <FileResource projectRelativePath="src/framework/utils/Random_Helper.ttcn" relativeURI="src/framework/utils/Random_Helper.ttcn"/>
     <FileResource projectRelativePath="start_mqtt_fuzzing.py" relativeURI="start_mqtt_fuzzing.py"/>
   </Files>

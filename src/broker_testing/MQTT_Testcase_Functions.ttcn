@@ -28,6 +28,8 @@ import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
 import from MQTT_Templates_PUBLISH all;
 
+import from Random_Helper all;
+
 import from MQTT_v3_1_1_Types all;
 
 group connectFunctionsGroup
@@ -2149,6 +2151,30 @@ group disconnectFunctionsGroup
 
 group protocolFeaturesFunctionsGroup
 {
+  function f_TC_MQTT_BROKER_FEAT_PUBSUB_rem_length(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber, octetstring p_payload) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_publisher.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    // subscribe to topic
+    p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done
+
+    // publish a message
+    var BIT1n v_retain_flag := '0'B
+    var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), p_payload))
+
+    // receive the published message without retained flag
+    // assumption: if payload is the same, decoding and encoding of remaining length was OK
+    var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_payload_qos0(p_payload)
+    p_subscriber.start(f_mqtt_receive_publish(v_expected))
+
+    all component.done;
+  }
+
   function f_TC_MQTT_BROKER_FEAT_RTND_001() runs on MQTT_Client
   {
     var UTF8EncodedString v_topic := f_getConcatenatedTopicName("retain");

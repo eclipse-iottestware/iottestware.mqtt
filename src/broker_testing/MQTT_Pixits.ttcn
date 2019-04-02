@@ -61,6 +61,11 @@ module MQTT_Pixits {
      */
     modulepar boolean PX_REUSE_ADDRESS := false
 
+    /*
+     * @desc
+     */
+    modulepar charstring PX_PAYLOAD_DATA_FILE := "./bin/Data.payload"
+
     /* @obsolete: selection of Test-cases via Dashboard makes this modulepar obsolete
     // PICS selection
     type enumerated PICS

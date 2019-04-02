@@ -1094,7 +1094,7 @@ Package mts_tst_mqtt {
             the IUT entity receives a CONNECT message containing
             header_flags indicating value '0000'B,
             protocol_name corresponding to PROTOCOL_NAME,
-            protocol_level indicating value 0x05,
+            protocol_level indicating value 0xFF,
             connect_flags containing
                 clean_session indicating value '0'B,
                 user_name_flag indicating value '0'B,
@@ -2392,6 +2392,190 @@ Package mts_tst_mqtt {
         } then {
             the IUT entity closes the TCP_CONNECTION
         }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_001
+
+    Test objective
+    "The IUT MUST forward PUBLISH messages to according subscribers"
+    Reference
+      "MQTT 3.3"  // Note: no direkt conformance statement!
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+           the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+               qos_level corresponding to AT_MOST_ONCE;
+           to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD;
+            ;
+            from the CLIENT_1 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD;
+            ;
+            to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_002
+
+    Test objective
+    "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 2 bytes to encode remaining length"
+    Reference
+      "MQTT 2.2.3 and MQTT 3.3"  // Note: no direkt conformance statements!
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+           the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+               qos_level corresponding to AT_MOST_ONCE;
+           to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD_REM_LEN_2;
+            ;
+            from the CLIENT_1 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD_REM_LEN_2;
+            ;
+            to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_003
+
+    Test objective
+    "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 3 bytes to encode remaining length"
+    Reference
+      "MQTT 2.2.3 and MQTT 3.3"  // Note: no direkt conformance statements!
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+           the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+               qos_level corresponding to AT_MOST_ONCE;
+           to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD_REM_LEN_3;
+            ;
+            from the CLIENT_1 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD_REM_LEN_3;
+            ;
+            to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_004
+
+    Test objective
+    "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 4 bytes to encode remaining length"
+    Reference
+      "MQTT 2.2.3 and MQTT 3.3"  // Note: no direkt conformance statements!
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+           the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+           and
+           the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+               qos_level corresponding to AT_MOST_ONCE;
+           to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD_REM_LEN_4;
+            ;
+            from the CLIENT_1 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+            publish_header containing
+                dup_flag indicating value '0'B,
+                qos_level corresponding to AT_MOST_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier indicating value omit,
+            payload corresponding to PAYLOAD_REM_LEN_4;
+            ;
+            to the CLIENT_2 entity
+      }
     }
   }
 

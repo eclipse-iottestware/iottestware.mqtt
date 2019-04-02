@@ -206,7 +206,7 @@ module MQTT_Functions_Protocol
 
       // send response
       MQTT_PCO.send(valueof(vt_msg))
-      log("[MQTT_MTC](send)(MQTT Message): ", vt_msg)
+      //log("[MQTT_MTC](send)(MQTT Message): ", vt_msg)
     }
   } // group Common_Functions
 

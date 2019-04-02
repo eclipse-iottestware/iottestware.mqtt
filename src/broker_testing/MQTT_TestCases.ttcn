@@ -21,6 +21,7 @@ import from MQTT_Testcase_Functions all;
 // MUST NOT be imported here... refactoring required with config_02
 import from MQTT_Pixits all;
 import from UTF8_Helper all;
+import from Random_Helper all;
 
 // MQTT TS Framework
 import from MQTT_TestSystem_Common all;
@@ -29,6 +30,7 @@ import from MQTT_Functions_Network all;
 
 // MQTT 3.1.1 Protocol Modules
 import from MQTT_v3_1_1_Types all;
+
 
 group connectGroup
 {
@@ -1186,6 +1188,175 @@ group disconnectGroup {
 } // disconnectGroup
 
 group protocolFeaturesGroup {
+
+  /*
+  * @purpose The IUT MUST forward PUBLISH messages to according subscribers"
+  *
+  * @reference MQTT 3.3
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      var integer v_payload_length := 10
+      var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_rem_length(publisher, subscriber, v_payload)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 2 bytes to encode remaining length"
+  *
+  * @reference MQTT 2.2.3 and MQTT 3.3
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      var integer v_payload_length := 128
+      var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_rem_length(publisher, subscriber, v_payload)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 3 bytes to encode remaining length"
+  *
+  * @reference MQTT 2.2.3 and MQTT 3.3
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      var integer v_payload_length := 16384
+      var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_rem_length(publisher, subscriber, v_payload)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 4 bytes to encode remaining length"
+  *
+  * @reference MQTT 2.2.3 and MQTT 3.3
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher, subscriber;
+
+    publisher := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(publisher:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    publisher.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      var integer v_payload_length := 2097152
+      var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
+
+      // TODO: test case will fail due to wrong decoding of remaining length
+      // Note: see https://bugs.eclipse.org/bugs/show_bug.cgi?id=546045
+
+      //f_TC_MQTT_BROKER_FEAT_PUBSUB_rem_length(publisher, subscriber, v_payload)
+      setverdict(inconc, "Unable to send decode large MQTT packets!")
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    publisher.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
 
   /*
   * @purpose Retained messages do not form part of the Session state in the IUT, they MUST NOT be deleted when the Session ends

@@ -12,6 +12,9 @@
 *******************************************************************************/
 module Random_Helper
 {
+  // FileIO
+  import from TCCFileIO_Functions all;
+
   /*
   * @desc create a random non-zero MQTT Packet ID as described in MQTT 2.3.1
   */
@@ -39,6 +42,7 @@ module Random_Helper
   /*
   * @desc create a octetstring with a specified length to be used as payload.
   *       The payload is marked with 'A5A5'O in the beginning
+  * @remark for bigger payloads this functions is too slow. Try to use f_test_long_payload instead
   */
   function f_test_payload(integer p_length) return octetstring
   {
@@ -50,5 +54,40 @@ module Random_Helper
       v_ret := v_ret & v_appendix
     }
     return v_ret
+  }
+
+  function f_test_long_payload(charstring p_file_path, integer p_length) return octetstring
+  {
+    var octetstring v_payload
+
+    var integer v_fd := f_FIO_open_rdonly(p_file_path)
+    if(v_fd > 0)
+    {
+      var integer v_ret := f_FIO_read_data(v_fd, v_payload, p_length)
+
+      // the file can contain less bytes as required; seek_home and read again!
+      var integer v_remain := p_length - v_ret
+      while(v_remain > 0)
+      {
+        f_FIO_seek_home(v_fd)
+        var octetstring v_p2
+        v_ret := f_FIO_read_data(v_fd, v_p2, v_remain)
+        v_remain := v_remain - v_ret
+        v_payload := v_payload & v_p2
+      }
+
+      // TODO: check v_ret before close?
+
+      f_FIO_close(v_fd)
+    }
+    else
+    {
+      // use f_test_payload as fallback if file was not found
+      // Note: this can be time consuming for large payload
+      log(p_file_path, " could not be opened. Using fallback function to generate payload")
+      v_payload := f_test_payload(p_length)
+    }
+
+    return v_payload
   }
 }

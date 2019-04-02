@@ -94,9 +94,12 @@ Package mts_mqtt_commons {
         //UTF8String RETAINED_MESSAGE; -> obsolete
         //UTF8String WILL_MESSAGE_VALID; -> obsolete
         UTF8String UTF8_MESSAGE_VALID;
-        Octetstring PAYLOAD;
+        Octetstring PAYLOAD;                 // must be a short payload which will not exceed remaining_length encoding of 1 byte (<= 10 Octets)
         Octetstring PAYLOAD_2;               // alternative PAYLOAD if required to distinguish to PAYLOAD
         Octetstring PAYLOAD_ZERO_BYTE;       // zero byte PAYLOAD has special semantic for retained messages
+        Octetstring PAYLOAD_REM_LEN_2;       // this payload must require remaining_length encoding in 2 bytes (take 128 Octets)
+        Octetstring PAYLOAD_REM_LEN_3;       // this payload must require remaining_length encoding in 3 bytes (take 16384 Octets)
+        Octetstring PAYLOAD_REM_LEN_4;       // this payload must require remaining_length encoding in 4 bytes (take 2097152 Octets)
         UTF8String PROTOCOL_NAME;            // MUST be MQTT
         UTF8String PROTOCOL_NAME_INVALID;    // MUST be != PROTOCOL_NAME
 
