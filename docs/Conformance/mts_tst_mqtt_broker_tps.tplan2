@@ -2396,12 +2396,12 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_001
+    TP Id TP_MQTT_Broker_FEAT_REMLEN_001
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers"
     Reference
-      "MQTT 3.3"  // Note: no direkt conformance statement!
+      "MQTT 2.2.3"  // Note: no direkt conformance statement!
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2442,12 +2442,12 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_002
+    TP Id TP_MQTT_Broker_FEAT_REMLEN_002
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 2 bytes to encode remaining length"
     Reference
-      "MQTT 2.2.3 and MQTT 3.3"  // Note: no direkt conformance statements!
+      "MQTT 2.2.3"  // Note: no direkt conformance statements!
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2488,12 +2488,12 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_003
+    TP Id TP_MQTT_Broker_FEAT_REMLEN_003
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 3 bytes to encode remaining length"
     Reference
-      "MQTT 2.2.3 and MQTT 3.3"  // Note: no direkt conformance statements!
+      "MQTT 2.2.3"  // Note: no direkt conformance statements!
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2534,12 +2534,12 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_004
+    TP Id TP_MQTT_Broker_FEAT_REMLEN_004
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 4 bytes to encode remaining length"
     Reference
-      "MQTT 2.2.3 and MQTT 3.3"  // Note: no direkt conformance statements!
+      "MQTT 2.2.3"  // Note: no direkt conformance statements!
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions

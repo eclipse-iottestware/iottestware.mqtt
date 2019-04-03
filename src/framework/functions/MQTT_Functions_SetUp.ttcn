@@ -72,7 +72,7 @@ module MQTT_Functions_SetUp
       // cleanly disconnect all connections
       f_disconnect_all();
 
-      map(self:MQTT_PCO, system:IPL4_PCO);
+      unmap(self:MQTT_PCO, system:IPL4_PCO);
       self.stop;
     }
   } // group Broker

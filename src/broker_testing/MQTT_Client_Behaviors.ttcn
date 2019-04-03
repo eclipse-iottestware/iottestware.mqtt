@@ -115,6 +115,31 @@
    }
 
    /*
+    * @desc similar to f_mqtt_receive_publish but intented to be used for receiving large payloads which might require longer than PX_MAX_RESPONSE_TIME!
+    */
+   function f_mqtt_receive_large_publish(template MQTT_v3_1_1_Publish p_publish, float p_timeout, integer p_estimated_size) runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expect := mw_mqtt_message({msg := { publish := p_publish }})
+     var MQTTasp_Message v_received
+     timer t_timeout := p_timeout;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect) {
+         setverdict(pass, "Received PUBLISH")
+         break;
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "Received unexpected message ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "Receive PUBLISH timed out after ", p_timeout, " sec. for transmission of ", p_estimated_size, " of Bytes")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   /*
    * @desc wati for a PUBLISH message with QoS 1 and response with PUBACK and invalid header flags
    */
    function f_mqtt_response_invalid_puback() runs on MQTT_Client_MTC

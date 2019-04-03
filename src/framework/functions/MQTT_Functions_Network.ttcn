@@ -17,8 +17,9 @@ module MQTT_Functions_Network
   import from MQTTasp_PortType all;
   import from MQTTasp_Types all;
   import from MQTTasp_CtrlFunct all;
+  import from MQTT_v3_1_1_IPL4SizeFunction all;
 
-  import from IPL4asp_PortType all;
+  //import from IPL4asp_PortType all;
   import from IPL4asp_Types all;
 
   import from Random_Helper all;
@@ -73,6 +74,12 @@ module MQTT_Functions_Network
         connection.ipl4.id := vl_result.connId
         connection.ipl4.tcp_state := Connected
         connection.client_state := Disconnected
+
+        // set callback to determine the boundaries of MQTT messages.
+        // IPL4 requires for assembling fragmented TCP packets
+        var integer v_cid := vl_result.connId
+        var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
+        f_IPL4_setGetMsgLen(MQTT_PCO, v_cid, getMsg_Func, {});
       }
 
       return v_connectState;

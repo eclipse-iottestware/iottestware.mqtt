@@ -2151,7 +2151,7 @@ group disconnectFunctionsGroup
 
 group protocolFeaturesFunctionsGroup
 {
-  function f_TC_MQTT_BROKER_FEAT_PUBSUB_rem_length(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber, octetstring p_payload) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  function f_TC_MQTT_BROKER_FEAT_REMLEN(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber, float p_timeout, octetstring p_payload) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     p_publisher.start(f_mqtt_connect_01())
     p_subscriber.start(f_mqtt_connect_01())
@@ -2170,7 +2170,7 @@ group protocolFeaturesFunctionsGroup
     // receive the published message without retained flag
     // assumption: if payload is the same, decoding and encoding of remaining length was OK
     var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_payload_qos0(p_payload)
-    p_subscriber.start(f_mqtt_receive_publish(v_expected))
+    p_subscriber.start(f_mqtt_receive_large_publish(v_expected, p_timeout, lengthof(p_payload)))
 
     all component.done;
   }
