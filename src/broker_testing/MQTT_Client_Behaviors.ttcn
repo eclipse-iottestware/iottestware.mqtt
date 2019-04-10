@@ -164,7 +164,12 @@
      }
    }
 
-   function f_mqtt_send_publish(MQTT_v3_1_1_PublishHeader p_header, octetstring p_payload := 'A5A5A5'O) runs on MQTT_Client_MTC
+   function f_mqtt_send_publish(MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+   {
+     f_send_publish(connection, p_publish)
+   }
+
+   function f_mqtt_send_publish_header(MQTT_v3_1_1_PublishHeader p_header, octetstring p_payload := 'A5A5A5'O) runs on MQTT_Client_MTC
    {
      var universal charstring v_topic_string := PX_TOPIC_NAME
      var UTF8EncodedString v_topic := { stringLength := lengthof(v_topic_string), stringItem := v_topic_string }
@@ -180,7 +185,7 @@
        v_publish := t_publish_packet(p_header, v_packet_id, v_topic, p_payload)
      }
 
-     f_send_pubish(connection, valueof(v_publish))
+     f_send_publish(connection, valueof(v_publish))
    }
 
    function f_mqtt_receive_publish(template MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC

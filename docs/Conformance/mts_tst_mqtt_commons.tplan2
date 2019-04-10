@@ -84,6 +84,8 @@ Package mts_mqtt_commons {
         UTF8String TOPIC_FILTER_INVALID;            // invalid topic filter according to MQTT: e.g. abc/#/def
         UTF8String TOPIC_NAME_VALID;                // valid topic name according to spec. (e.g. no wildcards)
         UTF8String TOPIC_NAME_INVALID;              // valid UTF-8 but invalid topic name (e.g. contains wildcards)
+        UTF8String TOPIC_NAME_WC_MULTI_LVL;              // valid UTF-8 but invalid topic name because it contains multi-level wildcards
+        UTF8String TOPIC_NAME_WC_SINGLE_LVL;              // valid UTF-8 but invalid topic name because it contains single-level wildcards
         UTF8String_invalid TOPIC_NAME_INVALID_UTF8; // invalid: general invalid UTF-8 topic name
         UTF8String_invalid WILL_TOPIC_D800;         // invalid: contains non-UTF8 chars: U+D800
         UTF8String_invalid WILL_TOPIC_0000;         // invalid: contains non-UTF8 chars: U+0000

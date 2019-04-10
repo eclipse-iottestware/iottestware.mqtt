@@ -13,11 +13,13 @@
 module MQTT_Functions_SetUp
 {
   import from MQTT_TestSystem_Common all;
+  import from MQTT_TypesAndValues_Common all;
 
   import from MQTT_Templates_MQTTasp all;
   import from MQTT_Templates_CONNACK all;
   import from MQTT_Templates_DISCONNECT all;
 
+  import from MQTT_Pixits all;
   import from MQTT_Broker_Pixits all;
   import from MQTT_Defaults_Common all;
 
@@ -79,14 +81,46 @@ module MQTT_Functions_SetUp
 
   group Client
   {
-    import from MQTT_Pixits all;
 
+    /*
+    * @desc initialize the whole MQTT Client Test System
+    */
+    function f_init_client_system(inout MQTT_Client_MTC p_ptc_1, inout MQTT_Client_MTC p_ptc_2) system MQTT_Client_TestSystem
+    return BooleanReturnType
+    {
+      var BooleanReturnType v_init_ptc_1, v_init_ptc_2;
+
+      map(p_ptc_1:MQTT_PCO, system:mqtt_client_1)
+      map(p_ptc_2:MQTT_PCO, system:mqtt_client_2)
+
+      p_ptc_1.start(f_init_client(0));
+      p_ptc_2.start(f_init_client(1));
+
+      // wait until clients initialized and store the init state
+      p_ptc_1.done(BooleanReturnType : ?) -> value v_init_ptc_1
+      p_ptc_2.done(BooleanReturnType : ?) -> value v_init_ptc_2
+
+      if(v_init_ptc_1 and v_init_ptc_2)
+      {
+        return true
+      }
+      else
+      {
+        return false
+      }
+    }
+
+    /*
+    * @desc initialize one single MQTT Client
+    */
     function f_init_client(in integer p_client_idx) runs on MQTT_Client_MTC
+    return BooleanReturnType
     {
       if(p_client_idx < 0 or p_client_idx >= lengthof(PX_CLIENTS))
       {
         log("Client Index ", p_client_idx, " is out of range")
-        self.kill
+        setverdict(inconc, "Initialization failed: check your config")
+        return false
       }
 
       connection := {
@@ -103,11 +137,41 @@ module MQTT_Functions_SetUp
       }
 
       credentials := PX_CLIENTS[p_client_idx]
+
+      return true
     }
 
-    function f_clear_client() runs on MQTT_Client_MTC return boolean
+    /*
+    * @desc clean up the whole MQTT Client Test System
+    */
+    function f_clear_client_system(inout MQTT_Client_MTC p_ptc_1, inout MQTT_Client_MTC p_ptc_2) system MQTT_Client_TestSystem
+    return BooleanReturnType
     {
-      return true // TODO
+      var BooleanReturnType v_clear_ptc_1, v_clear_ptc_2;
+
+      p_ptc_1.start(f_clear_client())
+      p_ptc_2.start(f_clear_client())
+
+      // wait until clients initialized and store the init state
+      p_ptc_1.done(BooleanReturnType : ?) -> value v_clear_ptc_1
+      p_ptc_2.done(BooleanReturnType : ?) -> value v_clear_ptc_2
+      all component.kill
+
+      unmap(p_ptc_1:MQTT_PCO, system:mqtt_client_1)
+      unmap(p_ptc_2:MQTT_PCO, system:mqtt_client_2)
+
+      return true
+    }
+
+    /*
+    * @desc clean up one single MQTT Client
+    */
+    function f_clear_client() runs on MQTT_Client_MTC
+    return BooleanReturnType
+    {
+      // TODO: any further clean up required?
+      var BooleanReturnType v_ret := f_ipl4_disconnect()
+      return v_ret
     }
   } // group Client
 

@@ -81,10 +81,6 @@
     <FileResource projectRelativePath="src/client_testing/MQTT_Broker_TypesAndValues.ttcn" relativeURI="src/client_testing/MQTT_Broker_TypesAndValues.ttcn"/>
     <FileResource projectRelativePath="src/client_testing/MQTT_Oracle_Broker.ttcn" relativeURI="src/client_testing/MQTT_Oracle_Broker.ttcn"/>
     <FileResource projectRelativePath="src/client_testing/Playground.ttcn" relativeURI="src/client_testing/Playground.ttcn"/>
-    <FileResource projectRelativePath="src/framework/MQTTasp_CtrlFunct.ttcn" relativeURI="src/framework/MQTTasp_CtrlFunct.ttcn"/>
-    <FileResource projectRelativePath="src/framework/MQTTasp_CtrlFunctDef.cc" relativeURI="src/framework/MQTTasp_CtrlFunctDef.cc"/>
-    <FileResource projectRelativePath="src/framework/MQTTasp_PortType.ttcn" relativeURI="src/framework/MQTTasp_PortType.ttcn"/>
-    <FileResource projectRelativePath="src/framework/MQTTasp_Types.ttcn" relativeURI="src/framework/MQTTasp_Types.ttcn"/>
     <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_CONNACK.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_CONNACK.ttcn"/>
     <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_CONNECT.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_CONNECT.ttcn"/>
     <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_Common.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_Common.ttcn"/>
@@ -121,6 +117,11 @@
     <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_UNSUBACK.ttcn" relativeURI="src/framework/templates/MQTT_Templates_UNSUBACK.ttcn"/>
     <FileResource projectRelativePath="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn" relativeURI="src/framework/templates/MQTT_Templates_UNSUBSCRIBE.ttcn"/>
     <FileResource projectRelativePath="src/framework/test_system/MQTT_TestSystem_Common.ttcn" relativeURI="src/framework/test_system/MQTT_TestSystem_Common.ttcn"/>
+    <FileResource projectRelativePath="src/framework/test_system/MQTT_TypesAndValues_Common.ttcn" relativeURI="src/framework/test_system/MQTT_TypesAndValues_Common.ttcn"/>
+    <FileResource projectRelativePath="src/framework/test_system/MQTTasp_CtrlFunct.ttcn" relativeURI="src/framework/test_system/MQTTasp_CtrlFunct.ttcn"/>
+    <FileResource projectRelativePath="src/framework/test_system/MQTTasp_CtrlFunctDef.cc" relativeURI="src/framework/test_system/MQTTasp_CtrlFunctDef.cc"/>
+    <FileResource projectRelativePath="src/framework/test_system/MQTTasp_PortType.ttcn" relativeURI="src/framework/test_system/MQTTasp_PortType.ttcn"/>
+    <FileResource projectRelativePath="src/framework/test_system/MQTTasp_Types.ttcn" relativeURI="src/framework/test_system/MQTTasp_Types.ttcn"/>
     <FileResource projectRelativePath="src/framework/utils/UTF8_Helper.ttcn" relativeURI="src/framework/utils/UTF8_Helper.ttcn"/>
     <FileResource projectRelativePath="src/framework/utils/Data.payload" relativeURI="src/framework/utils/Data.payload"/>
     <FileResource projectRelativePath="src/framework/utils/Random_Helper.ttcn" relativeURI="src/framework/utils/Random_Helper.ttcn"/>

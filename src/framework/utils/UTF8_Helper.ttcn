@@ -71,11 +71,43 @@ module UTF8_Helper {
     stringItem := p_item
   }
 
-  template UTF8EncodedString mw_utf8_string(integer p_len, charstring p_item) :=
+  template UTF8EncodedString mw_utf8_string_length(integer p_len) :=
   {
-    stringLength := ?,
+    stringLength := p_len,
     stringItem := ?
   }
 
+  template UTF8EncodedString mw_utf8_string_item(universal charstring p_item) :=
+  {
+    stringLength := ?,
+    stringItem := p_item
+  }
+
+  /*
+   * Function returns a template (ft_) of a octetstring with length
+   */
+  function ft_octstring_from_charstring(charstring p_in) return template OctStringWithLength
+  {
+    var octetstring v_in := char2oct(p_in)
+    return valueof(m_oct_string(lengthof(v_in), v_in))
+  }
+
+  template OctStringWithLength m_oct_string(integer p_len, octetstring p_item) :=
+  {
+    stringLength := p_len,
+    stringItem := p_item
+  }
+
+  template OctStringWithLength mw_oct_string_length(integer p_len) :=
+  {
+    stringLength := p_len,
+    stringItem := ?
+  }
+
+  template OctStringWithLength mw_oct_string_item(octetstring p_item) :=
+  {
+    stringLength := ?,
+    stringItem := p_item
+  }
 
 }

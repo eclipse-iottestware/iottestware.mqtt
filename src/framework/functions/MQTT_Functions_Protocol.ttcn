@@ -54,7 +54,7 @@ module MQTT_Functions_Protocol
     /*
      * @desc response with a PUBLISH
      */
-    function f_send_pubish(MQTT_Connection p_conn, MQTT_v3_1_1_Publish p_publish) runs on MQTT_MTC
+    function f_send_publish(MQTT_Connection p_conn, MQTT_v3_1_1_Publish p_publish) runs on MQTT_MTC
     {
       var QoS v_qos_level := p_publish.header.qos_level
       var template MQTT_v3_1_1_Message v_message := {msg := { publish := p_publish }}

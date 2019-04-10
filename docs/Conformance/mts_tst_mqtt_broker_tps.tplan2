@@ -937,7 +937,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT accepts only valid fixed header flags for CONNECT Control Packet and responds with CONNACK"
     Reference
-      "[MQTT-2.2.2-1], [MQTT-3.1.4-4]"
+      "[MQTT-2.2.2-1], [MQTT-3.1.4-4], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -967,11 +967,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_CONNACK_002
 
-
     Test objective
     "If the IUT accepts a connection with CleanSession set to 1, the IUT MUST set SessionPresent to 0 in the CONNACK packet in addition to setting a zero-return code."
     Reference
-      "[MQTT-3.2.2-1], [MQTT-3.1.4-4]"
+      "[MQTT-3.2.2-1], [MQTT-3.1.4-4], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -1009,7 +1008,7 @@ Package mts_tst_mqtt {
     Test objective
     "If the IUT has stored session state, it MUST set session present flag to 1 in the CONNACK control packet."
     Reference
-      "[MQTT-3.2.2-2], [MQTT-3.1.4-4]"
+      "[MQTT-3.2.2-2], [MQTT-3.1.4-4], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_RTND
 
     Initial conditions
@@ -1053,7 +1052,7 @@ Package mts_tst_mqtt {
     Test objective
     "If the IUT does not have a stored session state, it MUST set session present flag to 0 in the CONNACK control packet."
     Reference
-      "[MQTT-3.2.2-3], [MQTT-3.1.4-4]"
+      "[MQTT-3.2.2-3], [MQTT-3.1.4-4], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_RTND
 
 
@@ -1098,7 +1097,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT MUST respond to Protocol Levels which it does not support (in scope: MQTT-3.1.1) with return code 0x01"
     Reference
-      "[MQTT-3.1.2-2], [MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+      "[MQTT-3.1.2-2], [MQTT-3.2.2-4], [MQTT-3.2.2-5], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -1137,7 +1136,7 @@ Package mts_tst_mqtt {
     Test objective
     "If the Client supplies a zero-byte Client Identifier with Clean Session set to 0, the IUT MUST respond to the CONNECT Control Packet with a CONNACK return code 0x02 and then close the Network Connection."
     Reference
-      "[MQTT-3.1.3-8], [MQTT-3.1.3-9], [MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+      "[MQTT-3.1.3-8], [MQTT-3.1.3-9], [MQTT-3.2.2-4], [MQTT-3.2.2-5], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_RTND
 
     Expected behaviour
@@ -1177,7 +1176,7 @@ Package mts_tst_mqtt {
     Test objective
     "The data in the username (or password) is malformed"
     Reference
-      "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+      "[MQTT-3.2.2-4], [MQTT-3.2.2-5], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_AUTH
 
     Expected behaviour
@@ -1219,7 +1218,7 @@ Package mts_tst_mqtt {
     Test objective
     "The client is not authorized to connect. Username is invalid"
     Reference
-      "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+      "[MQTT-3.2.2-4], [MQTT-3.2.2-5], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_AUTH
 
     Expected behaviour
@@ -1261,7 +1260,7 @@ Package mts_tst_mqtt {
     Test objective
     "The client is not authorized to connect. Password is invalid"
     Reference
-      "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+      "[MQTT-3.2.2-4], [MQTT-3.2.2-5], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_AUTH
 
     Expected behaviour
@@ -1304,7 +1303,7 @@ Package mts_tst_mqtt {
     Test objective
     "The Network Connection has been made but the MQTT service is unavailable"
     Reference
-      "[MQTT-3.2.2-4], [MQTT-3.2.2-5]"
+      "[MQTT-3.2.2-4], [MQTT-3.2.2-5], [MQTT-3.2.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -1429,9 +1428,9 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_PUBLISH_004
 
     Test objective
-    "The Topic Name in the PUBLISH Packet MUST NOT contain wildcard characters"
+    "The Topic Name in the PUBLISH Packet MUST NOT contain multi-level wildcard characters"
     Reference
-    "[MQTT-3.3.2-2]"
+    "[MQTT-3.3.2-2], [MQTT-4.7.1-1]"
 
     PICS Selection PICS_BROKER_BASIC
 
@@ -1444,7 +1443,7 @@ Package mts_tst_mqtt {
     ensure that {
       when {
         the IUT entity receives a PUBLISH message containing
-        topic_name corresponding to TOPIC_NAME_INVALID;
+        topic_name corresponding to TOPIC_NAME_WC_MULTI_LVL;
       } then {
           the IUT entity closes the TCP_CONNECTION
       }
@@ -1453,6 +1452,91 @@ Package mts_tst_mqtt {
 
   Test Purpose {
     TP Id TP_MQTT_Broker_PUBLISH_005
+
+    Test objective
+    "The Topic Name in the PUBLISH Packet MUST NOT contain single-level wildcard characters"
+    Reference
+    "[MQTT-3.3.2-2], [MQTT-4.7.1-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_WC_SINGLE_LVL;
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_006
+
+    Test objective
+    "In the QoS 0 delivery protocol, the Sender MUST send a PUBLISH packet with QoS=0, DUP=0."
+    Reference
+    "[MQTT-4.3.1-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          dup_flag indicating value '1'B,
+          qos_level corresponding to AT_MOST_ONCE;
+        ;
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  /* Note: does it make sense to test this conformance statement here? */
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_007
+
+    Test objective
+    "In the QoS 0 delivery protocol, a PUBLISH Packet MUST NOT contain a Packet Identifier"
+    Reference
+    "[MQTT-2.3.1-5]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_MOST_ONCE;
+        ;
+        packet_identifier corresponding to PACKET_ID
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_008
 
     Test objective
     "In case of QoS = 1 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier"
@@ -1480,8 +1564,8 @@ Package mts_tst_mqtt {
     }
   }
 
-    Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_006
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_009
 
     Test objective
     "In case of QoS = 2 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier"
@@ -1601,7 +1685,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT closes the network connection if fixed header flags in PUREL Control Packet are invalid"
     Reference
-    "[MQTT-2.2.2-1], [MQTT-2.2.2-2]"
+    "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.6.1-1]"
     PICS Selection PICS_BROKER_QOS_2
 
     Initial conditions
@@ -1622,10 +1706,10 @@ Package mts_tst_mqtt {
       from the CLIENT_1 entity
       and
       the IUT entity receives a PUBREL message containing
-      header_flags indicating value '1111'B;
+      header_flags indicating value '1101'B;
       from the CLIENT_1 entity
       } then {
-          the IUT entity closes the TCP_CONNECTION to the CLIENT_2 entity
+          the IUT entity closes the TCP_CONNECTION to the CLIENT_1 entity
       }
     }
   }
@@ -2358,11 +2442,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_DISCONNECT_001
 
-    // Summary
     Test objective
     "The IUT MUST validate that reserved bits are set to zero and disconnect the Client if they are not zero."
     Reference
-      "[MQTT-2.2.2-1], [MQTT-3.14.1-1] "
+      "[MQTT-2.2.2-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2381,15 +2464,13 @@ Package mts_tst_mqtt {
     }
   }
 
-
   Test Purpose {
     TP Id TP_MQTT_Broker_DISCONNECT_002
 
-    // Summary
     Test objective
     "The IUT MUST validate that reserved bits are set to zero and disconnect the Client if they are not zero."
     Reference
-      "[MQTT-2.2.2-2], [MQTT-3.14.1-1] "
+      "[MQTT-2.2.2-2], [MQTT-3.14.1-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2408,13 +2489,14 @@ Package mts_tst_mqtt {
     }
   }
 
+  /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
     TP Id TP_MQTT_Broker_FEAT_REMLEN_001
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers"
     Reference
-      "MQTT 2.2.3"  // Note: no direkt conformance statement!
+      "MQTT 2.2.3"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2454,13 +2536,14 @@ Package mts_tst_mqtt {
     }
   }
 
+  /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
     TP Id TP_MQTT_Broker_FEAT_REMLEN_002
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 2 bytes to encode remaining length"
     Reference
-      "MQTT 2.2.3"  // Note: no direkt conformance statements!
+      "MQTT 2.2.3"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2500,13 +2583,14 @@ Package mts_tst_mqtt {
     }
   }
 
+  /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
     TP Id TP_MQTT_Broker_FEAT_REMLEN_003
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 3 bytes to encode remaining length"
     Reference
-      "MQTT 2.2.3"  // Note: no direkt conformance statements!
+      "MQTT 2.2.3"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2546,13 +2630,14 @@ Package mts_tst_mqtt {
     }
   }
 
+  /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
     TP Id TP_MQTT_Broker_FEAT_REMLEN_004
 
     Test objective
     "The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 4 bytes to encode remaining length"
     Reference
-      "MQTT 2.2.3"  // Note: no direkt conformance statements!
+      "MQTT 2.2.3"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2622,7 +2707,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_FEAT_RTND_001
 
-    // Summary
     Test objective
     "Retained messages do not form part of the Session state in the IUT, they MUST NOT be deleted when the Session ends"
     Reference
@@ -2661,29 +2745,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_FEAT_RTND_002
 
-    /*
-     * +-----------+           +-----+              +-----------+
-     * | CLIENT_1  |           | IUT |              | CLIENT_2  |
-     * +-----------+           +-----+              +-----------+
-     *     |                    |                       |
-     *     | PUBLISH(PAYLOAD)   |                       |
-     *     |------------------->|                       |
-     *     |                    |                       |
-     *     |             PUBACK |                       |
-     *     |<-------------------|                       |
-     *     |                    |                       |
-     *     |                    |             SUBSCRIBE |
-     *     |                    |<----------------------|
-     *     |                    |                       |
-     *     |                    | SUBACK                |
-     *     |                    |---------------------->|
-     *     |                    |                       |
-     *     |                    | PUBLISH(PAYLOAD)      |
-     *     |                    |---------------------->|
-     *     |                    |                       |
-     **/
-
-    // Summary
     Test objective
     "If the Retain Flag is set to 1, in a PUBLISH Control Packet sent by a Client to the IUT, the IUT MUST store the Application Message and its QoS, so that It can be delivered to future subscribers."
     Reference
@@ -2989,9 +3050,9 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_FEAT_LWT_002
 
     Test objective
-    "The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet"
+    "The Will Message MUST be removed from the stored Session state in the Server once it has been published or the Server has received a DISCONNECT packet from the Client"
     Reference
-    "[MQTT-3.1.2-8]"
+    "[MQTT-3.1.2-8], [MQTT-3.1.2-10], [MQTT-3.14.4-3]"
 
     PICS Selection PICS_BROKER_LWT
 

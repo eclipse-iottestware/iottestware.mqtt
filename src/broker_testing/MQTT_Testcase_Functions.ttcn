@@ -30,6 +30,7 @@ import from MQTT_Templates_CONNECT all;
 import from MQTT_Templates_PUBLISH all;
 
 import from Random_Helper all;
+import from UTF8_Helper all;
 
 import from MQTT_v3_1_1_Types all;
 
@@ -1386,6 +1387,72 @@ group publishFunctionsGroup
   {
     f_connectMqtt();
 
+    var integer v_pid := f_randomPacketId();
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName("*");
+    var octetstring v_payload := 'A0A0'O;
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
+    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+    f_send(v_publish)
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client_MTC
+  {
+    // publish retained message
+    var BIT1n v_dup_flag := '1'B
+    var BIT1n v_retain_flag := '0'B
+    var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
+    var UTF8EncodedString v_topic := f_utf8_from_charstring(PX_TOPIC_NAME)
+    var octetstring v_payload := 'A5A5A5'O
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(v_dup_flag, v_qos_level, v_retain_flag))
+    var MQTT_v3_1_1_Publish v_publish_packet := valueof(t_publish_packet_qos_0(v_pub_header, v_topic, v_payload))
+
+    /* pre condition */
+    f_mqtt_connect_01()
+
+    /* send the publish message */
+    f_mqtt_send_publish(v_publish_packet)
+
+    /* wait until SUT closes the IPL4 connection */
+    f_mqtt_receive_ipl4_close()
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_007() runs on MQTT_Client_MTC
+  {
+    // publish retained message
+    var BIT1n v_dup_flag := '0'B
+    var BIT1n v_retain_flag := '0'B
+    var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
+    var integer v_packet_id := f_random_packet_id()
+    var UTF8EncodedString v_topic := f_utf8_from_charstring(PX_TOPIC_NAME)
+    var octetstring v_payload := 'A5A5A5'O
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(v_dup_flag, v_qos_level, v_retain_flag))
+    var MQTT_v3_1_1_Publish v_publish_packet := valueof(t_publish_packet(v_pub_header, v_packet_id, v_topic, v_payload))
+
+    /* pre condition */
+    f_mqtt_connect_01()
+
+    /* send the publish message */
+    f_mqtt_send_publish(v_publish_packet)
+
+    /* wait until SUT closes the IPL4 connection */
+    f_mqtt_receive_ipl4_close()
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client
+  {
+    f_connectMqtt();
+
     var integer v_pid := 0;
     var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
     var octetstring v_payload := 'A0A0'O;
@@ -1405,7 +1472,7 @@ group publishFunctionsGroup
     }
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client
+  function f_TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client
   {
     f_connectMqtt();
 
@@ -1443,7 +1510,7 @@ group publishResponseFunctionsGroup
 
     var QoS v_qos_level := AT_LEAST_ONCE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, '0'B))
-    p_publisher.start(f_mqtt_send_publish(v_pub_header))
+    p_publisher.start(f_mqtt_send_publish_header(v_pub_header))
 
     /* expected bahaviour */
     p_subscriber.start(f_mqtt_response_invalid_puback())
@@ -1462,22 +1529,20 @@ group publishResponseFunctionsGroup
 
     var QoS v_qos_level := EXACTLY_ONE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, '0'B))
-    p_publisher.start(f_mqtt_send_publish(v_pub_header))
+    p_publisher.start(f_mqtt_send_publish_header(v_pub_header))
 
     /* expected bahaviour */
     p_subscriber.start(f_mqtt_response_invalid_pubrec())
     all component.done;
   }
 
-  function f_TC_MQTT_BROKER_PUBREL_001(MQTT_Client_MTC p_publisher) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  function f_TC_MQTT_BROKER_PUBREL_001() runs on MQTT_Client_MTC
   {
     /* Initial conditions */
-    p_publisher.start(f_mqtt_connect_01())
-    p_publisher.done;
+    f_mqtt_connect_01()
 
     /* expected bahaviour */
-    p_publisher.start(f_mqtt_response_invalid_pubrel())
-    p_publisher.done;
+    f_mqtt_response_invalid_pubrel()
   }
 
   function f_TC_MQTT_BROKER_PUBCOMP_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
@@ -1492,7 +1557,7 @@ group publishResponseFunctionsGroup
 
     var QoS v_qos_level := EXACTLY_ONE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, '0'B))
-    p_publisher.start(f_mqtt_send_publish(v_pub_header))
+    p_publisher.start(f_mqtt_send_publish_header(v_pub_header))
 
     /* expected bahaviour */
     p_subscriber.start(f_mqtt_response_invalid_pubcomp())
@@ -2178,7 +2243,7 @@ group protocolFeaturesFunctionsGroup
     var BIT1n v_retain_flag := '0'B
     var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), p_payload))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header), p_payload))
 
     // receive the published message without retained flag
     // assumption: if payload is the same, decoding and encoding of remaining length was OK
@@ -2188,16 +2253,14 @@ group protocolFeaturesFunctionsGroup
     all component.done;
   }
 
-  function f_TC_MQTT_BROKER_FEAT_KEEPALIVE_001(MQTT_Client_MTC p_client) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  function f_TC_MQTT_BROKER_FEAT_KEEPALIVE_001() runs on MQTT_Client_MTC
   {
     var integer v_keep_alive := 2
     // spec says 1.5 times of keep_alive until IUT must close IPL4 connection, so we expect IPL4 close in 3.0 sec. + 1.0 sec. buffer
     var float v_timeout := 4.0
-    p_client.start(f_mqtt_connect_02(v_keep_alive))
-    p_client.done
+    f_mqtt_connect_02(v_keep_alive)
 
-    p_client.start(f_mqtt_receive_ipl4_close(v_timeout))
-    p_client.done
+    f_mqtt_receive_ipl4_close(v_timeout)
   }
 
   function f_TC_MQTT_BROKER_FEAT_RTND_001() runs on MQTT_Client
@@ -2267,7 +2330,7 @@ group protocolFeaturesFunctionsGroup
     var BIT1n v_retain_flag := '1'B
     var QoS v_qos_level := AT_LEAST_ONCE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header)))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header)))
     p_publisher.done;
 
     // subscribe and check if retained message received
@@ -2276,7 +2339,7 @@ group protocolFeaturesFunctionsGroup
     p_subscriber.done
 
     /* clean up the retained message as this might brake other tests! */
-    p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_publisher.start(f_mqtt_send_publish_header(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
     p_publisher.done;
   }
 
@@ -2294,7 +2357,7 @@ group protocolFeaturesFunctionsGroup
     var BIT1n v_retain_flag := '1'B
     var QoS v_qos_level := AT_LEAST_ONCE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header)))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header)))
     p_publisher.done;
 
     // receive the published message without retained flag
@@ -2303,7 +2366,7 @@ group protocolFeaturesFunctionsGroup
     p_subscriber.done
 
     /* clean up the retained message as this might brake other tests! */
-    p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_publisher.start(f_mqtt_send_publish_header(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
     p_publisher.done;
   }
 
@@ -2323,7 +2386,7 @@ group protocolFeaturesFunctionsGroup
     var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
     var octetstring v_zero_byte_payload := ''O
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_zero_byte_payload))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header), v_zero_byte_payload))
     p_publisher.done;
 
     // receive the published message without retained flag and zero byte payload
@@ -2333,7 +2396,7 @@ group protocolFeaturesFunctionsGroup
 
     // Not required here because publisher already sends a retained message with zero-byte payload
     /* clean up the retained message as this might brake other tests! */
-    //p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    //p_publisher.start(f_mqtt_send_publish_header(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
     //p_publisher.done;
   }
 
@@ -2349,13 +2412,13 @@ group protocolFeaturesFunctionsGroup
     var BIT1n v_retain_flag := '1'B
     var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header)))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header)))
     p_publisher.done;
 
     // now send a retained message with zero byte payload -> delete retained message
     var octetstring v_zero_byte_payload := ''O
     v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_zero_byte_payload))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header), v_zero_byte_payload))
     p_publisher.done;
 
     timer t_timeout := 0.5;
@@ -2374,7 +2437,7 @@ group protocolFeaturesFunctionsGroup
 
     // Not required here because publisher already sends a retained message with zero-byte payload
     /* clean up the retained message as this might brake other tests! */
-    //p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    //p_publisher.start(f_mqtt_send_publish_header(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
     //p_publisher.done;
   }
 
@@ -2391,14 +2454,14 @@ group protocolFeaturesFunctionsGroup
     var octetstring v_payload_1 := 'A5A5A5A5A5A5'O
     var QoS v_qos_level := AT_MOST_ONCE_DELIVERY
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_payload_1))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header), v_payload_1))
     p_publisher.done;
 
     // now send a non-retained message with alternative payload
     v_retain_flag := '0'B
     var octetstring v_payload_2 := 'FFEEDDCCBBAA'O
     v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
-    p_publisher.start(f_mqtt_send_publish(valueof(v_pub_header), v_payload_2))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header), v_payload_2))
     p_publisher.done;
 
     timer t_timeout := 0.5;
@@ -2417,7 +2480,7 @@ group protocolFeaturesFunctionsGroup
     p_subscriber.done
 
     /* clean up the retained message as this might brake other tests! */
-    p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_publisher.start(f_mqtt_send_publish_header(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
     p_publisher.done;
   }
 
@@ -2484,7 +2547,7 @@ group protocolFeaturesFunctionsGroup
 
     /* clean up the retained LWT message as this might brake other tests! */
     // because publisher is already disconnected, the subscriber will do!
-    p_subscriber.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_subscriber.start(f_mqtt_send_publish_header(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
     p_subscriber.done;
   }
 

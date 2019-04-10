@@ -25,6 +25,7 @@ import from Random_Helper all;
 
 // MQTT TS Framework
 import from MQTT_TestSystem_Common all;
+import from MQTT_TypesAndValues_Common all;
 import from MQTT_Functions_SetUp all;
 import from MQTT_Functions_Network all;
 
@@ -456,36 +457,29 @@ group connectGroup
   */
   testcase TC_MQTT_BROKER_CONNECT_030() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC client_1, client_2;
+    var BooleanReturnType v_init_client1, v_init_client2;
 
-    client_1 := MQTT_Client_MTC.create("Client_1") alive;
-    client_2 := MQTT_Client_MTC.create("Client_2") alive;
+    var MQTT_Client_MTC client_1 := MQTT_Client_MTC.create("Client_1") alive;
+    var MQTT_Client_MTC client_2 := MQTT_Client_MTC.create("Client_2") alive;
 
+    // Note: here we cannot use f_init_client_system...
     map(client_1:MQTT_PCO, system:mqtt_client_1)
     map(client_2:MQTT_PCO, system:mqtt_client_2)
 
-    client_1.start(f_init_client(0));
-    client_2.start(f_init_client(0)); // both clients take the same credentials!
+    // ...because both clients must use the same credentials from PIXITS
+    client_1.start(f_init_client(0)); // <- idx = 0
+    client_2.start(f_init_client(0)); // <- idx = 0
 
-    all component.done
+    // wait until clients initialized and store the init state
+    client_1.done(BooleanReturnType : ?) -> value v_init_client1
+    client_2.done(BooleanReturnType : ?) -> value v_init_client2
 
-    if(all component.alive)
+    if(v_init_client1 and v_init_client2) // only if both initialized correctly
     {
       f_TC_MQTT_BROKER_CONNECT_030(client_1, client_2)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    client_1.start(f_ipl4_disconnect())
-    client_2.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(client_1:MQTT_PCO, system:mqtt_client_1)
-    unmap(client_2:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(client_1, client_2)
   }
 } // connectGroup
 
@@ -682,9 +676,9 @@ group publishGroup
   }
 
   /*
-  * @purpose The Topic Name in the PUBLISH Packet MUST NOT contain wildcard characters
+  * @purpose The Topic Name in the PUBLISH Packet MUST NOT contain multi-level wildcard characters
   *
-  * @reference [MQTT-3.3.2-2]
+  * @reference [MQTT-3.3.2-2], [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_004() runs on MQTT_Client
   {
@@ -696,9 +690,9 @@ group publishGroup
   }
 
   /*
-  * @purpose In case of QoS = 1 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
+  * @purpose The Topic Name in the PUBLISH Packet MUST NOT contain single-level wildcard characters
   *
-  * @reference [MQTT-2.3.1-1]
+  * @reference [MQTT-3.3.2-2], [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_005() runs on MQTT_Client
   {
@@ -710,15 +704,68 @@ group publishGroup
   }
 
   /*
+  * @purpose In the QoS 0 delivery protocol, the Sender MUST send a PUBLISH packet with QoS=0, DUP=0.
+  *
+  * @reference [MQTT-4.3.1-1]
+  */
+  testcase TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0))
+    {
+      f_TC_MQTT_BROKER_PUBLISH_006()
+    }
+
+    f_clear_client()
+
+    map(self:MQTT_PCO, system:MQTT_PCO)
+  }
+
+  /*
+  * @purpose In the QoS 0 delivery protocol, a PUBLISH Packet MUST NOT contain a Packet Identifier"
+  * @remark It should be impossible for Brokers to pass this test!
+  *         As the Packet Identifier is optional, it will be interpreted as part of payload coming after the topic_name.
+  * @reference [MQTT-2.3.1-5]
+  */
+  testcase TC_MQTT_BROKER_PUBLISH_007() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0))
+    {
+      f_TC_MQTT_BROKER_PUBLISH_007()
+    }
+
+    f_clear_client()
+
+    map(self:MQTT_PCO, system:MQTT_PCO)
+  }
+
+  /*
+  * @purpose In case of QoS = 1 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
+  *
+  * @reference [MQTT-2.3.1-1]
+  */
+  testcase TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client
+  {
+    if(f_init())
+    {
+      f_TC_MQTT_BROKER_PUBLISH_008();
+    }
+    f_cleanUp();
+  }
+
+  /*
   * @purpose In case of QoS = 2 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
   *
   * @reference [MQTT-2.3.1-1]
   */
-  testcase TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client
   {
     if(f_init())
     {
-      f_TC_MQTT_BROKER_PUBLISH_006();
+      f_TC_MQTT_BROKER_PUBLISH_009();
     }
     f_cleanUp();
   }
@@ -733,36 +780,15 @@ group publishResponseGroup
   */
   testcase TC_MQTT_BROKER_PUBACK_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_PUBACK_001(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -772,36 +798,15 @@ group publishResponseGroup
   */
   testcase TC_MQTT_BROKER_PUBREC_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_PUBREC_001(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -809,32 +814,18 @@ group publishResponseGroup
   *
   * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
-  testcase TC_MQTT_BROKER_PUBREL_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  testcase TC_MQTT_BROKER_PUBREL_001() runs on MQTT_Client_MTC
   {
-    var MQTT_Client_MTC publisher;
+    map(self:MQTT_PCO, system:MQTT_PCO)
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-
-    publisher.start(f_init_client(0));
-    publisher.done
-
-    if(publisher.alive)
+    if(f_init_client(0))
     {
-      f_TC_MQTT_BROKER_PUBREL_001(publisher)
-    }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
+      f_TC_MQTT_BROKER_PUBREL_001()
     }
 
-    publisher.start(f_ipl4_disconnect())
-    publisher.done
-    publisher.kill
+    f_clear_client()
 
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(self:MQTT_PCO, system:MQTT_PCO)
   }
 
   /*
@@ -844,36 +835,15 @@ group publishResponseGroup
   */
   testcase TC_MQTT_BROKER_PUBCOMP_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_PUBCOMP_001(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 }
 
@@ -1235,39 +1205,18 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       var integer v_payload_length := 10
       var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
       var float v_timeout := PX_MAX_RESPONSE_TIME
       f_TC_MQTT_BROKER_FEAT_REMLEN(publisher, subscriber, v_timeout, v_payload)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1277,39 +1226,18 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       var integer v_payload_length := 128
       var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
       var float v_timeout := PX_MAX_RESPONSE_TIME
       f_TC_MQTT_BROKER_FEAT_REMLEN(publisher, subscriber, v_timeout, v_payload)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1319,39 +1247,18 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       var integer v_payload_length := 16384
       var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
       var float v_timeout := PX_MAX_RESPONSE_TIME * 2.0
       f_TC_MQTT_BROKER_FEAT_REMLEN(publisher, subscriber, v_timeout, v_payload)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1361,39 +1268,18 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       var integer v_payload_length := 2097152
       var octetstring v_payload := f_test_long_payload(PX_PAYLOAD_DATA_FILE, v_payload_length)
       var float v_timeout := PX_MAX_RESPONSE_TIME * 4.0
       f_TC_MQTT_BROKER_FEAT_REMLEN(publisher, subscriber, v_timeout, v_payload)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1401,32 +1287,18 @@ group protocolFeaturesGroup {
   *
   * @reference [MQTT-3.1.2-24]
   */
-  testcase TC_MQTT_BROKER_FEAT_KEEPALIVE_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  testcase TC_MQTT_BROKER_FEAT_KEEPALIVE_001() runs on MQTT_Client_MTC
   {
-    var MQTT_Client_MTC client;
+    map(self:MQTT_PCO, system:MQTT_PCO)
 
-    client := MQTT_Client_MTC.create("Client") alive;
-
-    map(client:MQTT_PCO, system:mqtt_client_1)
-
-    client.start(f_init_client(0));
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client(0))
     {
-      f_TC_MQTT_BROKER_FEAT_KEEPALIVE_001(client)
-    }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
+      f_TC_MQTT_BROKER_FEAT_KEEPALIVE_001()
     }
 
-    client.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
+    f_clear_client()
 
-    unmap(client:MQTT_PCO, system:mqtt_client_1)
+    unmap(self:MQTT_PCO, system:MQTT_PCO)
   }
 
   /*
@@ -1450,35 +1322,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_RTND_002(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1488,36 +1340,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_RTND_003(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1529,36 +1360,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_RTND_004(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1570,36 +1380,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_RTND_005(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1610,36 +1399,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_006() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC publisher, subscriber;
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    publisher := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(publisher:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    publisher.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(publisher, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_RTND_006(publisher, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    publisher.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(publisher:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1649,36 +1417,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC client_lwt, subscriber;
+    var MQTT_Client_MTC client_lwt := MQTT_Client_MTC.create("Client_LWT") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    client_lwt.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(client_lwt, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_LWT_001(client_lwt, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    client_lwt.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(client_lwt, subscriber)
   }
 
   /*
@@ -1688,36 +1435,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC client_lwt, subscriber;
+    var MQTT_Client_MTC client_lwt := MQTT_Client_MTC.create("Client_LWT") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    client_lwt.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(client_lwt, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_LWT_002(client_lwt, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    client_lwt.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(client_lwt, subscriber)
   }
 
   /*
@@ -1727,36 +1453,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC client_lwt, subscriber;
+    var MQTT_Client_MTC client_lwt := MQTT_Client_MTC.create("Client_LWT") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    client_lwt.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(client_lwt, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_LWT_003(client_lwt, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    client_lwt.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(client_lwt, subscriber)
   }
 
   /*
@@ -1766,36 +1471,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC client_lwt, subscriber;
+    var MQTT_Client_MTC client_lwt := MQTT_Client_MTC.create("Client_LWT") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    client_lwt.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(client_lwt, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_LWT_004(client_lwt, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    client_lwt.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(client_lwt, subscriber)
   }
 
   /*
@@ -1805,36 +1489,15 @@ group protocolFeaturesGroup {
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    var MQTT_Client_MTC client_lwt, subscriber;
+    var MQTT_Client_MTC client_lwt := MQTT_Client_MTC.create("Client_LWT") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
 
-    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
-    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
-
-    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    map(subscriber:MQTT_PCO, system:mqtt_client_2)
-
-    client_lwt.start(f_init_client(0));
-    subscriber.start(f_init_client(1));
-
-    all component.done
-
-    if(all component.alive)
+    if(f_init_client_system(client_lwt, subscriber))
     {
       f_TC_MQTT_BROKER_FEAT_LWT_005(client_lwt, subscriber)
     }
-    else
-    {
-      log("some client died during init!")
-      setverdict(inconc, "Initialization failed: check your config")
-    }
 
-    client_lwt.start(f_ipl4_disconnect())
-    subscriber.start(f_ipl4_disconnect())
-    all component.done
-    all component.kill
-
-    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
-    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+    f_clear_client_system(client_lwt, subscriber)
   }
 } // protocolFeaturesGroup
 
