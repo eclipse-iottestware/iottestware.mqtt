@@ -448,6 +448,45 @@ group connectGroup
     }
     f_cleanUp();
   }
+
+  /*
+  * @purpose If the ClientId represents a Client already connected to the Server then the Server MUST disconnect the existing Client"
+  *
+  * @reference [MQTT-3.1.4-2]
+  */
+  testcase TC_MQTT_BROKER_CONNECT_030() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC client_1, client_2;
+
+    client_1 := MQTT_Client_MTC.create("Client_1") alive;
+    client_2 := MQTT_Client_MTC.create("Client_2") alive;
+
+    map(client_1:MQTT_PCO, system:mqtt_client_1)
+    map(client_2:MQTT_PCO, system:mqtt_client_2)
+
+    client_1.start(f_init_client(0));
+    client_2.start(f_init_client(0)); // both clients take the same credentials!
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_CONNECT_030(client_1, client_2)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    client_1.start(f_ipl4_disconnect())
+    client_2.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(client_1:MQTT_PCO, system:mqtt_client_1)
+    unmap(client_2:MQTT_PCO, system:mqtt_client_2)
+  }
 } // connectGroup
 
 group connackGroup
@@ -1358,6 +1397,39 @@ group protocolFeaturesGroup {
   }
 
   /*
+  * @purpose If the Keep Alive value is non-zero and the Server does not receive a Control Packet from the Client within one and a half times the Keep Alive time period, it MUST disconnect the Network Connection to the Client as if the network had failed
+  *
+  * @reference [MQTT-3.1.2-24]
+  */
+  testcase TC_MQTT_BROKER_FEAT_KEEPALIVE_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC client;
+
+    client := MQTT_Client_MTC.create("Client") alive;
+
+    map(client:MQTT_PCO, system:mqtt_client_1)
+
+    client.start(f_init_client(0));
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_FEAT_KEEPALIVE_001(client)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    client.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(client:MQTT_PCO, system:mqtt_client_1)
+  }
+
+  /*
   * @purpose Retained messages do not form part of the Session state in the IUT, they MUST NOT be deleted when the Session ends
   *
   * @reference [MQTT-3.1.2-7]
@@ -1567,6 +1639,201 @@ group protocolFeaturesGroup {
     all component.kill
 
     unmap(publisher:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet
+  *
+  * @reference [MQTT-3.1.2-8]
+  */
+  testcase TC_MQTT_BROKER_FEAT_LWT_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC client_lwt, subscriber;
+
+    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    client_lwt.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_FEAT_LWT_001(client_lwt, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    client_lwt.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet
+  *
+  * @reference [MQTT-3.1.2-8]
+  */
+  testcase TC_MQTT_BROKER_FEAT_LWT_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC client_lwt, subscriber;
+
+    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    client_lwt.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_FEAT_LWT_002(client_lwt, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    client_lwt.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet
+  *
+  * @reference [MQTT-3.1.2-12]
+  */
+  testcase TC_MQTT_BROKER_FEAT_LWT_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC client_lwt, subscriber;
+
+    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    client_lwt.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_FEAT_LWT_003(client_lwt, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    client_lwt.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose If Will Retain is set to 1, the Server MUST publish the Will Message as a retained message
+  *
+  * @reference [MQTT-3.1.2-17]
+  */
+  testcase TC_MQTT_BROKER_FEAT_LWT_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC client_lwt, subscriber;
+
+    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    client_lwt.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_FEAT_LWT_004(client_lwt, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    client_lwt.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
+  }
+
+  /*
+  * @purpose If Will Retain is set to 0, the Server MUST publish the Will Message as a non-retained message
+  *
+  * @reference [MQTT-3.1.2-16]
+  */
+  testcase TC_MQTT_BROKER_FEAT_LWT_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC client_lwt, subscriber;
+
+    client_lwt := MQTT_Client_MTC.create("Publisher") alive;
+    subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    map(client_lwt:MQTT_PCO, system:mqtt_client_1)
+    map(subscriber:MQTT_PCO, system:mqtt_client_2)
+
+    client_lwt.start(f_init_client(0));
+    subscriber.start(f_init_client(1));
+
+    all component.done
+
+    if(all component.alive)
+    {
+      f_TC_MQTT_BROKER_FEAT_LWT_005(client_lwt, subscriber)
+    }
+    else
+    {
+      log("some client died during init!")
+      setverdict(inconc, "Initialization failed: check your config")
+    }
+
+    client_lwt.start(f_ipl4_disconnect())
+    subscriber.start(f_ipl4_disconnect())
+    all component.done
+    all component.kill
+
+    unmap(client_lwt:MQTT_PCO, system:mqtt_client_1)
     unmap(subscriber:MQTT_PCO, system:mqtt_client_2)
   }
 } // protocolFeaturesGroup

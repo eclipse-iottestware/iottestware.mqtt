@@ -32,9 +32,11 @@ Package mts_mqtt_commons {
         - closes
         - having
         - published
+        - established
         - delivered   // published with QoS > 0 and performed PUBACK / PUBREC / PUBREL / PUBCOMP
         - subscribed
         - checks_that
+        - times_out   // see [MQTT-3.1.2-24] when keep_alive * 1.5 exceeds
         ;
     }
 
@@ -112,5 +114,6 @@ Package mts_mqtt_commons {
         UTF8String PX_CLIENT_ID;
         UTF8String PX_MQTT_USER_NAME;
         UTF8String PX_MQTT_PASSWORD;
+        Int16 PX_KEEP_ALIVE;
     }
 }

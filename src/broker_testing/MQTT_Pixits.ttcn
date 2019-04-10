@@ -66,6 +66,11 @@ module MQTT_Pixits {
      */
     modulepar charstring PX_PAYLOAD_DATA_FILE := "./bin/Data.payload"
 
+
+    /*
+     * @desc
+     */
+    modulepar charstring PX_WILL_MESSAGE := "LWT MESSAGE"
     /* @obsolete: selection of Test-cases via Dashboard makes this modulepar obsolete
     // PICS selection
     type enumerated PICS

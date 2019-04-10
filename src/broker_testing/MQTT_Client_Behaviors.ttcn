@@ -38,6 +38,8 @@
 
    /*
     * @desc f_mqtt_connect_01 sends a most basic MQTT Connect... no retain, no LWT etc...
+    * TODO: refactor f_mqtt_connect_[] functions
+    * TODO: move to MQTT_Functions_Protocol (??)
     */
    function f_mqtt_connect_01(integer p_return_code := 0) runs on MQTT_Client_MTC
    {
@@ -55,6 +57,95 @@
        t_timeout.start
        alt {
          [] MQTT_PCO.receive(v_receive) {
+           connection.client_state := Connected
+           break;
+         }
+         [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) {
+           setverdict(fail, "CONNACK contains wrong return code")
+           break
+         }
+         [] t_timeout.timeout {
+           setverdict(fail, "No CONNACK received")
+           break;
+         }
+       }
+     }
+     else
+     {
+       setverdict(fail, "Client could not connect to ", PX_SUT_HOSTNAME, ":", PX_SUT_PORT)
+     }
+   }
+
+   /*
+    * @desc connect MQTT client with a given keep_alive time
+    * TODO: refactor f_mqtt_connect_[] functions
+    */
+   function f_mqtt_connect_02(integer p_keep_alive, integer p_return_code := 0) runs on MQTT_Client_MTC
+   {
+     // establish TCP connection
+     if(f_ipl4_connect())
+     {
+       var UTF8EncodedString v_client_id := f_utf8_from_charstring(credentials.clientId)
+       var template MQTT_v3_1_1_Message v_connect_packet := md_connect_message_keep_alive(v_client_id, p_keep_alive)
+       var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection);
+
+       MQTT_PCO.send(valueof(vt_connect))
+
+       var template MQTTasp_Message v_receive := mw_mqtt_message(mw_connack_rc(p_return_code))
+       timer t_timeout := PX_MAX_RESPONSE_TIME;
+       t_timeout.start
+       alt {
+         [] MQTT_PCO.receive(v_receive) {
+           connection.client_state := Connected
+           break;
+         }
+         [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) {
+           setverdict(fail, "CONNACK contains wrong return code")
+           break
+         }
+         [] t_timeout.timeout {
+           setverdict(fail, "No CONNACK received")
+           break;
+         }
+       }
+     }
+     else
+     {
+       setverdict(fail, "Client could not connect to ", PX_SUT_HOSTNAME, ":", PX_SUT_PORT)
+     }
+   }
+
+   /*
+    * @desc connect MQTT client with LWT
+    * TODO: refactor f_mqtt_connect_[] functions
+    */
+   function f_mqtt_connect_03(BIT1n p_will_retain := '0'B) runs on MQTT_Client_MTC
+   {
+     // establish TCP connection
+     if(f_ipl4_connect())
+     {
+       var integer v_return_code := 0
+
+       var UTF8EncodedString v_client_id := f_utf8_from_charstring(credentials.clientId)
+       var UTF8EncodedString v_will_topic := f_utf8_from_charstring(PX_TOPIC_NAME)
+       var OctStringWithLength v_will_message := f_octstring_from_charstring(PX_WILL_MESSAGE);
+       var UTF8EncodedString v_username := f_utf8_from_charstring(credentials.username)
+       var OctStringWithLength v_password := f_octstring_from_charstring(credentials.password)
+
+       var BIT1n v_will_flag := '1'B
+       var template MQTT_v3_1_1_ConnectFlags v_flags := md_connect_credentials_lwt(v_will_flag, p_will_retain, -)
+       var template MQTT_v3_1_1_ConnectPayload v_payload := m_connect_payload_credentials(v_client_id, v_will_topic, v_will_message, v_username, v_password)
+       var template MQTT_v3_1_1_Message v_connect_packet := m_connect_message_base_02(v_flags, v_payload)
+       var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection);
+
+       MQTT_PCO.send(valueof(vt_connect))
+
+       var template MQTTasp_Message v_receive := mw_mqtt_message(mw_connack_rc(v_return_code))
+       timer t_timeout := PX_MAX_RESPONSE_TIME;
+       t_timeout.start
+       alt {
+         [] MQTT_PCO.receive(v_receive) {
+           connection.client_state := Connected
            break;
          }
          [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) {
@@ -108,6 +199,27 @@
        }
        [] t_timeout.timeout {
          setverdict(fail, "No PUBLISH received")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   function f_mqtt_receive_no_publish() runs on MQTT_Client_MTC
+   {
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+         setverdict(fail, "Received unexpected ASP Event message")
+         break;
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "Received unexpected message ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(pass, "No PUBLISH received")
          break;
        }
      }
@@ -461,6 +573,37 @@
        }
        [] t_timeout.timeout {
          setverdict(fail, "No SUBACK received for ", v_packet_id)
+         break;
+       }
+     }
+
+     t_timeout.stop
+   }
+
+   /*
+    * @desc subscribe to PX_TOPIC_NAME and check there is no retained message
+    */
+   function f_mqtt_receive_ipl4_close(float p_timeout := 0.0) runs on MQTT_Client_MTC
+   {
+     if(p_timeout <= 0.0) {
+       p_timeout := PX_MAX_RESPONSE_TIME
+     }
+     timer t_timeout := p_timeout
+
+     var MQTTasp_Message v_received
+
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+         setverdict(pass, "IUT closed network connection correctly")
+         break;
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "No message was expected, received ", v_received)
+         break;
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "IUT must close network connection")
          break;
        }
      }

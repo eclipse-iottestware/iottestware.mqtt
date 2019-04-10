@@ -19,6 +19,12 @@ module UTF8_Helper {
     return { stringLength := lengthof(p_in), stringItem := p_in }
   }
 
+  function f_octstring_from_charstring(universal charstring p_in) return OctStringWithLength
+  {
+    var octetstring v_item := unichar2oct(p_in)
+    return { stringLength := lengthof(v_item), stringItem := v_item }
+  }
+
   /*
    * check if the decoded charstring is valid UTF-8 according to the MQTT specification (1.5.3)
    * @reference http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718016

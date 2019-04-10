@@ -21,7 +21,8 @@ import from MQTT_Pixits all;
 // MQTT TS Framework
 import from MQTTasp_Types all;
 import from MQTT_TestSystem_Common all;
-//import from MQTT_Functions_Network all;
+import from MQTT_Functions_Network all;
+import from MQTT_Functions_Protocol all;
 //import from MQTT_Functions_SetUp all;
 import from MQTT_Client_Behaviors all;
 import from MQTT_Templates_MQTTasp all;
@@ -852,6 +853,18 @@ group connectFunctionsGroup
           setverdict(fail, "IUT MUST close the Network Connection");
           f_disconnectMqtt();
         }
+      }
+
+      function f_TC_MQTT_BROKER_CONNECT_030(MQTT_Client_MTC client_1, MQTT_Client_MTC client_2) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+      {
+        /* Initial conditions */
+        client_1.start(f_mqtt_connect_01())
+        client_1.done
+
+        /* expected behaviour */
+        client_1.start(f_mqtt_receive_ipl4_close()) // start waiting for IPL4 close from IUT for Client 1
+        client_2.start(f_mqtt_connect_01())         // MQTT connect for Client 2 with same client ID as Client 1
+        all component.done;
       }
 } // connectFunctionsGroup
 
@@ -2175,6 +2188,18 @@ group protocolFeaturesFunctionsGroup
     all component.done;
   }
 
+  function f_TC_MQTT_BROKER_FEAT_KEEPALIVE_001(MQTT_Client_MTC p_client) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var integer v_keep_alive := 2
+    // spec says 1.5 times of keep_alive until IUT must close IPL4 connection, so we expect IPL4 close in 3.0 sec. + 1.0 sec. buffer
+    var float v_timeout := 4.0
+    p_client.start(f_mqtt_connect_02(v_keep_alive))
+    p_client.done
+
+    p_client.start(f_mqtt_receive_ipl4_close(v_timeout))
+    p_client.done
+  }
+
   function f_TC_MQTT_BROKER_FEAT_RTND_001() runs on MQTT_Client
   {
     var UTF8EncodedString v_topic := f_getConcatenatedTopicName("retain");
@@ -2194,27 +2219,34 @@ group protocolFeaturesFunctionsGroup
     {
       var IPL4_Response v_response := f_receive();
 
-      if(match(v_response.receivedMsg.msg.publish.header, v_expected.msg.publish.header))
+      if(ischosen(v_response.receivedMsg))
       {
-        if(match(v_response.receivedMsg.msg.publish.topic_name, v_expected.msg.publish.topic_name))
+        if(match(v_response.receivedMsg.msg.publish.header, v_expected.msg.publish.header))
         {
-          if(match(v_response.receivedMsg.msg.publish.payload, v_expected.msg.publish.payload))
+          if(match(v_response.receivedMsg.msg.publish.topic_name, v_expected.msg.publish.topic_name))
           {
-            setverdict(pass, "Received retained message")
+            if(match(v_response.receivedMsg.msg.publish.payload, v_expected.msg.publish.payload))
+            {
+              setverdict(pass, "Received retained message")
+            }
+            else
+            {
+              setverdict(fail, "PUBLISH payload does not match")
+            }
           }
           else
           {
-            setverdict(fail, "PUBLISH payload does not match")
+            setverdict(fail, "PUBLISH topic does not match")
           }
         }
         else
         {
-          setverdict(fail, "PUBLISH topic does not match")
+          setverdict(fail, "PUBLISH header does not match")
         }
       }
       else
       {
-        setverdict(fail, "PUBLISH header does not match")
+        setverdict(fail, "Received not PUBLISH but: ", v_response)
       }
     }
     else
@@ -2242,6 +2274,10 @@ group protocolFeaturesFunctionsGroup
     var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_retain_qos0('1'B)
     p_subscriber.start(f_mqtt_subscribe_retained(AT_MOST_ONCE_DELIVERY, v_expected))
     p_subscriber.done
+
+    /* clean up the retained message as this might brake other tests! */
+    p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_publisher.done;
   }
 
   function f_TC_MQTT_BROKER_FEAT_RTND_003(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
@@ -2265,6 +2301,10 @@ group protocolFeaturesFunctionsGroup
     var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_retain_qos0('0'B)
     p_subscriber.start(f_mqtt_receive_publish(v_expected))
     p_subscriber.done
+
+    /* clean up the retained message as this might brake other tests! */
+    p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_publisher.done;
   }
 
   function f_TC_MQTT_BROKER_FEAT_RTND_004(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
@@ -2290,6 +2330,11 @@ group protocolFeaturesFunctionsGroup
     var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_zero_payload_qos0('0'B)
     p_subscriber.start(f_mqtt_receive_publish(v_expected))
     p_subscriber.done
+
+    // Not required here because publisher already sends a retained message with zero-byte payload
+    /* clean up the retained message as this might brake other tests! */
+    //p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    //p_publisher.done;
   }
 
   function f_TC_MQTT_BROKER_FEAT_RTND_005(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
@@ -2326,6 +2371,11 @@ group protocolFeaturesFunctionsGroup
     // subscribe to topic and check if retained message was removed
     p_subscriber.start(f_mqtt_subscribe_no_retained(AT_MOST_ONCE_DELIVERY))
     p_subscriber.done;
+
+    // Not required here because publisher already sends a retained message with zero-byte payload
+    /* clean up the retained message as this might brake other tests! */
+    //p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    //p_publisher.done;
   }
 
   function f_TC_MQTT_BROKER_FEAT_RTND_006(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
@@ -2363,8 +2413,96 @@ group protocolFeaturesFunctionsGroup
 
     // receive the published message with retained flag and first payload
     var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_alternative_payload_qos0('1'B, v_payload_1)
-    p_subscriber.start(f_mqtt_receive_publish(v_expected))
+    p_subscriber.start(f_mqtt_subscribe_retained(v_qos_level, v_expected))
     p_subscriber.done
+
+    /* clean up the retained message as this might brake other tests! */
+    p_publisher.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_publisher.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_LWT_001(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_client_lwt.start(f_mqtt_connect_03())  // with LWT
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done;
+
+    /* expected bahaviour */
+    var octetstring v_will_message := unichar2oct(PX_WILL_MESSAGE);
+    var template MQTT_v3_1_1_Publish v_lwt_message := mw_publish_packet_payload_qos0(v_will_message)
+    p_subscriber.start(f_mqtt_receive_publish(v_lwt_message))
+    p_client_lwt.start(f_ipl4_disconnect())
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_LWT_002(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_client_lwt.start(f_mqtt_connect_03())  // with LWT
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done;
+
+    /* expected bahaviour */
+    p_subscriber.start(f_mqtt_receive_no_publish())
+    p_client_lwt.start(f_send_disconnect())
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_LWT_003(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_client_lwt.start(f_mqtt_connect_01())  // without LWT
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done;
+
+    /* expected bahaviour */
+    p_subscriber.start(f_mqtt_receive_no_publish())
+    p_client_lwt.start(f_ipl4_disconnect())
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_LWT_004(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_client_lwt.start(f_mqtt_connect_03('1'B))  // with LWT and will_retain
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_client_lwt.start(f_ipl4_disconnect())
+    p_client_lwt.done;
+
+    /* expected bahaviour */
+    var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_retain_qos0
+    p_subscriber.start(f_mqtt_subscribe_retained(AT_MOST_ONCE_DELIVERY, v_expected))
+    all component.done;
+
+    /* clean up the retained LWT message as this might brake other tests! */
+    // because publisher is already disconnected, the subscriber will do!
+    p_subscriber.start(f_mqtt_send_publish(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_subscriber.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_LWT_005(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_client_lwt.start(f_mqtt_connect_03('0'B))  // with LWT and will_retain
+    p_subscriber.start(f_mqtt_connect_01())
+    all component.done;
+
+    p_client_lwt.start(f_ipl4_disconnect())
+    p_client_lwt.done;
+
+    /* expected bahaviour */
+    p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
+    p_subscriber.done;
+
+    p_subscriber.start(f_mqtt_receive_no_publish())
+    all component.done;
   }
 } // protocolFeaturesFunctionsGroup
 

@@ -42,6 +42,7 @@ type port MQTTasp_PT message {
 private function f_enc_mqtt(in MQTTasp_Message p_in, out ASP_SendTo p_out) return integer
 {
   //log("[TRPO](Ecndode MQTT message): ", p_in)
+
   var octetstring v_encoded := f_MQTT_enc(p_in.msg);
   v_encoded := f_adjustLength(f_calc_rem_length(v_encoded));
 

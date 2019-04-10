@@ -347,24 +347,23 @@ module MQTT_Functions_Protocol
      * @desc the client sends a DISCONNECT notification and closes the IPL4 connection
      * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349355
      */
-    function f_send_disconnect(inout MQTT_Connection p_conn) runs on MQTT_Client_MTC
+    function f_send_disconnect() runs on MQTT_Client_MTC
     {
-      /*
-      if(ispresent(p_conn.client_state) and p_conn.client_state != Disconnected) {
-        log("[DISCONNECT](Send Disconnect Request): ", p_conn)
-        var template MQTTasp_Message v_disc_req := m_mqtt_message_conn(m_disconnect, p_conn)
+      if(ispresent(connection.client_state) and connection.client_state != Disconnected) {
+        log("[DISCONNECT](Send Disconnect Request): ", connection)
+        var template MQTTasp_Message v_disc_req := m_mqtt_message_conn(m_disconnect, connection)
         MQTT_PCO.send(valueof(v_disc_req))
 
-        p_conn.client_state := Disconnected;
+        connection.client_state := Disconnected;
       } else {
-        log("[DISCONNECT](Not possible for ", p_con_idx, "): ", p_conn);
+        log("[DISCONNECT](Not possible for): ", connection);
       }
 
-      if(p_conn.ipl4.tcp_state != Disconnected) {
-        log("[DISCONNECT](Close IPL4 for): ", p_conn);
-        f_IPL4_close(MQTT_PCO, p_conn.ipl4.id);
-        p_conn.ipl4.tcp_state := Disconnected;
-      }*/
+      if(connection.ipl4.tcp_state != Disconnected) {
+        log("[DISCONNECT](Close IPL4 for): ", connection);
+        f_IPL4_close(MQTT_PCO, connection.ipl4.id);
+        connection.ipl4.tcp_state := Disconnected;
+      }
     }
 
   } // group Client_Functions
