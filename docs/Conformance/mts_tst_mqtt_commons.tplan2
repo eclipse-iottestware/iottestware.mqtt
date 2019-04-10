@@ -30,6 +30,7 @@ Package mts_mqtt_commons {
         - awaits
         - sends
         - closes
+        - closed
         - having
         - published
         - established

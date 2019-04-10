@@ -1526,9 +1526,9 @@ Package mts_tst_mqtt {
       when {
         the IUT entity receives a PUBLISH message containing
         header containing
-          qos_level corresponding to AT_MOST_ONCE;
+          qos_level corresponding to AT_MOST_ONCE,
+        packet_identifier corresponding to PACKET_ID;
         ;
-        packet_identifier corresponding to PACKET_ID
       } then {
           the IUT entity closes the TCP_CONNECTION
       }
@@ -2691,7 +2691,7 @@ Package mts_tst_mqtt {
        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
        and
        the CLIENT entity established the MQTT_CONNECTION containing
-       keep_alive corresponding to PX_KEEP_ALIVE
+       keep_alive corresponding to PX_KEEP_ALIVE;
     }
 
     Expected behaviour
@@ -2699,7 +2699,7 @@ Package mts_tst_mqtt {
       when {
         the CLIENT entity times_out
       } then {
-        the IUT entity closes the TCP_CONNECTION to the CLIENT
+        the IUT entity closes the TCP_CONNECTION to the CLIENT entity
       }
     }
   }
@@ -3021,12 +3021,11 @@ Package mts_tst_mqtt {
       and
       the CLIENT_1 entity established the MQTT_CONNECTION containing
       flags containing
-        will_flag indicating value '1'B;
-      ;
+        will_flag indicating value '1'B,
       payload containing
         will_topic corresponding to PX_PUBLISH_TOPIC,
         will_message corresponding to PX_WILL_MESSAGE;
-      ;
+      ;;
       and
       the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
       and
@@ -3062,12 +3061,11 @@ Package mts_tst_mqtt {
       and
       the CLIENT_1 entity established the MQTT_CONNECTION containing
       flags containing
-        will_flag indicating value '1'B;
-      ;
+        will_flag indicating value '1'B,
       payload containing
         will_topic corresponding to PX_PUBLISH_TOPIC,
         will_message corresponding to PX_WILL_MESSAGE;
-      ;
+      ;;
       and
       the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
       and
@@ -3135,12 +3133,11 @@ Package mts_tst_mqtt {
       the CLIENT_1 entity established the MQTT_CONNECTION containing
       flags containing
         will_retain indicating value '1'B,
-        will_flag indicating value '1'B;
-      ;
+        will_flag indicating value '1'B,
       payload containing
         will_topic corresponding to PX_PUBLISH_TOPIC,
         will_message corresponding to PX_WILL_MESSAGE;
-      ;
+      ;;
       and
       the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
       and
@@ -3181,12 +3178,11 @@ Package mts_tst_mqtt {
       the CLIENT_1 entity established the MQTT_CONNECTION containing
       flags containing
         will_retain indicating value '0'B,
-        will_flag indicating value '1'B;
-      ;
+        will_flag indicating value '1'B,
       payload containing
         will_topic corresponding to PX_PUBLISH_TOPIC,
         will_message corresponding to PX_WILL_MESSAGE;
-      ;
+      ;;
       and
       the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
       and
