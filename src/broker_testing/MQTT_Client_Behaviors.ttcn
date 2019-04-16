@@ -37,18 +37,24 @@
    import from Random_Helper all;
 
    /*
-    * @desc f_mqtt_connect_01 sends a most basic MQTT Connect... no retain, no LWT etc...
+    * @desc f_mqtt_connect_01 sends a most basic MQTT Connect message with credentials from MQTT_Client_MTC
     * TODO: refactor f_mqtt_connect_[] functions
     * TODO: move to MQTT_Functions_Protocol (??)
     */
-   function f_mqtt_connect_01(integer p_return_code := 0) runs on MQTT_Client_MTC
+   function f_mqtt_connect_valid(integer p_return_code := 0) runs on MQTT_Client_MTC
    {
      // establish TCP connection
      if(f_ipl4_connect())
      {
        var UTF8EncodedString v_client_id := f_utf8_from_charstring(credentials.clientId)
-       var template MQTT_v3_1_1_Message v_connect_packet := m_connect_message_base(v_client_id)
-       var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection);
+       var UTF8EncodedString v_username := f_utf8_from_charstring(credentials.username)
+       var OctStringWithLength v_password := f_octstring_from_charstring(credentials.password)
+
+       var template MQTT_v3_1_1_ConnectFlags v_connect_flags := md_connect_credentials
+       var template MQTT_v3_1_1_ConnectPayload v_connect_payload := m_connect_payload_credentials(v_client_id, v_username, v_password)
+       var template MQTT_v3_1_1_Message v_connect_packet := m_connect_message_base_02(v_connect_flags, v_connect_payload)
+       var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection)
+       var MQTTasp_Message v_response
 
        MQTT_PCO.send(valueof(vt_connect))
 
@@ -60,8 +66,8 @@
            connection.client_state := Connected
            break;
          }
-         [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) {
-           setverdict(fail, "CONNACK contains wrong return code")
+         [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) -> value v_response {
+           setverdict(fail, "CONNACK returned unexpected code: ", p_return_code, " != ", v_response.msg.msg.connack.connect_return_code)
            break
          }
          [] t_timeout.timeout {
@@ -134,7 +140,7 @@
 
        var BIT1n v_will_flag := '1'B
        var template MQTT_v3_1_1_ConnectFlags v_flags := md_connect_credentials_lwt(v_will_flag, p_will_retain, -)
-       var template MQTT_v3_1_1_ConnectPayload v_payload := m_connect_payload_credentials(v_client_id, v_will_topic, v_will_message, v_username, v_password)
+       var template MQTT_v3_1_1_ConnectPayload v_payload := m_connect_payload_credentials_lwt(v_client_id, v_will_topic, v_will_message, v_username, v_password)
        var template MQTT_v3_1_1_Message v_connect_packet := m_connect_message_base_02(v_flags, v_payload)
        var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection);
 
@@ -493,7 +499,7 @@
    /*
     * @desc subscribe to PX_TOPIC_NAME and expect a retained message
     */
-   function f_mqtt_subscribe_retained(QoS p_requested_qos, template MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+   function f_mqtt_subscribe_retained(QoS p_requested_qos, template MQTT_v3_1_1_Publish p_publish, boolean p_fail_on_timeout := true) runs on MQTT_Client_MTC
    {
      var integer v_packet_id := f_random_packet_id()
      var universal charstring v_topic_filter := PX_TOPIC_NAME
@@ -517,10 +523,23 @@
              setverdict(pass, "Received retained message")
            }
            [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
-             setverdict(fail, "Retained PUBLISH was expected, received ", v_received)
+             if(match(v_received, mw_mqtt_message(mw_publish_retain_qos0('0'B))))
+             {
+               // v_received does not match v_expect_retain_pub; probably because of the missing retain flag
+               // this branch gives a more precise verdict message
+               setverdict(fail, "Received PUBLISH was not marked as retained. received: ", v_received)
+             }
+             else
+             {
+               setverdict(fail, "Retained PUBLISH was expected, received ", v_received)
+             }
            }
-           [] t_timeout.timeout {
+           [p_fail_on_timeout] t_timeout.timeout {
              setverdict(fail, "No retained PUBLISH received")
+             break;
+           }
+           [not p_fail_on_timeout] t_timeout.timeout {
+             setverdict(pass, "No retained PUBLISH received")
              break;
            }
          }
@@ -614,5 +633,11 @@
      }
 
      t_timeout.stop
+   }
+
+   // TODO: rename MQTT_Functions_Protocol.f_send_disconnect() to f_mqtt_disconnect()
+   function f_mqtt_disconnect() runs on MQTT_Client_MTC
+   {
+     f_send_disconnect()
    }
 } // module MQTT_Client_Behaviors

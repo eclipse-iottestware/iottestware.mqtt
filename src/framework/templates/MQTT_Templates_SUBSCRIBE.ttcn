@@ -43,12 +43,24 @@ module MQTT_Templates_SUBSCRIBE
         requested_qos := p_requested_qos
       }
 
-      /* TODO: how to template a List?
-      template MQTT_v3_1_1_SubscribePayloadList m_subscribe_payload_list_1(UCHAR0_65535 p_topic_filter, QoS p_requested_qos) :=
+
+      /*
+      function ft_subscribe_payload_list(charstring p_in_1, charstring p_in_2) return template MQTT_v3_1_1_SubscribePayloadList
       {
-        {
-          m_subscribe_payload(p_topic_filter, p_requested_qos)
-        }
+        var template MQTT_v3_1_1_SubscribePayload v_p_1 := ft_subscribe_payload(p_in_1)
+        var template MQTT_v3_1_1_SubscribePayload v_p_2 := ft_subscribe_payload(p_in_2)
+        return m_subscribe_payload_list_2(v_p_1, v_p_2)
+      }*/
+
+      template MQTT_v3_1_1_SubscribePayloadList m_subscribe_payload_list_1(MQTT_v3_1_1_SubscribePayload p_payload) :=
+      {
+        p_payload
+      }
+
+      /*
+      template MQTT_v3_1_1_SubscribePayloadList m_subscribe_payload_list_2(template MQTT_v3_1_1_SubscribePayload p_elem_1, template MQTT_v3_1_1_SubscribePayload p_elem_2) :=
+      {
+        p_elem_1, p_elem_2
       }*/
     }
 
@@ -64,6 +76,13 @@ module MQTT_Templates_SUBSCRIBE
 
     group SUBSCRIBE_MessageGroup
     {
+      template MQTT_v3_1_1_Message m_subscribe_message(integer p_packet_id, MQTT_v3_1_1_SubscribePayloadList p_payload) :=
+      {
+        msg :=
+        {
+          subscribe := m_subscribe_packet(p_packet_id, p_payload)
+        }
+      }
       /*
       template MQTT_v3_1_1_Message t_subscribe_basic_valid(BIT4n p_header_flags) :=
       {

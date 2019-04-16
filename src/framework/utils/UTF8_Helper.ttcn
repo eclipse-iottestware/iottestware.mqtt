@@ -10,6 +10,7 @@
 *   Sascha Hackel
 *   Axel Rennoch
 *******************************************************************************/
+// TODO: probably rename to Helper or String_Helper...
 module UTF8_Helper {
 
   import from MQTT_v3_1_1_Types all;

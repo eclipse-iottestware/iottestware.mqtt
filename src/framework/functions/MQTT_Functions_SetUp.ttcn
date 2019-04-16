@@ -170,8 +170,8 @@ module MQTT_Functions_SetUp
     return BooleanReturnType
     {
       // TODO: any further clean up required?
-      var BooleanReturnType v_ret := f_ipl4_disconnect()
-      return v_ret
+      f_send_disconnect(true);
+      return true
     }
   } // group Client
 

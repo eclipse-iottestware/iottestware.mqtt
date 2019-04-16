@@ -61,6 +61,14 @@ module MQTT_Templates_CONNECT
           password_flag := '1'B
         }
 
+        template MQTT_v3_1_1_ConnectFlags md_connect_flags_lwt(BIT1n p_will_flag := '1'B, BIT1n p_will_retain := '0'B, QoS p_will_qos := AT_MOST_ONCE_DELIVERY)
+        modifies m_connect_flags_basic :=
+        {
+          will_retain := p_will_retain,
+          will_qos := p_will_qos,
+          will_flag := p_will_flag
+        }
+
         template MQTT_v3_1_1_ConnectFlags md_connect_credentials_lwt(BIT1n p_will_flag := '1'B, BIT1n p_will_retain := '0'B, QoS p_will_qos := AT_MOST_ONCE_DELIVERY)
         modifies md_connect_credentials :=
         {
@@ -83,6 +91,18 @@ module MQTT_Templates_CONNECT
 
         template MQTT_v3_1_1_ConnectPayload m_connect_payload_credentials(
           UTF8EncodedString p_client_id,
+          UTF8EncodedString p_user_name,
+          OctStringWithLength p_password) :=
+        {
+          client_identifier := p_client_id,
+          will_topic := omit,
+          will_message := omit,
+          user_name := p_user_name,
+          password := p_password
+        }
+
+        template MQTT_v3_1_1_ConnectPayload m_connect_payload_credentials_lwt(
+          UTF8EncodedString p_client_id,
           UTF8EncodedString p_will_topic,
           OctStringWithLength p_will_msg,
           UTF8EncodedString p_user_name,
@@ -98,6 +118,17 @@ module MQTT_Templates_CONNECT
 
       group CONNECT_Message_Group
       {
+        template MQTT_v3_1_1_Connect m_connect_packet_mqtt4(template MQTT_v3_1_1_ConnectFlags p_flags, template MQTT_v3_1_1_ConnectPayload p_payload) :=
+        {
+          header := m_connect_header,
+          nameLength := 4,
+          name := "MQTT",
+          protocol_level := 4,
+          flags := p_flags,
+          keep_alive := 0,
+          payload := p_payload
+        }
+
         template MQTT_v3_1_1_Message m_connect_message_base(UTF8EncodedString p_client_id) :=
         {
           msg :=
@@ -157,7 +188,7 @@ module MQTT_Templates_CONNECT
             connect_msg :=
             {
               flags := md_connect_credentials_lwt,
-              payload := m_connect_payload_credentials(p_client_id, p_will_topic, p_will_msg, p_user_name, p_password)
+              payload := m_connect_payload_credentials_lwt(p_client_id, p_will_topic, p_will_msg, p_user_name, p_password)
             }
           }
         }

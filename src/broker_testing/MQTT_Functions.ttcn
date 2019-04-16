@@ -266,7 +266,7 @@ group MqttMTC_FunctionsGroup
     return integer
     {
       var template MQTT_v3_1_1_Message v_pub;
-      var integer v_packet_id := f_randomPacketId();
+      var integer v_packet_id := f_random_packet_id();
 
       if(p_qos == AT_MOST_ONCE_DELIVERY)
       {
@@ -634,14 +634,6 @@ group Common_FunctionsGroup {
         }
       }
     }
-  }
-
-  // NOTE: move to generic helper functions in framework
-  function f_randomPacketId()
-  return integer
-  {
-    var integer v_ret := float2int(rnd() * 65535.0);
-    return v_ret;
   }
 }
 

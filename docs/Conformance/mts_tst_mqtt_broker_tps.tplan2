@@ -853,7 +853,7 @@ Package mts_tst_mqtt {
     Test objective
     "After a Network Connection is established by a Client to a Server, the first Packet sent from the Client to the Server MUST be a CONNECT Packet"
     Reference
-    "[MQTT-3.1.0-1]"
+    "[MQTT-3.1.0-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -928,6 +928,38 @@ Package mts_tst_mqtt {
         and
         the IUT entity sends a CONNACK message to the CLIENT_2 entity
       }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_CONNECT_031
+
+    Test objective
+    "All Topic Names MUST be at least one character long"
+    Reference
+      "[MQTT-4.7.3-1]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a CONNECT message containing
+            header_flags indicating value '0000'B,
+            protocol_name corresponding to PROTOCOL_NAME,
+            protocol_level indicating value 0x04,
+            connect_flags containing
+                will_flag indicating value '1'B,
+                will_qos corresponding to AT_LEAST_ONCE,
+                will_retain indicating value '0'B,
+                reserved_field indicating value '0'B;
+            ,
+            payload containing
+                will_topic corresponding to TOPIC_NAME_ZERO_CHARS,
+                will_message corresponding to PX_WILL_MESSAGE;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
     }
   }
 
@@ -1404,7 +1436,7 @@ Package mts_tst_mqtt {
     Test objective
     "The Topic Name MUST be a UTF-8 encoded string and be present as the first field in the variable header"
     Reference
-    "[MQTT-3.3.2-1]"
+    "[MQTT-3.3.2-1], [MQTT-4.8.0-1]"
 
     PICS Selection PICS_BROKER_BASIC
 
@@ -1430,7 +1462,7 @@ Package mts_tst_mqtt {
     Test objective
     "The Topic Name in the PUBLISH Packet MUST NOT contain multi-level wildcard characters"
     Reference
-    "[MQTT-3.3.2-2], [MQTT-4.7.1-1]"
+    "[MQTT-3.3.2-2], [MQTT-4.7.1-1], [MQTT-4.8.0-1]"
 
     PICS Selection PICS_BROKER_BASIC
 
@@ -1456,7 +1488,7 @@ Package mts_tst_mqtt {
     Test objective
     "The Topic Name in the PUBLISH Packet MUST NOT contain single-level wildcard characters"
     Reference
-    "[MQTT-3.3.2-2], [MQTT-4.7.1-1]"
+    "[MQTT-3.3.2-2], [MQTT-4.7.1-1], [MQTT-4.8.0-1]"
 
     PICS Selection PICS_BROKER_BASIC
 
@@ -1480,9 +1512,61 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_PUBLISH_006
 
     Test objective
+    "All Topic Names MUST be at least on character long"
+    Reference
+    "[MQTT-4.7.3-1], [MQTT-4.8.0-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_ZERO_CHARS;
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_007
+
+    Test objective
+    "Topic Names MUST NOT include the null character (Unicode U+0000)"
+    Reference
+    "[MQTT-4.7.3-2], [MQTT-4.8.0-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_0000;
+      } then {
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_008
+
+    Test objective
     "In the QoS 0 delivery protocol, the Sender MUST send a PUBLISH packet with QoS=0, DUP=0."
     Reference
-    "[MQTT-4.3.1-1]"
+    "[MQTT-4.3.1-1], [MQTT-4.8.0-1]"
 
     PICS Selection PICS_BROKER_BASIC
 
@@ -1507,12 +1591,12 @@ Package mts_tst_mqtt {
 
   /* Note: does it make sense to test this conformance statement here? */
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_007
+    TP Id TP_MQTT_Broker_PUBLISH_009
 
     Test objective
     "In the QoS 0 delivery protocol, a PUBLISH Packet MUST NOT contain a Packet Identifier"
     Reference
-    "[MQTT-2.3.1-5]"
+    "[MQTT-2.3.1-5], [MQTT-4.8.0-1]"
 
     PICS Selection PICS_BROKER_BASIC
 
@@ -1536,12 +1620,12 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_008
+    TP Id TP_MQTT_Broker_PUBLISH_010
 
     Test objective
     "In case of QoS = 1 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier"
     Reference
-    "[MQTT-2.3.1-1]"
+    "[MQTT-2.3.1-1], [MQTT-4.8.0-1]"
 
     PICS Selection PICS_BROKER_QOS_1
 
@@ -1565,12 +1649,12 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_009
+    TP Id TP_MQTT_Broker_PUBLISH_011
 
     Test objective
     "In case of QoS = 2 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier"
     Reference
-    "[MQTT-2.3.1-1]"
+    "[MQTT-2.3.1-1], [MQTT-4.8.0-1]"
 
     PICS Selection PICS_BROKER_QOS_2
 
@@ -1765,11 +1849,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBSCRIBE_001
 
-    // Summary
     Test objective
     "The IUT closes the network connection if fixed header flags in SUBSCRIBE Control Packet are invalid"
     Reference
-      "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.8.1-1]"
+      "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.8.1-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -1792,7 +1875,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBSCRIBE_002
 
-    // Summary
     Test objective
     "SUBSCRIBE Control Packet MUST contain a non-zero 16-bit Packet Identifier"
     Reference
@@ -1825,11 +1907,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBSCRIBE_003
 
-    // Summary
     Test objective
     "The Topic Filters in a Subscribe packet payload MUST be UTF-8 encoded strings. This data MUST NOT include encodings of code points between U+D800 and U+DFFF"
     Reference
-      "[MQTT-1.5.3-1], [MQTT-3.8.3-1]"
+      "[MQTT-1.5.3-1], [MQTT-3.8.3-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -1857,11 +1938,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBSCRIBE_004
 
-    // Summary
     Test objective
     "The Topic Filters in a Subscribe packet payload MUST be UTF-8 encoded strings. A UTF-8 encoded string MUST NOT include an encoding of the null character U+0000."
     Reference
-      "[MQTT-1.5.3-2], [MQTT-3.8.3-1], [MQTT-4.7.3-2]"
+      "[MQTT-1.5.3-2], [MQTT-3.8.3-1], [MQTT-4.7.3-2], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -1889,9 +1969,39 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBSCRIBE_005
 
-    // Summary
     Test objective
-    "The payload of a SUBSCRIBE packet MUST contain at least one Topic Filter /QoS pair."
+    "All Topic Filters MUST be at least one character long"
+    Reference
+      "[MQTT-4.7.3-1], [MQTT-4.8.0-1]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a SUBSCRIBE message containing
+            header_flags indicating value '0010'B,
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+                topic_filter corresponding to TOPIC_FILTER_ZERO_CHARS,
+                requested_qos corresponding to AT_LEAST_ONCE;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_SUBSCRIBE_006
+
+    Test objective
+    "The payload of a SUBSCRIBE packet MUST contain at least one Topic Filter/QoS pair."
     Reference
       "[MQTT-3.8.3-3], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
@@ -1918,13 +2028,12 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_006
+    TP Id TP_MQTT_Broker_SUBSCRIBE_007
 
-    // Summary
     Test objective
     "The upper 6 bits of the Requested QoS byte are reserved. Reserved bits for Requested QoS in the payload must be set to 0."
     Reference
-      "[MQTT-3.8.3-4]"
+      "[MQTT-3.8.3-4], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -1951,13 +2060,12 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_007
+    TP Id TP_MQTT_Broker_SUBSCRIBE_008
 
-    // Summary
     Test objective
     "The Requested QoS in the payload MUST be 0, 1 or 2"
     Reference
-      "[MQTT-3.8.3-4]"
+      "[MQTT-3.8.3-4], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -1981,11 +2089,70 @@ Package mts_tst_mqtt {
     }
   }
 
+  Test Purpose {
+    TP Id TP_MQTT_Broker_SUBSCRIBE_009
+
+    Test objective
+    "The multi-level wildcard character MUST be specified either on its own or following a topic level separator. In either case it MUST be the last character specified in the Topic Filter."
+    Reference
+      "[MQTT-4.7.1-2], [MQTT-4.8.0-1]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a SUBSCRIBE message containing
+            header_flags indicating value '0010'B,
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+                topic_filter corresponding to TOPIC_FILTER_MULTI_LEVEL_INVALID,
+                requested_qos corresponding to AT_MOST_ONCE;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_SUBSCRIBE_010
+
+    Test objective
+    "The single-level wildcard can be used at any level in the Topic Filter, including first and last levels. Where it is used it MUST occupy an entire level of the filter."
+    Reference
+      "[MQTT-4.7.1-3], [MQTT-4.8.0-1]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a SUBSCRIBE message containing
+            header_flags indicating value '0010'B,
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+                topic_filter corresponding to TOPIC_FILTER_SINGLE_LEVEL_INVALID,
+                requested_qos corresponding to AT_MOST_ONCE;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
 
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBACK_001
 
-    // Summary
     Test objective
     "The IUT accepts only valid fixed header flags for SUBSCRIBE Control Packet and responds with SUBACK"
     Reference
@@ -2013,7 +2180,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBACK_002
 
-    // Summary
     Test objective
     "SUBSCRIBE (in case where QoS > 0) Control Packet MUST contain a non-zero 16-bit Packet Identifier"
     Reference
@@ -2047,7 +2213,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBACK_003
 
-    // Summary
     Test objective
     "SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used."
     Reference
@@ -2082,7 +2247,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBACK_004
 
-    // Summary
     Test objective
     "SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used."
     Reference
@@ -2123,7 +2287,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBACK_005
 
-    // Summary
     Test objective
     "SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used."
     Reference
@@ -2170,7 +2333,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBACK_006
 
-    // Summary
     Test objective
     "SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used."
     Reference
@@ -2208,11 +2370,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_UNSUBSCRIBE_001
 
-    // Summary
     Test objective
     "The IUT closes the network connection if fixed header flags in UNSUBSCRIBE Control Packet are invalid"
     Reference
-      "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.10.1-1]"
+      "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.10.1-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2235,11 +2396,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_UNSUBSCRIBE_002
 
-    // Summary
     Test objective
     "UNSUBSCRIBE Control Packet MUST contain a non-zero 16-bit Packet Identifier"
     Reference
-      "[MQTT-2.3.1-1]"
+      "[MQTT-2.3.1-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2267,11 +2427,10 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_UNSUBSCRIBE_003
 
-    // Summary
     Test objective
     "The Topic Filters in an Unsubscribe packet payload MUST be UTF-8 encoded strings. This data MUST NOT include encodings of code points between U+D800 and U+DFFF"
     Reference
-      "[MQTT-1.5.3-1], [MQTT-3.10.3-1]"
+      "[MQTT-1.5.3-1], [MQTT-3.10.3-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2294,15 +2453,72 @@ Package mts_tst_mqtt {
     }
   }
 
-
   Test Purpose {
     TP Id TP_MQTT_Broker_UNSUBSCRIBE_004
 
-    // Summary
+    Test objective
+    "All Topic Filters MUST be at least one character long"
+    Reference
+      "[MQTT-4.7.3-1], [MQTT-4.8.0-1]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a UNSUBSCRIBE message containing
+            header_flags indicating value '0010'B,
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+                topic_filter corresponding to TOPIC_FILTER_ZERO_CHARS;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_UNSUBSCRIBE_005
+
+    Test objective
+    "Topic Filters MUST NOT include the null character (Unicode U+0000)"
+    Reference
+      "[MQTT-4.7.3-2], [MQTT-4.8.0-1]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a UNSUBSCRIBE message containing
+            header_flags indicating value '0010'B,
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+                topic_filter corresponding to TOPIC_FILTER_0000;
+            ;
+        } then {
+            the IUT entity closes the TCP_CONNECTION
+        }
+    }
+  }
+
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_UNSUBSCRIBE_006
+
     Test objective
     "The payload of a UNSUBSCRIBE packet MUST contain at least one Topic Filter."
     Reference
-      "[MQTT-3.10.3-2], [MQTT-4.8.0-1]"
+      "[MQTT-3.10.3-2], [MQTT-4.8.0-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2329,7 +2545,6 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_UNSUBACK_001
 
-    // Summary
     Test objective
     "The IUT accepts only valid fixed header flags for UNSUBSCRIBE Control Packet and responds with SUBACK"
     Reference
@@ -2357,11 +2572,76 @@ Package mts_tst_mqtt {
   Test Purpose {
     TP Id TP_MQTT_Broker_UNSUBACK_002
 
-    // Summary
     Test objective
     "The IUT MUST respond to an UNSUBSCRIBE request by sending an UNSUBACK control packet. The UNSUBACK control packet MUST have the same Packet Identifier as the UNSUBSCRIBE Control Packet."
     Reference
-      "[MQTT-3.10.4-4], [MQTT-3.10.4-5] "
+      "[MQTT-3.10.4-4]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT entity subscribed the PX_PUBLISH_TOPIC containing
+              qos_level corresponding to AT_MOST_ONCE;
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a UNSUBSCRIBE message containing
+            header_flags indicating value '0010'B,
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+              topic_filter corresponding to PX_PUBLISH_TOPIC;
+            ;
+        } then {
+            the IUT entity sends a UNSUBACK message containing
+            header_flags indicating value '0000'B,
+            packet_identifier corresponding to PACKET_ID;
+        }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_UNSUBACK_003
+
+    Test objective
+    "Even where no Topic Subscriptions are deleted, the Server MUST respond with an UNSUBACK"
+    Reference
+      "[MQTT-3.10.4-5]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT entity not subscribed the PX_PUBLISH_TOPIC
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a UNSUBSCRIBE message containing
+            header_flags indicating value '0010'B,
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+              topic_filter corresponding to PX_PUBLISH_TOPIC;
+            ;
+        } then {
+            the IUT entity sends a UNSUBACK message containing
+            header_flags indicating value '0000'B;
+        }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_UNSUBACK_004
+
+    Test objective
+    "If a Server receives an UNSUBSCRIBE packet that contains multiple Topic Filters it MUST handle that packet as if it had received a sequence of multiple UNSUBSCRIBE packets, except that it sends just one UNSUBACK response"
+    Reference
+    "[MQTT-3.10.4-6]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2374,11 +2654,15 @@ Package mts_tst_mqtt {
         when {
             the IUT entity receives a UNSUBSCRIBE message containing
             header_flags indicating value '0010'B,
-            packet_identifier corresponding to PACKET_ID;
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+              topic_filter corresponding to PX_PUBLISH_TOPIC,
+              topic_filter corresponding to TOPIC_FILTER_VALID; // second topic filter
+            ;
         } then {
-            the IUT entity sends a UNSUBACK message containing
-            header_flags indicating value '0000'B,
-            packet_identifier corresponding to PACKET_ID;
+            the IUT entity sends a UNSUBACK message
+            and
+            the IUT entity sends no second UNSUBACK message
         }
     }
   }
@@ -2391,7 +2675,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT closes the network connection if fixed header flags in PINGREQ Control Packet are invalid"
     Reference
-      "[MQTT-2.2.2-1], [MQTT-2.2.2-2]"
+      "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2470,7 +2754,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT MUST validate that reserved bits are set to zero and disconnect the Client if they are not zero."
     Reference
-      "[MQTT-2.2.2-2], [MQTT-3.14.1-1]"
+      "[MQTT-2.2.2-2], [MQTT-3.14.1-1], [MQTT-4.8.0-1]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -2993,6 +3277,7 @@ Package mts_tst_mqtt {
           topic_filter corresponding to PX_PUBLISH_TOPIC,
           requested_qos corresponding to AT_MOST_ONCE;
         ;
+        from the CLIENT_2 entity
       } then {
         the IUT entity sends a PUBLISH message containing
         publish_header containing
@@ -3001,6 +3286,64 @@ Package mts_tst_mqtt {
         payload corresponding to PAYLOAD;
         ;
         to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_RTND_007
+
+    Test objective
+    "If the Server receives a QoS 0 message with the RETAIN flag set to 1 it MUST discard any message previously retained for that topic. It SHOULD store the new QoS 0 message as the new retained message for that topic, but MAY choose to discard it at any time - if this happens there will be no retained message for that topic."
+    Reference
+    "[MQTT-3.3.1-7]"
+
+    PICS Selection PICS_BROKER_RTND
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+          retain_flag indicating value '1'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        payload corresponding to PAYLOAD;
+        ;
+        from the CLIENT_1 entity
+        and
+        the IUT entity receives a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '1'B,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        payload corresponding to PAYLOAD_2;
+        ;
+        from the CLIENT_1 entity
+        and
+        the IUT entity receives a SUBSCRIBE message containing
+        payload containing
+          topic_filter corresponding to PX_PUBLISH_TOPIC,
+          requested_qos corresponding to AT_MOST_ONCE;
+        ;
+        from the CLIENT_2 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        publish_header containing
+          qos_level corresponding to AT_MOST_ONCE,
+          retain_flag indicating value '1'B,
+        payload corresponding to PAYLOAD_2;
+        ;
+        to the CLIENT_2 entity
+        or
+        the IUT entity sends no PUBLISH message to the CLIENT_2 entity
       }
     }
   }

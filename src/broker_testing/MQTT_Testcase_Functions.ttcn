@@ -28,6 +28,9 @@ import from MQTT_Client_Behaviors all;
 import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
 import from MQTT_Templates_PUBLISH all;
+import from MQTT_Templates_SUBSCRIBE all;
+import from MQTT_Templates_UNSUBSCRIBE all;
+import from MQTT_Templates_UNSUBACK all;
 
 import from Random_Helper all;
 import from UTF8_Helper all;
@@ -815,7 +818,7 @@ group connectFunctionsGroup
         //f_ipl4_connect_sut(); // is done implicitly while f_init()
 
         /* expected bahaviour */
-        var integer v_pid := f_randomPacketId();
+        var integer v_pid := f_random_packet_id();
         var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
         var octetstring v_payload := 'A0A0'O;
         var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
@@ -859,13 +862,39 @@ group connectFunctionsGroup
       function f_TC_MQTT_BROKER_CONNECT_030(MQTT_Client_MTC client_1, MQTT_Client_MTC client_2) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
       {
         /* Initial conditions */
-        client_1.start(f_mqtt_connect_01())
+        client_1.start(f_mqtt_connect_valid())
         client_1.done
 
         /* expected behaviour */
         client_1.start(f_mqtt_receive_ipl4_close()) // start waiting for IPL4 close from IUT for Client 1
-        client_2.start(f_mqtt_connect_01())         // MQTT connect for Client 2 with same client ID as Client 1
+        client_2.start(f_mqtt_connect_valid())         // MQTT connect for Client 2 with same client ID as Client 1
         all component.done;
+      }
+
+      function f_TC_MQTT_BROKER_CONNECT_031() runs on MQTT_Client_MTC
+      {
+        var UTF8EncodedString v_client_id := f_utf8_from_charstring(credentials.clientId)
+        var UTF8EncodedString v_will_topic := f_utf8_from_charstring("")  // zero byte will topic
+        var OctStringWithLength v_will_msg := f_octstring_from_charstring(PX_WILL_MESSAGE)
+        var UTF8EncodedString v_user_name := f_utf8_from_charstring(credentials.username)
+        var OctStringWithLength v_password := f_octstring_from_charstring(credentials.password)
+        var template MQTT_v3_1_1_ConnectPayload v_connect_payload := m_connect_payload_credentials_lwt(v_client_id, v_will_topic, v_will_msg, v_user_name, v_password)
+
+        var BIT1n v_will_flag := '1'B
+        var template MQTT_v3_1_1_ConnectFlags v_connect_flags := md_connect_credentials_lwt(v_will_flag, -, -)
+
+        var template MQTT_v3_1_1_Connect v_connect_packet := m_connect_packet_mqtt4(v_connect_flags, v_connect_payload)
+
+        // establish TCP connection
+        if(f_ipl4_connect())
+        {
+          f_send_connect(valueof(v_connect_packet))
+          f_mqtt_receive_ipl4_close()
+        }
+        else
+        {
+          setverdict(fail, "Client could not connect to ", PX_SUT_HOSTNAME, ":", PX_SUT_PORT)
+        }
       }
 } // connectFunctionsGroup
 
@@ -1284,7 +1313,7 @@ group publishFunctionsGroup
   {
     f_connectMqtt();
 
-    var integer v_pid := f_randomPacketId();  // Note: encoder will filter v_pid out anyways [MQTT-2.3.1-1]
+    var integer v_pid := f_random_packet_id();  // Note: encoder will filter v_pid out anyways [MQTT-2.3.1-1]
     var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('1'B, AT_MOST_ONCE_DELIVERY))
@@ -1308,7 +1337,7 @@ group publishFunctionsGroup
   {
     f_connectMqtt();
 
-    var integer v_pid := f_randomPacketId();
+    var integer v_pid := f_random_packet_id();
     var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, RESERVED))
@@ -1336,7 +1365,7 @@ group publishFunctionsGroup
     // TODO: return of f_connectMqtt must be always checked!!
     if(f_connectMqtt())
     {
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName(c_ucUN);
       var octetstring v_payload := 'A0A0'O;
       var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
@@ -1364,7 +1393,7 @@ group publishFunctionsGroup
   {
     f_connectMqtt();
 
-    var integer v_pid := f_randomPacketId();
+    var integer v_pid := f_random_packet_id();
     var UTF8EncodedString v_topic := f_getConcatenatedTopicName("#");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
@@ -1387,7 +1416,7 @@ group publishFunctionsGroup
   {
     f_connectMqtt();
 
-    var integer v_pid := f_randomPacketId();
+    var integer v_pid := f_random_packet_id();
     var UTF8EncodedString v_topic := f_getConcatenatedTopicName("*");
     var octetstring v_payload := 'A0A0'O;
     var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
@@ -1406,7 +1435,60 @@ group publishFunctionsGroup
     }
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client_MTC
+  function f_TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client
+  {
+    f_connectMqtt();
+
+    var integer v_pid := f_random_packet_id();
+    var UTF8EncodedString v_topic := f_utf8_from_charstring("")  // zero byte will topic
+    var octetstring v_payload := 'A0A0'O;
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
+    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+    f_send(v_publish)
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_007() runs on MQTT_Client
+  {
+    f_connectMqtt();
+
+    var integer v_pid := f_random_packet_id();
+    const octetstring c_octet_null := '00'O; // UTF-8 for U+0000
+    const UCHAR0_65535 c_unichar_null := oct2unichar(c_octet_null);
+    var UTF8EncodedString v_topic := f_getConcatenatedTopicName(c_unichar_null);
+    var octetstring v_payload := 'A0A0'O;
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publishHeader('0'B, AT_MOST_ONCE_DELIVERY))
+    var MQTT_v3_1_1_Message v_publish := valueof(t_publish(v_pub_header, v_topic.stringItem, v_pid, v_payload))
+
+    f_send(v_publish)
+
+    if(f_receiveNetworkClosedEvent())
+    {
+      setverdict(pass, "IUT closed the Network Connection correctly");
+    }
+    else
+    {
+      setverdict(fail, "IUT MUST close the Network Connection");
+      f_disconnectMqtt();
+    }
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client
+  {
+    setverdict(fail, "TODO")
+  }
+
+  function f_TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client_MTC
   {
     // publish retained message
     var BIT1n v_dup_flag := '1'B
@@ -1418,7 +1500,7 @@ group publishFunctionsGroup
     var MQTT_v3_1_1_Publish v_publish_packet := valueof(t_publish_packet_qos_0(v_pub_header, v_topic, v_payload))
 
     /* pre condition */
-    f_mqtt_connect_01()
+    f_mqtt_connect_valid()
 
     /* send the publish message */
     f_mqtt_send_publish(v_publish_packet)
@@ -1427,7 +1509,7 @@ group publishFunctionsGroup
     f_mqtt_receive_ipl4_close()
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_007() runs on MQTT_Client_MTC
+  function f_TC_MQTT_BROKER_PUBLISH_010() runs on MQTT_Client_MTC
   {
     // publish retained message
     var BIT1n v_dup_flag := '0'B
@@ -1440,7 +1522,7 @@ group publishFunctionsGroup
     var MQTT_v3_1_1_Publish v_publish_packet := valueof(t_publish_packet(v_pub_header, v_packet_id, v_topic, v_payload))
 
     /* pre condition */
-    f_mqtt_connect_01()
+    f_mqtt_connect_valid()
 
     /* send the publish message */
     f_mqtt_send_publish(v_publish_packet)
@@ -1449,7 +1531,7 @@ group publishFunctionsGroup
     f_mqtt_receive_ipl4_close()
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client
+  function f_TC_MQTT_BROKER_PUBLISH_011() runs on MQTT_Client
   {
     f_connectMqtt();
 
@@ -1472,7 +1554,7 @@ group publishFunctionsGroup
     }
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client
+  function f_TC_MQTT_BROKER_PUBLISH_012() runs on MQTT_Client
   {
     f_connectMqtt();
 
@@ -1501,8 +1583,8 @@ group publishResponseFunctionsGroup
   function f_TC_MQTT_BROKER_PUBACK_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     /* Initial conditions */
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_subscriber.start(f_mqtt_subscribe(AT_LEAST_ONCE_DELIVERY))
@@ -1520,8 +1602,8 @@ group publishResponseFunctionsGroup
   function f_TC_MQTT_BROKER_PUBREC_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     /* Initial conditions */
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_subscriber.start(f_mqtt_subscribe(EXACTLY_ONE_DELIVERY))
@@ -1539,7 +1621,7 @@ group publishResponseFunctionsGroup
   function f_TC_MQTT_BROKER_PUBREL_001() runs on MQTT_Client_MTC
   {
     /* Initial conditions */
-    f_mqtt_connect_01()
+    f_mqtt_connect_valid()
 
     /* expected bahaviour */
     f_mqtt_response_invalid_pubrel()
@@ -1548,8 +1630,8 @@ group publishResponseFunctionsGroup
   function f_TC_MQTT_BROKER_PUBCOMP_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     /* Initial conditions */
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_subscriber.start(f_mqtt_subscribe(EXACTLY_ONE_DELIVERY))
@@ -1571,7 +1653,7 @@ group subscribeFunctionsGroup
      {
         f_connectMqtt();
 
-        var integer v_pid := f_randomPacketId();
+        var integer v_pid := f_random_packet_id();
         const QoS c_qos := AT_MOST_ONCE_DELIVERY;
         const BIT4n c_header_flags := '1101'B;
 
@@ -1649,7 +1731,7 @@ group subscribeFunctionsGroup
        const octetstring c_oUN := '00'O; // UTF-8 for U+0000
        const UCHAR0_65535 c_ucUN := oct2unichar(c_oUN);
 
-       var integer v_pid := 0;
+       var integer v_pid := f_random_packet_id();
        const QoS c_qos := AT_MOST_ONCE_DELIVERY;
        const BIT4n c_header_flags := '0010'B;
 
@@ -1671,9 +1753,33 @@ group subscribeFunctionsGroup
 
      function f_TC_MQTT_BROKER_SUBSCRIBE_005() runs on MQTT_Client
      {
+       f_connectMqtt();
+
+       var integer v_pid := f_random_packet_id();
+       const QoS c_qos := AT_MOST_ONCE_DELIVERY;
+       const BIT4n c_header_flags := '0010'B;
+
+       var UTF8EncodedString v_topic := f_utf8_from_charstring("")  // zero byte topic filter
+
+       var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_topic(p_header_flags := c_header_flags, p_packet_id := v_pid, p_topic_filter := v_topic.stringItem, p_qos := c_qos));
+       f_send(v_subscribe);
+
+       if(f_receiveNetworkClosedEvent())
+       {
+         setverdict(pass, "IUT closed the Network Connection correctly");
+       }
+       else
+       {
+         setverdict(fail, "IUT MUST close the Network Connection");
+         f_disconnectMqtt();
+       }
+     }
+
+     function f_TC_MQTT_BROKER_SUBSCRIBE_006() runs on MQTT_Client
+     {
         f_connectMqtt();
 
-        var integer v_pid := f_randomPacketId();
+        var integer v_pid := f_random_packet_id();
 
         var MQTT_v3_1_1_Message v_subscribe := valueof(t_subscribe_empty_payload(p_packet_id := v_pid));
         f_send(v_subscribe);
@@ -1689,11 +1795,11 @@ group subscribeFunctionsGroup
         }
      }
 
-     function f_TC_MQTT_BROKER_SUBSCRIBE_006() runs on MQTT_Client
+     function f_TC_MQTT_BROKER_SUBSCRIBE_007() runs on MQTT_Client
      {
        f_connectMqtt();
 
-       var integer v_pid := f_randomPacketId();
+       var integer v_pid := f_random_packet_id();
 
        const QoS c_qos := AT_MOST_ONCE_DELIVERY;
        var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
@@ -1725,11 +1831,11 @@ group subscribeFunctionsGroup
        @update(t_subscribe_topic)
      }
 
-     function f_TC_MQTT_BROKER_SUBSCRIBE_007() runs on MQTT_Client
+     function f_TC_MQTT_BROKER_SUBSCRIBE_008() runs on MQTT_Client
      {
         f_connectMqtt();
 
-        var integer v_pid := f_randomPacketId();
+        var integer v_pid := f_random_packet_id();
         const QoS c_qos := RESERVED;
         var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
@@ -1746,6 +1852,56 @@ group subscribeFunctionsGroup
           f_disconnectMqtt();
         }
      }
+
+     function f_TC_MQTT_BROKER_SUBSCRIBE_009() runs on MQTT_Client_MTC
+     {
+       f_mqtt_connect_valid()
+
+       var integer v_pid := f_random_packet_id()
+       var charstring v_topic_filter := "#" & PX_TOPIC_NAME
+       var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(v_topic_filter, AT_MOST_ONCE_DELIVERY)
+       var template MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := m_subscribe_payload_list_1(valueof(v_subscribe_payload))
+       var template MQTT_v3_1_1_Message v_subscribe := m_subscribe_message(v_pid, valueof(v_subscribe_payload_list))
+
+       f_send_mqtt(connection, v_subscribe)
+
+       timer t_timeout := PX_MAX_RESPONSE_TIME;
+       t_timeout.start
+       alt {
+          [] MQTT_PCO.receive(MQTT_ASP_Event : ?) {
+            setverdict(pass, "IUT closed the Network Connection correctly")
+          }
+         [] t_timeout.timeout {
+           setverdict(fail, "IUT MUST close the Network Connection");
+           break;
+         }
+       }
+     }
+
+     function f_TC_MQTT_BROKER_SUBSCRIBE_010() runs on MQTT_Client_MTC
+     {
+       f_mqtt_connect_valid()
+
+       var integer v_pid := f_random_packet_id()
+       var charstring v_topic_filter := PX_TOPIC_NAME & "+data"
+       var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(v_topic_filter, AT_MOST_ONCE_DELIVERY)
+       var template MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := m_subscribe_payload_list_1(valueof(v_subscribe_payload))
+       var template MQTT_v3_1_1_Message v_subscribe := m_subscribe_message(v_pid, valueof(v_subscribe_payload_list))
+
+       f_send_mqtt(connection, v_subscribe)
+
+       timer t_timeout := PX_MAX_RESPONSE_TIME;
+       t_timeout.start
+       alt {
+          [] MQTT_PCO.receive(MQTT_ASP_Event : ?) {
+            setverdict(pass, "IUT closed the Network Connection correctly")
+          }
+         [] t_timeout.timeout {
+           setverdict(fail, "IUT MUST close the Network Connection");
+           break;
+         }
+       }
+     }
 } // subscribeFunctionsGroup
 
 group subackFunctionsGroup
@@ -1754,7 +1910,7 @@ group subackFunctionsGroup
     {
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
@@ -1780,7 +1936,7 @@ group subackFunctionsGroup
     {
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
@@ -1806,7 +1962,7 @@ group subackFunctionsGroup
     {
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       const QoS c_qos := AT_MOST_ONCE_DELIVERY;
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
@@ -1835,7 +1991,7 @@ group subackFunctionsGroup
     {
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       const QoS c_qos := AT_LEAST_ONCE_DELIVERY;
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
@@ -1892,7 +2048,7 @@ group subackFunctionsGroup
     {
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       const QoS c_qos := EXACTLY_ONE_DELIVERY;
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
@@ -1951,7 +2107,7 @@ group subackFunctionsGroup
 
       const charstring c_topicPrefix := "/prefix";
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       const QoS c_qos := AT_MOST_ONCE_DELIVERY;
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
@@ -1995,7 +2151,7 @@ group unsubscribeFunctionsGroup
     {
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
       var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic('1101'B, v_pid, v_topic.stringItem));
@@ -2049,7 +2205,7 @@ group unsubscribeFunctionsGroup
       const octetstring c_oUN := 'EDA080'O; // UTF-8 for U+D800
       const UCHAR0_65535 c_ucUN := oct2unichar(c_oUN) & "/data";
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName(c_ucUN);
 
       var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
@@ -2069,8 +2225,50 @@ group unsubscribeFunctionsGroup
     function f_TC_MQTT_BROKER_UNSUBSCRIBE_004() runs on MQTT_Client
     {
       f_connectMqtt();
+      var integer v_pid := f_random_packet_id();
+      var UTF8EncodedString v_topic := f_utf8_from_charstring("")  // zero byte will topic
 
-      var integer v_pid := f_randomPacketId();
+      var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
+      f_send(v_unsubscribe);
+
+      if(f_receiveNetworkClosedEvent())
+      {
+        setverdict(pass, "IUT closed the Network Connection correctly");
+      }
+      else
+      {
+        f_disconnectMqtt();
+        setverdict(fail, "IUT MUST close the Network Connection");
+      }
+    }
+
+    function f_TC_MQTT_BROKER_UNSUBSCRIBE_005() runs on MQTT_Client
+    {
+      f_connectMqtt();
+      var integer v_pid := f_random_packet_id();
+
+      const octetstring c_octet_null := '00'O; // UTF-8 for U+0000
+      const UCHAR0_65535 c_unichar_null := oct2unichar(c_octet_null);
+      var UTF8EncodedString v_topic := f_getConcatenatedTopicName(c_unichar_null);
+      var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
+      f_send(v_unsubscribe);
+
+      if(f_receiveNetworkClosedEvent())
+      {
+        setverdict(pass, "IUT closed the Network Connection correctly");
+      }
+      else
+      {
+        f_disconnectMqtt();
+        setverdict(fail, "IUT MUST close the Network Connection");
+      }
+    }
+
+    function f_TC_MQTT_BROKER_UNSUBSCRIBE_006() runs on MQTT_Client
+    {
+      f_connectMqtt();
+
+      var integer v_pid := f_random_packet_id();
 
       var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_emtpy_topic(v_pid));
       f_send(v_unsubscribe);
@@ -2093,7 +2291,7 @@ group unsubackFunctionsGroup
     {
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
 
       var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
@@ -2116,11 +2314,14 @@ group unsubackFunctionsGroup
 
     function f_TC_MQTT_BROKER_UNSUBACK_002() runs on MQTT_Client
     {
+      /* initial condition */
       f_connectMqtt();
 
-      var integer v_pid := f_randomPacketId();
+      var integer v_pid := f_random_packet_id();
       var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+      var boolean v_subscription := f_subscribe(v_topic.stringItem, AT_MOST_ONCE_DELIVERY);
 
+      /* expected behaviour */
       var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
       f_send(v_unsubscribe);
 
@@ -2137,6 +2338,72 @@ group unsubackFunctionsGroup
       }
 
       f_disconnectMqtt();
+    }
+
+    function f_TC_MQTT_BROKER_UNSUBACK_003() runs on MQTT_Client
+    {
+      /* initial condition */
+      f_connectMqtt();
+
+      var integer v_pid := f_random_packet_id();
+      var UTF8EncodedString v_topic := f_getConcatenatedTopicName("data");
+
+      /* expected behaviour */
+      var MQTT_v3_1_1_Message v_unsubscribe := valueof(t_unsubscribe_topic(-, v_pid, v_topic.stringItem));
+      f_send(v_unsubscribe);
+
+      var template IPL4_Response v_expected := { receivedMsg := tw_unsuback_packed_id(v_pid) };
+      var IPL4_Response v_response := f_receive();
+
+      if(match(v_response, v_expected))
+      {
+        setverdict(pass, "IUT answered correctly with UNSUBACK and correct packet identifier");
+      }
+      else
+      {
+        setverdict(fail, "IUT answered incorrectly with ", v_response);
+      }
+
+      f_disconnectMqtt();
+    }
+
+    function f_TC_MQTT_BROKER_UNSUBACK_004() runs on MQTT_Client_MTC
+    {
+      f_mqtt_connect_valid()
+
+      var integer v_pid := f_random_packet_id()
+      var charstring v_topic_filter_1 := PX_TOPIC_NAME & "/1"
+      var charstring v_topic_filter_2 := PX_TOPIC_NAME & "/2"
+      var template MQTT_v3_1_1_UnsubscribePayloadList v_unsubscribe_payload := ft_unsubscribe_payload_list(v_topic_filter_1, v_topic_filter_2)
+      var template MQTT_v3_1_1_Message v_unsubscribe := m_unsubscribe(v_pid, valueof(v_unsubscribe_payload))
+      var template MQTTasp_Message v_expected := mw_mqtt_message(mw_unsuback_id(v_pid))
+
+      f_send_mqtt(connection, v_unsubscribe)
+
+      timer t_timeout := PX_MAX_RESPONSE_TIME;
+      t_timeout.start
+      alt {
+        [] MQTT_PCO.receive(v_expected) {
+          // received correct UNSUBACK, wait for another 2.0 seconds and check if any other UNSUBACK arrives
+          timer t_timeout_2 := 2.0
+          t_timeout_2.start
+          var template MQTTasp_Message v_not_expected := mw_mqtt_message(mw_unsuback)
+          alt {
+            [] MQTT_PCO.receive(v_not_expected) {
+              setverdict(fail, "Received unexpected second UNSUBACK")
+              break;
+            }
+            [] t_timeout_2.timeout {
+              setverdict(pass, "Received only one UNSUBACK as expected")
+              break;
+            }
+          }
+        }
+        [] t_timeout.timeout {
+          setverdict(fail, "No UNSUBACK received")
+          break;
+        }
+      }
     }
 } // unsubackFunctionsGroup
 
@@ -2231,8 +2498,8 @@ group protocolFeaturesFunctionsGroup
 {
   function f_TC_MQTT_BROKER_FEAT_REMLEN(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber, float p_timeout, octetstring p_payload) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     // subscribe to topic
@@ -2322,8 +2589,8 @@ group protocolFeaturesFunctionsGroup
 
   function f_TC_MQTT_BROKER_FEAT_RTND_002(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     // publish retained message
@@ -2345,8 +2612,8 @@ group protocolFeaturesFunctionsGroup
 
   function f_TC_MQTT_BROKER_FEAT_RTND_003(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     // subscribe to topic
@@ -2373,8 +2640,8 @@ group protocolFeaturesFunctionsGroup
   function f_TC_MQTT_BROKER_FEAT_RTND_004(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     /* Initial conditions */
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
@@ -2403,8 +2670,8 @@ group protocolFeaturesFunctionsGroup
   function f_TC_MQTT_BROKER_FEAT_RTND_005(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     /* Initial conditions */
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     /* Expected behaviour */
@@ -2427,6 +2694,7 @@ group protocolFeaturesFunctionsGroup
       [] t_timeout.timeout {
         // wait until publish is sent out from queue!
         // otherwise the following subscription arrives before the previous publish (?)
+        // TODO: check if [TESTPORT_PARAMETERS] *.p.noDelay:="YES" solves the problem!
         break;
       }
     }
@@ -2444,8 +2712,8 @@ group protocolFeaturesFunctionsGroup
   function f_TC_MQTT_BROKER_FEAT_RTND_006(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     /* Initial conditions */
-    p_publisher.start(f_mqtt_connect_01())
-    p_subscriber.start(f_mqtt_connect_01())
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     /* Expected behaviour */
@@ -2470,6 +2738,7 @@ group protocolFeaturesFunctionsGroup
       [] t_timeout.timeout {
         // wait until publish is sent out from queue!
         // otherwise the following subscription arrives before the previous publish (?)
+        // TODO: check if [TESTPORT_PARAMETERS] *.p.noDelay:="YES" solves the problem!
         break;
       }
     }
@@ -2484,10 +2753,45 @@ group protocolFeaturesFunctionsGroup
     p_publisher.done;
   }
 
+  function f_TC_MQTT_BROKER_FEAT_RTND_007(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    /* Expected behaviour */
+    // send a retained message with payload
+    var BIT1n v_retain_flag := '1'B
+    var octetstring v_payload_1 := 'A5A5A5A5A5A5'O
+    var QoS v_qos_level := AT_LEAST_ONCE_DELIVERY
+    var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header), v_payload_1))
+    p_publisher.done;
+
+    // now send a retained message with alternative payload and QoS = 0
+    v_retain_flag := '1'B
+    var octetstring v_payload_2 := 'FFEEDDCCBBAA'O
+    v_qos_level := AT_MOST_ONCE_DELIVERY
+    v_pub_header := valueof(t_publish_header(-, v_qos_level, v_retain_flag))
+    p_publisher.start(f_mqtt_send_publish_header(valueof(v_pub_header), v_payload_2))
+    p_publisher.done;
+
+    // receive the published message with retained flag and second payload
+    var boolean v_fail_on_timeout := false  // IUT SHOULD retain PUBLISH(v_payload_2) but also MAY choose to discard
+    var template MQTT_v3_1_1_Publish v_expected := mw_publish_packet_alternative_payload_qos0('1'B, v_payload_2)
+    p_subscriber.start(f_mqtt_subscribe_retained(v_qos_level, v_expected, v_fail_on_timeout))
+    p_subscriber.done
+
+    /* clean up the retained message as this might brake other tests! */
+    p_publisher.start(f_mqtt_send_publish_header(valueof(t_publish_header(-, AT_MOST_ONCE_DELIVERY, '1'B)), ''O))  // retained message with empty payload
+    p_publisher.done;
+  }
+
   function f_TC_MQTT_BROKER_FEAT_LWT_001(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     p_client_lwt.start(f_mqtt_connect_03())  // with LWT
-    p_subscriber.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
@@ -2504,7 +2808,7 @@ group protocolFeaturesFunctionsGroup
   function f_TC_MQTT_BROKER_FEAT_LWT_002(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     p_client_lwt.start(f_mqtt_connect_03())  // with LWT
-    p_subscriber.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
@@ -2518,8 +2822,8 @@ group protocolFeaturesFunctionsGroup
 
   function f_TC_MQTT_BROKER_FEAT_LWT_003(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
-    p_client_lwt.start(f_mqtt_connect_01())  // without LWT
-    p_subscriber.start(f_mqtt_connect_01())
+    p_client_lwt.start(f_mqtt_connect_valid())  // without LWT
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_subscriber.start(f_mqtt_subscribe(AT_MOST_ONCE_DELIVERY))
@@ -2534,7 +2838,7 @@ group protocolFeaturesFunctionsGroup
   function f_TC_MQTT_BROKER_FEAT_LWT_004(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     p_client_lwt.start(f_mqtt_connect_03('1'B))  // with LWT and will_retain
-    p_subscriber.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_client_lwt.start(f_ipl4_disconnect())
@@ -2554,7 +2858,7 @@ group protocolFeaturesFunctionsGroup
   function f_TC_MQTT_BROKER_FEAT_LWT_005(MQTT_Client_MTC p_client_lwt, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     p_client_lwt.start(f_mqtt_connect_03('0'B))  // with LWT and will_retain
-    p_subscriber.start(f_mqtt_connect_01())
+    p_subscriber.start(f_mqtt_connect_valid())
     all component.done;
 
     p_client_lwt.start(f_ipl4_disconnect())

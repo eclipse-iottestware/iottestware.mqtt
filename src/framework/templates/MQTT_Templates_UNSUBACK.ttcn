@@ -90,6 +90,18 @@ module MQTT_Templates_UNSUBACK
             unsuback := ?
           }
         }
+
+        template MQTT_v3_1_1_Message mw_unsuback_id(integer p_packet_id) :=
+        {
+          msg :=
+          {
+            unsuback :=
+            {
+              header := mw_unsuback_header,
+              packet_identifier := p_packet_id
+            }
+          }
+        }
       }
     }
   }

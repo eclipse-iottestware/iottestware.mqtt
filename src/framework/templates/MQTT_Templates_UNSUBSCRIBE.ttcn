@@ -41,9 +41,38 @@ module MQTT_Templates_UNSUBSCRIBE
         }
       }
 
+      template MQTT_v3_1_1_UnsubscribePayload m_unsubscribe_payload(INT_BIT16_MSB p_len, UCHAR0_65535 p_filter) :=
+      {
+        filterLength := p_len,
+        topic_filter := p_filter
+      }
+
+      // Helper functions to retrieve MQTT_v3_1_1_UnsubscribePayload without calculating the filterLength manually
+      function ft_unsubscribe_payload(charstring p_in) return template MQTT_v3_1_1_UnsubscribePayload
+      {
+        return m_unsubscribe_payload(lengthof(p_in), p_in)
+      }
+
+      function ft_unsubscribe_payload_list(charstring p_in_1, charstring p_in_2) return template MQTT_v3_1_1_UnsubscribePayloadList
+      {
+        var template MQTT_v3_1_1_UnsubscribePayload v_p_1 := ft_unsubscribe_payload(p_in_1)
+        var template MQTT_v3_1_1_UnsubscribePayload v_p_2 := ft_unsubscribe_payload(p_in_2)
+        return m_unsubscribe_payload_list_2(v_p_1, v_p_2)
+      }
+
+      template MQTT_v3_1_1_UnsubscribePayloadList m_unsubscribe_payload_list_1(MQTT_v3_1_1_UnsubscribePayload p_payload) :=
+      {
+        p_payload
+      }
+
+      template MQTT_v3_1_1_UnsubscribePayloadList m_unsubscribe_payload_list_2(template MQTT_v3_1_1_UnsubscribePayload p_elem_1, template MQTT_v3_1_1_UnsubscribePayload p_elem_2) :=
+      {
+        p_elem_1, p_elem_2
+      }
+
       group UNSUBSCRIBE_MessageGroup
       {
-        template MQTT_v3_1_1_Message m_unsubscribe(integer p_packet_id, MQTT_v3_1_1_UnsubscribePayloadList p_payload) :=
+        template MQTT_v3_1_1_Message m_unsubscribe(integer p_packet_id, MQTT_v3_1_1_UnsubscribePayloadList p_payload_list) :=
         {
           msg :=
           {
@@ -51,7 +80,7 @@ module MQTT_Templates_UNSUBSCRIBE
             {
               header := m_unsubscribe_header,
               packet_identifier := p_packet_id,
-              payload := p_payload
+              payload := p_payload_list
             }
           }
         }
