@@ -44,4 +44,34 @@ type record MQTTasp_Message {
   MQTT_Connection conn
 }
 
+
+// TODO: move somewhere to utils/helpers
+// This structures and methods required to handle multiple QoS message flows
+type enumerated AT_MOST_ONCE_DELIVERY_STATE { e_wait_publish, e_wait_pubrec, e_wait_pubrel, e_wait_pubcomp, e_completed }
+type record MessageFlowState {
+  integer packet_id,
+  AT_MOST_ONCE_DELIVERY_STATE message_state
+}
+
+type record of MessageFlowState MessageFlowList
+
+/*
+function f_get_flow_state_by_id(MessageFlowList p_list, integer p_packet_id) return AT_MOST_ONCE_DELIVERY_STATE {
+  var AT_MOST_ONCE_DELIVERY_STATE v_ret := e_wait_publish
+  for(var integer v_idx := 0; v_idx < lengthof(p_list); v_idx := v_idx + 1) {
+    if(p_list[v_idx].packet_id == p_packet_id) { v_ret := p_list[v_idx].message_state }
+  }
+
+  return v_ret
+}*/
+
+function f_get_index_by_id(MessageFlowList p_list, integer p_packet_id) return integer {
+  var integer v_ret := -1
+  for(var integer v_idx := 0; v_idx < lengthof(p_list); v_idx := v_idx + 1) {
+    if(p_list[v_idx].packet_id == p_packet_id) { v_ret := v_idx }
+  }
+
+  return v_ret
+}
+
 } // module

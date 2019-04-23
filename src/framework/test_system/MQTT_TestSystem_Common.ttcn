@@ -22,6 +22,7 @@ import from MQTTasp_PortType all;
 import from MQTT_TypesAndValues all;  // MQTT_Client_TypesAndValues
 import from MQTT_Broker_TypesAndValues all;
 import from MQTT_Broker_Pixits all;
+import from MQTT_Pixits all;
 
 group common_components {
 
@@ -54,6 +55,16 @@ group client_components {
   {
     port MQTTasp_PT mqtt_client_1;
     port MQTTasp_PT mqtt_client_2;
+  }
+
+  type record of MQTT_Client_MTC MQTT_Client_List;
+  type component MQTT_Client_SecurityTestSystem
+  {
+    port MQTTasp_PT mqtt_probe_client;
+    port MQTTasp_PT mqtt_attacker_0;
+    port MQTTasp_PT mqtt_attacker_1;
+    port MQTTasp_PT mqtt_attacker_2;
+    port MQTTasp_PT mqtt_attacker_3;
   }
 
   /*

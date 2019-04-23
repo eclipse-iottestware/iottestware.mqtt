@@ -13,6 +13,11 @@
 
 module MQTT_Defaults_PUBACK
 {
+  import from MQTT_TestSystem_Common all;
+  import from MQTTasp_PortType all;
+  import from MQTTasp_Types all;
+  import from MQTT_Templates_PUBACK all;
+  import from MQTT_Templates_MQTTasp all;
   /*
    * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718021
    *

@@ -14,5 +14,7 @@ module MQTT_TypesAndValues_Common
 {
   // types with done extension which can be returned via done from PTCs
   type boolean BooleanReturnType with { extension "done" }
-  
+
+  type record of BooleanReturnType BooleanReturnType_List
+
 } // module

@@ -1,0 +1,84 @@
+Package mts_tst_mqtt {
+
+  import all from mts_mqtt_commons;
+
+  Domain {
+    entities:
+      - ATTACKER_CLIENT
+      - PROBE_CLIENT;
+  }
+
+  Data {
+    UTF8String TOPIC_FILTER_SEC_CVE_01;  // topic filter used in TP_MQTT_Broker_SEC_CVE_001
+    Int16 TOPIC_FILTER_LEN_SEC_CVE_01;   // corresponds to lengthof(TOPIC_FILTER_SEC_CVE_01) + 1
+
+    UTF8String TOPIC_NAME_SEC_CVE_02;  // topic name used in TP_MQTT_Broker_SEC_CVE_002: e.g. $TEST
+
+    Int16 PX_PROBE_CON_KEEP_ALIVE;       // the Keep alive time the PROBE_CLIENT should stay connected
+  }
+
+  Test Purpose {
+    TP Id
+      TP_MQTT_Broker_SEC_CVE_001
+    Test objective
+    "A specifically malformed MQTT Subscribe packet crashes MQTT Brokers using the mqtt-packet.js module for decoding.
+    This crash is caused by a buffer over-read."
+    Reference
+      "CVE ID TODO"
+    PICS Selection
+      PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+       the PROBE_CLIENT entity established the MQTT_CONNECTION containing
+          keep_alive corresponding to PX_PROBE_CON_KEEP_ALIVE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+          the IUT entity receives a SUBSCRIBE message containing
+            payload containing
+              filterLength corresponding to TOPIC_FILTER_LEN_SEC_CVE_01,
+              topic_filter corresponding to TOPIC_FILTER_LEN_SEC_CVE_01;;
+          from the ATTACKER_CLIENT entity
+      } then {
+          the IUT entity not closes the TCP_CONNECTION for the PROBE_CLIENT entity
+      }
+    }
+  }
+
+  /*
+  * Note: CVE does not mention the kind of control packet, this TP focuses on PUBLISH.
+  *       However, CONNECT also contains a topic (will_topic). This one might be also checked
+  */
+  Test Purpose {
+    TP Id
+      TP_MQTT_Broker_SEC_CVE_002
+    Test objective
+    "If a message received by the IUT has a topic that begins with $, but that does not begin with $SYS, an assert is triggered that should otherwise not be accessible, causing the IUT to exit."
+    Reference
+    "CVE-2018-12543"
+    PICS Selection
+      PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the ATTACKER_CLIENT entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the PROBE_CLIENT entity established the MQTT_CONNECTION containing
+         keep_alive corresponding to PX_PROBE_CON_KEEP_ALIVE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+          the IUT entity receives a PUBLISH message containing
+            topic_name corresponding to TOPIC_NAME_SEC_CVE_02;
+          from the ATTACKER_CLIENT entity
+      } then {
+          the IUT entity not closes the TCP_CONNECTION for the PROBE_CLIENT entity
+      }
+    }
+  }
+}

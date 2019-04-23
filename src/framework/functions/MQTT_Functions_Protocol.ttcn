@@ -204,9 +204,8 @@ module MQTT_Functions_Protocol
     {
       var template MQTTasp_Message vt_msg := m_mqtt_message_conn(p_msg, p_conn)
 
-      // send response
+      // send MQTT message via MQTTasp_Port
       MQTT_PCO.send(valueof(vt_msg))
-      //log("[MQTT_MTC](send)(MQTT Message): ", vt_msg)
     }
   } // group Common_Functions
 
@@ -344,21 +343,56 @@ module MQTT_Functions_Protocol
     }
 
     /*
+     * @desc TODO: shoulde obsolete f_send_subscribe -> refactoring required here + MQTT_Client_Behaviors
+     * use fw_ prefix for framework functions to avoid nameing collision with old code
+     * fw_mqtt_subscribe_XXX
+     * fw_mqtt_publish_XXX etc.
+     */
+    function fw_mqtt_subscribe(MQTT_v3_1_1_Subscribe p_subscribe) runs on MQTT_Client_MTC
+    {
+      var template MQTT_v3_1_1_Message v_message := {msg := { subscribe := p_subscribe }}
+      f_send_mqtt(connection, v_message)
+    }
+
+    function fw_mqtt_publish(MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+    {
+      var template MQTT_v3_1_1_Message v_message := {msg := { publish := p_publish }}
+      f_send_mqtt(connection, v_message)
+    }
+
+    /*
+    * TODO: rename to f_mqtt_publish
+    */
+    function f_mqtt_client_send_publish(in MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+    {
+      var template MQTT_v3_1_1_Message v_message := {msg := { publish := p_publish }}
+
+      f_send_mqtt(connection, v_message)
+    }
+
+    function f_mqtt_client_send_publish_qos2(MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+    {
+      var template MQTT_v3_1_1_Message v_message := {msg := { publish := p_publish }}
+
+      f_send_publish_qos_2(connection, v_message)
+    }
+
+    /*
      * @desc the client sends a DISCONNECT notification and closes the IPL4 connection
      * @see http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349355
      */
     function f_send_disconnect(boolean p_close_ipl4 := true) runs on MQTT_Client_MTC
     {
-      if(ispresent(connection.client_state) and connection.client_state != Disconnected) {
+      if(connection.client_state == Connected) {
         log("[DISCONNECT](Send Disconnect Request): ", connection)
         var template MQTTasp_Message v_disc_req := m_mqtt_message_conn(m_disconnect, connection)
         MQTT_PCO.send(valueof(v_disc_req))
         connection.client_state := Disconnected;
       } else {
-        log("[DISCONNECT](Not possible for): ", connection);
+        log("[DISCONNECT](Not required for): ", connection);
       }
 
-      if(connection.ipl4.tcp_state != Disconnected and p_close_ipl4) {
+      if(connection.ipl4.tcp_state == Connected and p_close_ipl4) {
         log("[DISCONNECT](Close IPL4 for): ", connection);
         f_IPL4_close(MQTT_PCO, connection.ipl4.id);
         connection.ipl4.tcp_state := Disconnected;

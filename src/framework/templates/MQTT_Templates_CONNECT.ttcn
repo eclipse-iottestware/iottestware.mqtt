@@ -69,12 +69,13 @@ module MQTT_Templates_CONNECT
           will_flag := p_will_flag
         }
 
-        template MQTT_v3_1_1_ConnectFlags md_connect_credentials_lwt(BIT1n p_will_flag := '1'B, BIT1n p_will_retain := '0'B, QoS p_will_qos := AT_MOST_ONCE_DELIVERY)
+        template MQTT_v3_1_1_ConnectFlags md_connect_credentials_lwt(BIT1n p_will_flag := '1'B, BIT1n p_will_retain := '0'B, QoS p_will_qos := AT_MOST_ONCE_DELIVERY, BIT1n p_clean_session := '1'B)
         modifies md_connect_credentials :=
         {
           will_retain := p_will_retain,
           will_qos := p_will_qos,
-          will_flag := p_will_flag
+          will_flag := p_will_flag,
+          clean_session := p_clean_session
         }
       } // end group connectFlags_Group
 
@@ -254,6 +255,13 @@ module MQTT_Templates_CONNECT
         modifies mw_connect_flags_basic :=
         {
           will_retain := p_flag
+        }
+
+        template MQTT_v3_1_1_ConnectFlags mdw_connect_willretain(BIT1n p_will_flag := '1'B, BIT1n p_will_retain := '1'B)
+        modifies mw_connect_flags_basic :=
+        {
+          will_retain := p_will_retain,
+          will_flag := p_will_flag
         }
 
         template MQTT_v3_1_1_ConnectFlags mdw_connect_will_qos(QoS p_qos := AT_MOST_ONCE_DELIVERY)

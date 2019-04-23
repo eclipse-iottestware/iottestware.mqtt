@@ -28,9 +28,12 @@ import from MQTT_Client_Behaviors all;
 import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
 import from MQTT_Templates_PUBLISH all;
+import from MQTT_Templates_PUBACK all;
+import from MQTT_Templates_PUBREC all;
 import from MQTT_Templates_SUBSCRIBE all;
 import from MQTT_Templates_UNSUBSCRIBE all;
 import from MQTT_Templates_UNSUBACK all;
+
 
 import from Random_Helper all;
 import from UTF8_Helper all;
@@ -1599,6 +1602,58 @@ group publishResponseFunctionsGroup
     all component.done;
   }
 
+  function f_TC_MQTT_BROKER_PUBACK_002() runs on MQTT_Client_MTC
+  {
+    f_mqtt_connect_valid()
+
+    var integer v_pid_1 := f_random_packet_id()
+    var integer v_pid_2 := f_random_packet_id()
+    var UTF8EncodedString v_topic_name:= f_utf8_from_charstring(PX_TOPIC_NAME)
+    var octetstring v_payload := 'A0A0'O;
+
+    var template MQTT_v3_1_1_PublishHeader v_header_1 := t_publish_header(-, AT_LEAST_ONCE_DELIVERY, -)
+    var template MQTT_v3_1_1_PublishHeader v_header_2 := t_publish_header(-, AT_LEAST_ONCE_DELIVERY, -)
+    var template MQTT_v3_1_1_Publish v_publish_1 := t_publish_packet(valueof(v_header_1), v_pid_1, v_topic_name, v_payload)
+    var template MQTT_v3_1_1_Publish v_publish_2 := t_publish_packet(valueof(v_header_2), v_pid_2, v_topic_name, v_payload)
+
+    var template MQTTasp_Message v_expected_puback_1 := mw_mqtt_message(mw_puback_packet_id(v_pid_1));
+    var template MQTTasp_Message v_expected_puback_2 := mw_mqtt_message(mw_puback_packet_id(v_pid_2));
+    var MQTTasp_Message v_received;
+
+    timer t_timeout := PX_MAX_RESPONSE_TIME;
+    t_timeout.start
+
+    f_mqtt_client_send_publish(valueof(v_publish_1))
+    f_mqtt_client_send_publish(valueof(v_publish_2))
+
+    alt {
+      [] MQTT_PCO.receive(v_expected_puback_1) {
+          alt {
+            [] MQTT_PCO.receive(v_expected_puback_2) {
+              setverdict(pass, "Received PUBACK messages in correct order")
+              break
+            }
+            [] MQTT_PCO.receive(mw_mqtt_message(mw_puback)) -> value v_received {
+              setverdict(fail, "Received second PUBACK message with wrong packet ID ", v_received.msg.msg.puback.packet_identifier)
+            }
+          }
+          break
+      }
+      [] MQTT_PCO.receive(mw_mqtt_message(mw_puback)) -> value v_received {
+        setverdict(fail, "Received out of order PUBACK message with ID ", v_received.msg.msg.puback.packet_identifier)
+        break
+      }
+      [] MQTT_PCO.receive(MQTTasp_Message : ?) -> value v_received {
+        setverdict(fail, "Received unexpected message: ", v_received)
+        break
+      }
+      [] t_timeout.timeout {
+        setverdict(fail, "Time out without PUBACK")
+        break
+      }
+    }
+  }
+
   function f_TC_MQTT_BROKER_PUBREC_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     /* Initial conditions */
@@ -1618,6 +1673,58 @@ group publishResponseFunctionsGroup
     all component.done;
   }
 
+  function f_TC_MQTT_BROKER_PUBREC_002() runs on MQTT_Client_MTC
+  {
+    f_mqtt_connect_valid()
+
+    var integer v_pid_1 := f_random_packet_id()
+    var integer v_pid_2 := f_random_packet_id()
+    var UTF8EncodedString v_topic_name:= f_utf8_from_charstring(PX_TOPIC_NAME)
+    var octetstring v_payload := 'A0A0'O;
+
+    var template MQTT_v3_1_1_PublishHeader v_header_1 := t_publish_header(-, EXACTLY_ONE_DELIVERY, -)
+    var template MQTT_v3_1_1_PublishHeader v_header_2 := t_publish_header(-, EXACTLY_ONE_DELIVERY, -)
+    var template MQTT_v3_1_1_Publish v_publish_1 := t_publish_packet(valueof(v_header_1), v_pid_1, v_topic_name, v_payload)
+    var template MQTT_v3_1_1_Publish v_publish_2 := t_publish_packet(valueof(v_header_2), v_pid_2, v_topic_name, v_payload)
+
+    var template MQTTasp_Message v_expected_pubrec_1 := mw_mqtt_message(mw_pubrec_packet_id(v_pid_1));
+    var template MQTTasp_Message v_expected_pubrec_2 := mw_mqtt_message(mw_pubrec_packet_id(v_pid_2));
+    var MQTTasp_Message v_received;
+
+    timer t_timeout := PX_MAX_RESPONSE_TIME;
+    t_timeout.start
+
+    f_mqtt_client_send_publish(valueof(v_publish_1))
+    f_mqtt_client_send_publish(valueof(v_publish_2))
+
+    alt {
+      [] MQTT_PCO.receive(v_expected_pubrec_1) {
+          alt {
+            [] MQTT_PCO.receive(v_expected_pubrec_2) {
+              setverdict(pass, "Received PUBREC messages in correct order")
+              break
+            }
+            [] MQTT_PCO.receive(mw_mqtt_message(mw_pubrec)) -> value v_received {
+              setverdict(fail, "Received second PUBREC message with wrong packet ID ", v_received.msg.msg.puback.packet_identifier)
+            }
+          }
+          break
+      }
+      [] MQTT_PCO.receive(mw_mqtt_message(mw_pubrec)) -> value v_received {
+        setverdict(fail, "Received out of order PUBREC message with ID ", v_received.msg.msg.puback.packet_identifier)
+        break
+      }
+      [] MQTT_PCO.receive(MQTTasp_Message : ?) -> value v_received {
+        setverdict(fail, "Received unexpected message: ", v_received)
+        break
+      }
+      [] t_timeout.timeout {
+        setverdict(fail, "Time out without PUBREC")
+        break
+      }
+    }
+  }
+
   function f_TC_MQTT_BROKER_PUBREL_001() runs on MQTT_Client_MTC
   {
     /* Initial conditions */
@@ -1625,6 +1732,38 @@ group publishResponseFunctionsGroup
 
     /* expected bahaviour */
     f_mqtt_response_invalid_pubrel()
+  }
+
+  function f_TC_MQTT_BROKER_PUBREL_002(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(EXACTLY_ONE_DELIVERY))
+    p_subscriber.done
+
+    var integer v_pid_1 := f_random_packet_id()
+    var integer v_pid_2 := f_random_packet_id()
+    var UTF8EncodedString v_topic_name:= f_utf8_from_charstring(PX_TOPIC_NAME)
+    var octetstring v_payload_1 := 'A5A5'O;
+    var octetstring v_payload_2 := 'F0F0'O;
+
+    var template MQTT_v3_1_1_PublishHeader v_header_1 := t_publish_header(-, EXACTLY_ONE_DELIVERY, -)
+    var template MQTT_v3_1_1_PublishHeader v_header_2 := t_publish_header(-, EXACTLY_ONE_DELIVERY, -)
+    var template MQTT_v3_1_1_Publish v_publish_1 := t_publish_packet(valueof(v_header_1), v_pid_1, v_topic_name, v_payload_1)
+    var template MQTT_v3_1_1_Publish v_publish_2 := t_publish_packet(valueof(v_header_2), v_pid_2, v_topic_name, v_payload_2)
+
+    /* expected bahaviour */
+    p_subscriber.start(f_receive_ordered_pubrel())
+
+    p_publisher.start(f_mqtt_client_send_publish_qos2(valueof(v_publish_1)))
+    p_publisher.done
+    p_publisher.start(f_mqtt_client_send_publish_qos2(valueof(v_publish_2)))
+    p_publisher.done
+
+    all component.done;
   }
 
   function f_TC_MQTT_BROKER_PUBCOMP_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
@@ -2872,5 +3011,47 @@ group protocolFeaturesFunctionsGroup
     all component.done;
   }
 } // protocolFeaturesFunctionsGroup
+
+function f_TC_MQTT_BROKER_SEC_CVE_001(MQTT_Client_MTC p_attacker, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+{
+  p_attacker.start(f_mqtt_connect_valid())
+  p_probe.start(f_mqtt_connect_valid())
+  all component.done;
+
+  p_probe.start(f_ipl4_probe(PX_PROBE_TIME))
+  p_attacker.start(f_send_malformed_subscribe_01())
+  all component.done
+}
+
+function f_TC_MQTT_BROKER_SEC_CVE_002(MQTT_Client_MTC p_attacker, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+{
+  p_attacker.start(f_mqtt_connect_valid())
+  p_probe.start(f_mqtt_connect_valid())
+  all component.done;
+
+  p_probe.start(f_ipl4_probe(PX_PROBE_TIME))
+  p_attacker.start(f_send_malformed_publish_01())
+  all component.done
+}
+
+/*
+* Note: still experimental and does not work yet for affected IUT
+*/
+function f_TC_MQTT_BROKER_SEC_CVE_003(MQTT_Client_List p_attacker_list, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_SecurityTestSystem
+{
+  p_probe.start(f_mqtt_connect_valid())
+  all component.done;
+
+  p_probe.start(f_ipl4_probe(PX_PROBE_TIME))
+
+  var integer v_clients_len := lengthof(p_attacker_list)
+  for(var integer i := 0; i < v_clients_len; i := i + 1)
+  {
+    var MQTT_Client_MTC v_cc := p_attacker_list[i]
+    v_cc.start(f_malformed_connect_01(100, 65535))
+  }
+
+  all component.done
+}
 
 } // MQTT_Testcase_Functions

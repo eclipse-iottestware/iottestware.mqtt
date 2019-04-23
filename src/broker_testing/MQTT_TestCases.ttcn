@@ -853,6 +853,24 @@ group publishResponseGroup
   }
 
   /*
+  * @purpose The IUT MUST send PUBACK packet in the order in which the corresponding PUBLISH packets where received (QoS 1 messages)
+  * @reference [MQTT-4.6.0-2]
+  */
+  testcase TC_MQTT_BROKER_PUBACK_002() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0))
+    {
+      f_TC_MQTT_BROKER_PUBACK_002()
+    }
+
+    f_clear_client()
+
+    unmap(self:MQTT_PCO, system:MQTT_PCO)
+  }
+
+  /*
   * @purpose The IUT closes the network connection if fixed header flags in PUBREC Control Packet are invalid
   *
   * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
@@ -868,6 +886,24 @@ group publishResponseGroup
     }
 
     f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose
+  * @reference [MQTT-4.6.0-3]
+  */
+  testcase TC_MQTT_BROKER_PUBREC_002() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0))
+    {
+      f_TC_MQTT_BROKER_PUBREC_002()
+    }
+
+    f_clear_client()
+
+    unmap(self:MQTT_PCO, system:MQTT_PCO)
   }
 
   /*
@@ -887,6 +923,24 @@ group publishResponseGroup
     f_clear_client()
 
     unmap(self:MQTT_PCO, system:MQTT_PCO)
+  }
+
+  /*
+  * @purpose The IUT MUST send PUBREL packets in the order in which the corresponding PUBREC packets were received (QoS 2 messages)
+  *
+  * @reference [MQTT-4.6.0-4]
+  */
+  testcase TC_MQTT_BROKER_PUBREL_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_PUBREL_002(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
   }
 
   /*
@@ -1691,5 +1745,60 @@ group protocolFeaturesGroup {
     f_clear_client_system(client_lwt, subscriber)
   }
 } // protocolFeaturesGroup
+
+group cveGroup {
+  /*
+  *
+  */
+  testcase TC_MQTT_BROKER_SEC_CVE_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC attacker := MQTT_Client_MTC.create("Attacker") alive;
+    var MQTT_Client_MTC probe := MQTT_Client_MTC.create("Probe") alive;
+
+    if(f_init_client_system(attacker, probe))
+    {
+      f_TC_MQTT_BROKER_SEC_CVE_001(attacker, probe)
+    }
+
+    f_clear_client_system(attacker, probe)
+  }
+
+  /*
+  * https://mosquitto.org/blog/2018/09/security-advisory-cve-2018-12543/
+  */
+  testcase TC_MQTT_BROKER_SEC_CVE_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC attacker := MQTT_Client_MTC.create("Attacker") alive;
+    var MQTT_Client_MTC probe := MQTT_Client_MTC.create("Probe") alive;
+
+    if(f_init_client_system(attacker, probe))
+    {
+      f_TC_MQTT_BROKER_SEC_CVE_002(attacker, probe)
+    }
+
+    f_clear_client_system(attacker, probe)
+  }
+
+  /*
+  * https://mosquitto.org/blog/2018/09/security-advisory-cve-2018-12543/
+  */
+  testcase TC_MQTT_BROKER_SEC_CVE_003() runs on MQTT_Client_MTC system MQTT_Client_SecurityTestSystem
+  {
+    var MQTT_Client_MTC attacker_0 := MQTT_Client_MTC.create("Attacker_0") alive;
+    var MQTT_Client_MTC attacker_1 := MQTT_Client_MTC.create("Attacker_1") alive;
+    var MQTT_Client_MTC attacker_2 := MQTT_Client_MTC.create("Attacker_2") alive;
+    var MQTT_Client_MTC attacker_3 := MQTT_Client_MTC.create("Attacker_3") alive;
+    var MQTT_Client_MTC probe := MQTT_Client_MTC.create("Probe") alive;
+
+    var MQTT_Client_List v_list := {attacker_0, attacker_1, attacker_2, attacker_3}
+
+    if(f_init_client_security_system(v_list, probe))
+    {
+      f_TC_MQTT_BROKER_SEC_CVE_003(v_list, probe)
+    }
+
+    f_clear_client_security_system(v_list, probe)
+  }
+} // cveGroup
 
 } // module MQTT_TestCases

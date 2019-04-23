@@ -466,6 +466,67 @@
      t_timeout.stop
    }
 
+   function f_receive_ordered_pubrel() runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expected_publish := mw_mqtt_message(mdw_publish_qos(EXACTLY_ONE_DELIVERY));
+
+     var MQTTasp_Message v_received;
+     var integer v_publish_counter := 0
+     var MessageFlowList v_message_flows
+
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+
+     alt {
+       [] MQTT_PCO.receive(v_expected_publish) -> value v_received {
+         var integer v_pid := v_received.msg.msg.publish.packet_identifier
+         f_send_pubrec(connection, v_pid)
+
+         v_message_flows[v_publish_counter] := { packet_id := v_pid, message_state := e_wait_pubrel }
+         v_publish_counter := v_publish_counter + 1
+         repeat
+       }
+       [] MQTT_PCO.receive(mw_mqtt_message(mw_pubrel)) -> value v_received {
+         var integer v_pid := v_received.msg.msg.pubrel.packet_identifier
+         var integer v_idx := f_get_index_by_id(v_message_flows, v_pid)
+         var AT_MOST_ONCE_DELIVERY_STATE v_idx_state := v_message_flows[v_idx].message_state
+
+         // first check if the pubrel was expected
+         if(v_idx < 0 or v_idx_state != e_wait_pubrel) { setverdict(fail, "Receveid unexpected PUBREL with ID ", v_pid) }
+
+         if(v_idx == 0) {
+           // first received pub_id can be directly processed
+           v_message_flows[v_idx] := { packet_id := v_pid, message_state := e_completed }
+           f_send_pubcomp(connection, v_pid)
+           repeat
+         } else {
+           // this is a consecutive pub_id, check if previous pubrel was already processed!
+           var integer v_idx_prev := v_idx - 1; // the previous message flow
+           var AT_MOST_ONCE_DELIVERY_STATE v_idx_state_prev := v_message_flows[v_idx_prev].message_state // flow state of the previous message
+           if(v_idx_state_prev == e_completed) {
+             v_message_flows[v_idx] := { packet_id := v_pid, message_state := e_completed }
+             setverdict(pass, "Received PUBREL messages in correct order")
+             f_send_pubcomp(connection, v_pid)
+           } else {
+             setverdict(fail, "Received out of order PUBREL message with ID ", v_received.msg.msg.pubrel.packet_identifier)
+           }
+         }
+       }
+       [] MQTT_PCO.receive(mw_mqtt_message(mw_publish_basic)) -> value v_received {
+         setverdict(inconc, "Received unexpeceted PUBLISH with QoS ", v_received.msg.msg.publish.header.qos_level)
+         break
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message : ?) -> value v_received {
+         setverdict(fail, "Received unexpected message: ", v_received)
+         break
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "Time out without PUBLISH")
+         break
+       }
+     }
+   }
+
    function f_mqtt_subscribe(QoS p_requested_qos) runs on MQTT_Client_MTC
    {
      var integer v_packet_id := f_random_packet_id()
@@ -633,6 +694,110 @@
      }
 
      t_timeout.stop
+   }
+
+   function f_ipl4_probe(float p_timeout := 0.0, boolean p_fail_event := true) runs on MQTT_Client_MTC
+   {
+       if(p_timeout <= 0.0) {
+         p_timeout := PX_MAX_RESPONSE_TIME
+       }
+       timer t_timeout := p_timeout
+       var MQTT_ASP_Event v_asp_event
+
+       t_timeout.start
+       alt {
+         [p_fail_event] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+           setverdict(fail, "IUT closed network connection")
+           break;
+         }
+         [p_fail_event] t_timeout.timeout {
+           setverdict(pass, "IUT did not close network connection")
+           break;
+         }
+         [not p_fail_event] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+           setverdict(pass, "IUT did not closed network connection")
+           break;
+         }
+         [p_fail_event] t_timeout.timeout {
+           setverdict(fail, "IUT closed network connection")
+           break;
+         }
+     }
+   }
+
+   /*
+   * TODO: describe and reference to CVE for MQTT.js
+   * @desc send a specifically malformed MQTT Packet:
+   */
+   function f_send_malformed_subscribe_01() runs on MQTT_Client_MTC
+   {
+     var integer v_packet_id := f_random_packet_id()
+     var UCHAR0_65535 v_topic_filter := PX_TOPIC_NAME
+     var INT_BIT16_MSB v_filter_len := lengthof(v_topic_filter) + 1  // this additional byte is significant
+     var octetstring v_filter_len_raw := int2oct(v_filter_len, 2)       // reqired as erroneous only via values seems encode incorrectly
+     var QoS v_req_qos := AT_MOST_ONCE_DELIVERY
+
+     // update the template
+     @update(m_subscribe_packet_02) with
+     {
+       erroneous (payload[0].filterLength) "value(raw) := v_filter_len_raw";
+     }
+
+     var template MQTT_v3_1_1_SubscribePayload v_payload := m_subscribe_payload(v_topic_filter, v_req_qos)
+
+     var template MQTT_v3_1_1_SubscribePayloadList v_payload_list := { v_payload }
+     var template MQTT_v3_1_1_Subscribe v_malformed_subscribe := m_subscribe_packet_02(v_packet_id, v_payload_list)
+     var MQTT_v3_1_1_Subscribe v_malformed_subscribe_val := valueof(v_malformed_subscribe)
+
+     fw_mqtt_subscribe(v_malformed_subscribe_val)
+
+     // clear
+     @update(m_subscribe_packet_02)
+   }
+
+   /*
+   * @ref https://mosquitto.org/blog/2018/09/security-advisory-cve-2018-12543/
+   * @desc send a specifically malformed MQTT Packet:
+   */
+   function f_send_malformed_publish_01() runs on MQTT_Client_MTC
+   {
+     var integer v_packet_id := f_random_packet_id()
+     var UTF8EncodedString v_topic_name := f_utf8_from_charstring("$TEST")
+     var QoS v_req_qos := AT_MOST_ONCE_DELIVERY
+     var MQTT_v3_1_1_PublishHeader v_header := valueof(t_publish_header)
+     var octetstring v_payload := 'AAAAAA'O
+
+     var template MQTT_v3_1_1_Publish v_malformed_publish := t_publish_packet_qos_0(v_header, v_topic_name, v_payload)
+
+     fw_mqtt_publish(valueof(v_malformed_publish))
+   }
+
+   import from MQTT_Functions all;
+   function f_malformed_connect_01(integer v_num := 10, integer p_string_len := 65535) runs on MQTT_Client_MTC
+   {
+     // prepare variables
+     var integer v_packet_id := f_random_packet_id()
+     var universal charstring v_long_string := f_test_charstring(p_string_len)
+     var UTF8EncodedString v_client_id := f_utf8_from_charstring(v_long_string)
+     var UTF8EncodedString v_will_topic := f_utf8_from_charstring(v_long_string)
+     var OctStringWithLength v_will_msg := f_octstring_from_charstring(v_long_string)
+     var UTF8EncodedString v_user_name := f_utf8_from_charstring(v_long_string)
+     var OctStringWithLength v_password := f_octstring_from_charstring(v_long_string)
+
+     var template MQTT_v3_1_1_ConnectFlags v_flags := md_connect_credentials_lwt('1'B, '1'B, EXACTLY_ONE_DELIVERY, '0'B)
+     var template MQTT_v3_1_1_ConnectPayload v_payload := m_connect_payload_credentials_lwt(v_client_id, v_will_topic, v_will_msg, v_user_name, v_password)
+     var template MQTT_v3_1_1_Connect vt_connect := m_connect_packet_mqtt4(v_flags, v_payload)
+     var MQTT_v3_1_1_Connect v_connect := valueof(vt_connect)
+
+     for(var integer v_idx := 0; v_idx < v_num; v_idx := v_idx + 1) {
+       if(f_ipl4_connect()) {
+         f_send_connect(v_connect)
+         f_sleep(0.5)
+         f_ipl4_disconnect()
+       } else {
+         setverdict(inconc, "Could not connect to IUT")
+       }
+     }
    }
 
    // TODO: rename MQTT_Functions_Protocol.f_send_disconnect() to f_mqtt_disconnect()

@@ -42,6 +42,11 @@ module MQTT_Pixits {
     modulepar float PX_MAX_RESPONSE_TIME := 5.0;
 
     /*
+    * @desc max time the Probe PTC must wait to detect a certain probe event (e.g. IPL4 close )
+    */
+    modulepar float PX_PROBE_TIME := 2.0
+
+    /*
      * @desc how often should the TS try to reconnect if connection fails.
      */
     modulepar integer PX_CONNECT_RETRIES := 1;

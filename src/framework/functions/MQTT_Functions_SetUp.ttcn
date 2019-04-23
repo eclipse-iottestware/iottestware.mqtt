@@ -111,6 +111,48 @@ module MQTT_Functions_SetUp
     }
 
     /*
+    * @desc initialize the whole MQTT Client Test System
+    */
+    function f_init_client_security_system(MQTT_Client_List p_clients, MQTT_Client_MTC p_probe) system MQTT_Client_SecurityTestSystem
+    return BooleanReturnType
+    {
+      var integer v_clients_len := lengthof(p_clients)
+      var BooleanReturnType v_init_ptc;
+
+      for(var integer i := 0; i < v_clients_len; i := i + 1)
+      {
+        var MQTT_Client_MTC v_cc := p_clients[i]  // current client within loop
+
+        // map manually for now
+        if(i == 0) {
+          map(v_cc:MQTT_PCO, system:mqtt_attacker_0)
+        }
+        else if(i == 1) {
+          map(v_cc:MQTT_PCO, system:mqtt_attacker_1)
+        }
+        else if(i == 2) {
+          map(v_cc:MQTT_PCO, system:mqtt_attacker_2)
+        }
+        else if(i == 3) {
+          map(v_cc:MQTT_PCO, system:mqtt_attacker_3)
+        } else {
+          log("[Clear MTC]: cannot map ", v_cc)
+          return false
+        }
+
+        v_cc.start(f_init_client(0));
+        v_cc.done(BooleanReturnType : ?) -> value v_init_ptc
+        if(not v_init_ptc) { return false }
+      }
+
+      map(p_probe:MQTT_PCO, system:mqtt_probe_client)
+      p_probe.start(f_init_client(1))
+      p_probe.done(BooleanReturnType : ?) -> value v_init_ptc
+
+      return v_init_ptc
+    }
+
+    /*
     * @desc initialize one single MQTT Client
     */
     function f_init_client(in integer p_client_idx) runs on MQTT_Client_MTC
@@ -163,6 +205,47 @@ module MQTT_Functions_SetUp
       return true
     }
 
+    function f_clear_client_security_system(MQTT_Client_List p_clients, MQTT_Client_MTC p_probe) system MQTT_Client_SecurityTestSystem
+    return BooleanReturnType
+    {
+      var integer v_clients_len := lengthof(p_clients)
+      var BooleanReturnType v_clear_ptc;
+
+      for(var integer i := 0; i < v_clients_len; i := i + 1)
+      {
+        var MQTT_Client_MTC v_cc := p_clients[i]  // current client within loop
+        log("[Clear MTC]: ", v_cc)
+        // map manually for now
+        if(i == 0) {
+          unmap(v_cc:MQTT_PCO, system:mqtt_attacker_0)
+        }
+        else if(i == 1) {
+          unmap(v_cc:MQTT_PCO, system:mqtt_attacker_1)
+        }
+        else if(i == 2) {
+          unmap(v_cc:MQTT_PCO, system:mqtt_attacker_2)
+        }
+        else if(i == 3) {
+          unmap(v_cc:MQTT_PCO, system:mqtt_attacker_3)
+        } else {
+          log("[Clear MTC]: cannot unmap ", v_cc)
+          return false
+        }
+
+        var BooleanReturnType v_clear_ptc_2 := false
+
+        v_cc.start(f_clear_client());
+        v_cc.done(BooleanReturnType : ?) -> value v_clear_ptc_2
+        if(not v_clear_ptc_2) { return false }
+      }
+
+      unmap(p_probe:MQTT_PCO, system:mqtt_probe_client)
+      p_probe.start(f_clear_client())
+      p_probe.done(BooleanReturnType : ?) -> value v_clear_ptc
+
+      return v_clear_ptc
+    }
+
     /*
     * @desc clean up one single MQTT Client
     */
@@ -170,7 +253,7 @@ module MQTT_Functions_SetUp
     return BooleanReturnType
     {
       // TODO: any further clean up required?
-      f_send_disconnect(true);
+      //f_send_disconnect(true);
       return true
     }
   } // group Client

@@ -1721,6 +1721,46 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
+    TP Id TP_MQTT_Broker_PUBACK_002
+
+    Test objective
+    "The IUT MUST send PUBACK packet in the order in which the corresponding PUBLISH packets where received (QoS 1 messages)"
+    Reference
+    "[MQTT-4.6.0-2]"
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+      the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_1;
+        ;
+        and
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_2;
+        ;
+      } then {
+        the IUT entity sends a PUBACK message containing
+          packet_identifier corresponding to PACKET_ID_1;
+        and
+        the IUT entity sends a PUBACK message containing
+          packet_identifier corresponding to PACKET_ID_2;
+      }
+    }
+  }
+
+  Test Purpose {
     TP Id TP_MQTT_Broker_PUBREC_001
 
     Test objective
@@ -1764,6 +1804,46 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
+    TP Id TP_MQTT_Broker_PUBREC_002
+
+    Test objective
+    "The IUT MUST send PUBREC packets in the order in which the corresponding PUBLISH packets were received (QoS 2 messages)"
+    Reference
+    "[MQTT-4.6.0-3]"
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+      the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to EXACTLY_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_1;
+        ;
+        and
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to EXACTLY_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_2;
+        ;
+      } then {
+        the IUT entity sends a PUBREC message containing
+          packet_identifier corresponding to PACKET_ID_1;
+        and
+        the IUT entity sends a PUBREC message containing
+          packet_identifier corresponding to PACKET_ID_2;
+      }
+    }
+  }
+
+  Test Purpose {
     TP Id TP_MQTT_Broker_PUBREL_001
 
     Test objective
@@ -1794,6 +1874,71 @@ Package mts_tst_mqtt {
       from the CLIENT_1 entity
       } then {
           the IUT entity closes the TCP_CONNECTION to the CLIENT_1 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_PUBREL_002
+
+    Test objective
+    "It MUST send PUBREL packets in the order in which the corresponding PUBREC packets were received (QoS 2 messages)"
+    Reference
+    "[MQTT-4.6.0-4]"
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+            qos_level corresponding to EXACTLY_ONCE;
+        and
+        the CLIENT_1 entity delivered a PUBLISH message containing
+            qos_level corresponding to EXACTLY_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier corresponding to PACKET_ID_1;
+        to the IUT entity
+        and
+        the CLIENT_1 entity delivered a PUBLISH message containing
+            qos_level corresponding to EXACTLY_ONCE,
+            topic_name corresponding to PX_PUBLISH_TOPIC,
+            packet_identifier corresponding to PACKET_ID_2;
+        to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+      the IUT entity sends a PUBLISH message containing
+      header containing
+        qos_level corresponding to EXACTLY_ONCE,
+      topic_name corresponding to PX_PUBLISH_TOPIC,
+      packet_identifier corresponding to PACKET_ID_1;;
+      to the CLIENT_2 entity
+      and
+      the IUT entity receives a PUBREC message containing
+      packet_identifier corresponding to PACKET_ID_1;
+      from the CLIENT_2 entity
+      and
+      the IUT entity sends a PUBLISH message containing
+      header containing
+        qos_level corresponding to EXACTLY_ONCE,
+      topic_name corresponding to PX_PUBLISH_TOPIC,
+      packet_identifier corresponding to PACKET_ID_2;;
+      to the CLIENT_2 entity
+      and
+      the IUT entity receives a PUBREC message containing
+      packet_identifier corresponding to PACKET_ID_2;
+      from the CLIENT_2 entity
+      } then {
+        the IUT entity sends a PUBREL message containing
+          packet_identifier corresponding to PACKET_ID_1;
+        and
+        the IUT entity sends a PUBREL message containing
+          packet_identifier corresponding to PACKET_ID_2;
       }
     }
   }

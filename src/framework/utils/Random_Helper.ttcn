@@ -56,6 +56,26 @@ module Random_Helper
     return v_ret
   }
 
+  function f_test_charstring(integer p_length) return universal charstring
+  {
+    var universal charstring v_ret := "A5A5"  // initi with marker pattern
+
+    var integer v_current_len := 4
+    while(v_current_len < p_length) {
+      v_current_len := v_current_len + 1
+      var universal charstring v_appendix := "A"
+      v_ret := v_ret & v_appendix
+    }
+
+    /*for(var integer i := 2; i < p_length; i := i + 1)
+    {
+      var universal charstring v_appendix := oct2unichar(int2oct((i mod 255), 1))
+      v_ret := v_ret & v_appendix
+    }*/
+
+    return v_ret
+  }
+
   function f_test_long_payload(charstring p_file_path, integer p_length) return octetstring
   {
     var octetstring v_payload

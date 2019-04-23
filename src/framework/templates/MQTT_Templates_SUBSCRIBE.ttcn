@@ -43,6 +43,15 @@ module MQTT_Templates_SUBSCRIBE
         requested_qos := p_requested_qos
       }
 
+      /**/
+      // Note: Does not work either as the codec seems to overwrite the given filterLength encoding anyways
+      template MQTT_v3_1_1_SubscribePayload m_subscribe_payload_len(integer p_filter_len, UCHAR0_65535 p_topic_filter, QoS p_requested_qos) :=
+      {
+        filterLength := p_filter_len,
+        topic_filter := p_topic_filter,
+        requested_qos := p_requested_qos
+      }
+
 
       /*
       function ft_subscribe_payload_list(charstring p_in_1, charstring p_in_2) return template MQTT_v3_1_1_SubscribePayloadList
@@ -67,6 +76,13 @@ module MQTT_Templates_SUBSCRIBE
     group SUBSCRIBE_Group
     {
       template MQTT_v3_1_1_Subscribe m_subscribe_packet(integer p_packet_id, MQTT_v3_1_1_SubscribePayloadList p_payload) :=
+      {
+        header := m_subscribe_header,
+        packet_identifier := p_packet_id,
+        payload := p_payload
+      }
+
+      template MQTT_v3_1_1_Subscribe m_subscribe_packet_02(integer p_packet_id, template MQTT_v3_1_1_SubscribePayloadList p_payload) :=
       {
         header := m_subscribe_header,
         packet_identifier := p_packet_id,

@@ -50,13 +50,16 @@ module MQTT_Functions_Network
 
   group Client
   {
-    function f_ipl4_connect() runs on MQTT_Client_MTC
+    function f_ipl4_connect(integer p_local_port := -1) runs on MQTT_Client_MTC
     return boolean
     {
-      if(connection.ipl4.local_port == -1)
+      if(p_local_port == -1)
       {
         connection.ipl4.local_port := f_random_port_number()
+      } else {
+        connection.ipl4.local_port := p_local_port
       }
+
       var charstring v_remote_host := connection.ipl4.remote_name
       var integer v_remote_port := connection.ipl4.remote_port
       var charstring v_local_host := connection.ipl4.local_name

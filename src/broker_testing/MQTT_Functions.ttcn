@@ -24,6 +24,7 @@ import from IPL4asp_PortType all;
 import from IPL4asp_Types all;
 
 import from Random_Helper all;
+import from MQTTasp_PortType all;
 
 /*
 * This group contains all functions running on MQTT_Client component
@@ -399,15 +400,10 @@ group MqttMTC_FunctionsGroup
       }
     }
 
-    /*
-     * Note: f_MQTT_enc_negtest and f_send_negtest are required for negtest
-     */
-    external function f_MQTT_enc_negtest(in MQTT_v3_1_1_Message msg) return octetstring
-      with { extension "prototype(convert) encode(RAW) errorbehavior(NEGTEST_CONFL:WARNING)" };
 
     function f_send_negtest(in MQTT_v3_1_1_Message p_msg) runs on MQTT_Client
     {
-      var octetstring v_encoded := f_MQTT_enc_negtest(p_msg);
+      var octetstring v_encoded := f_enc_mqtt_msg(p_msg);
       v_encoded := f_adjustLength(f_calcRemLength(v_encoded));
 
       var ASP_Send vl_send;

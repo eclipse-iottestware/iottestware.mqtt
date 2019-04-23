@@ -39,12 +39,19 @@ type port MQTTasp_PT message {
   )"
 }
 
+/*
+ * Note: f_enc_mqtt_msg is required for negtest with @update
+ */
+external function f_enc_mqtt_msg(in MQTT_v3_1_1_Message msg) return octetstring
+  with { extension "prototype(convert) encode(RAW) errorbehavior(NEGTEST_CONFL:WARNING)" };
+
 private function f_enc_mqtt(in MQTTasp_Message p_in, out ASP_SendTo p_out) return integer
 {
-  //log("[TRPO](Ecndode MQTT message): ", p_in)
-
-  var octetstring v_encoded := f_MQTT_enc(p_in.msg);
+  log("[TRPO](Encoode MQTT message): ", p_in)
+  var octetstring v_encoded := f_enc_mqtt_msg(p_in.msg);
   v_encoded := f_adjustLength(f_calc_rem_length(v_encoded));
+  log("[TRPO](after encoding): ", v_encoded)
+
 
   p_out.connId := p_in.conn.ipl4.id;
   p_out.remName := p_in.conn.ipl4.remote_name;
@@ -55,6 +62,7 @@ private function f_enc_mqtt(in MQTTasp_Message p_in, out ASP_SendTo p_out) retur
   return 0;
   //} with {extension "prototype(fast)"}
 } with {extension "prototype(backtrack)" }
+
 
 private function f_dec_mqtt(in ASP_RecvFrom p_in, out MQTTasp_Message p_out) return integer
 {
@@ -88,14 +96,14 @@ private function f_dec_mqtt(in ASP_RecvFrom p_in, out MQTTasp_Message p_out) ret
   //} with {extension "prototype(fast)"}
 } with {extension "prototype(backtrack)" }
 
-private function f_enc_asp_send(in charstring p_in, out ASP_Send p_out) return integer
+function f_enc_asp_send(in charstring p_in, out ASP_Send p_out) return integer
 {
   //log("[TRPO](Encode ASP Event): ", p_in)
   return 0;
   //} with {extension "prototype(fast)"}
 } with {extension "prototype(backtrack)" }
 
-private function f_dec_asp_event(in ASP_Event p_in, out MQTT_ASP_Event p_out) return integer
+function f_dec_asp_event(in ASP_Event p_in, out MQTT_ASP_Event p_out) return integer
 {
   //log("[TRPO](Decode ASP Event): ", p_in)
   p_out := p_in

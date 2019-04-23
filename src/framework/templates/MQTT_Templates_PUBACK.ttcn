@@ -35,7 +35,7 @@ module MQTT_Templates_PUBACK
       {
         template Header m_puback_header(BIT4n p_flags := '0000'B) :=
         {
-          packetType := '0111'B ,
+          packetType := '0100'B ,
           flags := p_flags,
           remLength := '00000000'O  // f_calcRemLength will set this field automatically after encoding
         }
@@ -87,7 +87,7 @@ module MQTT_Templates_PUBACK
       {
         template Header mw_puback_header(BIT4n p_flags := '0000'B) :=
         {
-          packetType := '0111'B ,
+          packetType := '0100'B ,
           flags := p_flags,
           remLength := ?
         }

@@ -101,7 +101,11 @@ module MQTT_Templates_PUBREL
         {
           msg :=
           {
-            pubrel := ?
+            pubrel :=
+            {
+              header := mw_pubrel_header,
+              packet_identifier := ?
+            }
           }
         }
 

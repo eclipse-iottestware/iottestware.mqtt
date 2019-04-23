@@ -144,6 +144,18 @@ module MQTT_Templates_PUBLISH
         }
       }
 
+      template MQTT_v3_1_1_Message mdw_publish_qos_id(QoS p_qos_level, integer p_packet_id)
+      modifies mdw_publish_qos :=
+      {
+        msg :=
+        {
+          publish :=
+          {
+            packet_identifier := p_packet_id
+          }
+        }
+      }
+
       template MQTT_v3_1_1_Message mw_publish_dup(QoS p_qos_level, BIT1n p_dup_flag) :=
       {
         msg :=
