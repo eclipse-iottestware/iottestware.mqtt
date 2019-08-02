@@ -15,10 +15,10 @@ Package mts_tst {
         Expected behaviour
         ensure that {
           when {
-              the IUT entity sends a CONNECT message
+              the IUT entity is triggered to connect
           } then {
-              the TEST_SYSTEM entity checks_that the received CONNECT message containing
-              header_flags indicating value '0000'B;
+              the IUT entity sends a CONNECT message containing
+                header_flags indicating value '0000'B;
           }
         }
     }
@@ -38,8 +38,8 @@ Package mts_tst {
           when {
               the IUT entity sends a CONNECT message
           } then {
-              the TEST_SYSTEM entity checks_that the received CONNECT message containing
-              protocol_name corresponding to PROTOCOL_NAME;
+              the IUT entity sends a CONNECT message containing
+                protocol_name corresponding to PROTOCOL_NAME;
           }
         }
     }
@@ -505,19 +505,13 @@ Package mts_tst {
         Expected behaviour
         ensure that {
           when {
-            the IUT entity sends a PUBLISH message containing
-            header containing
-              qos_level corresponding to EXACTLY_ONCE;
-            ;
+            the IUT entity is triggered to publish a message containing
+          		qos_level corresponding to EXACTLY_ONCE;
           } then {
-            the TEST_SYSTEM entity drops the received PUBLISH message
-
-            and the TEST_SYSTEM entity awaits the resent PUBLISH message
-
-            and the TEST_SYSTEM entity checks_that the resent PUBLISH message containing
-            header containing
-              qos_level corresponding to EXACTLY_ONCE,
-              dup_flag indicating value '1'B;
+            the IUT entity sends a PUBLISH message containing header containing
+            	qos_level corresponding to EXACTLY_ONCE,
+            	dup_flag indicating value '1'B;
+            	;
             ;
           }
         }
