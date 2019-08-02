@@ -25,6 +25,8 @@ Package mts_mqtt_commons {
         - TEST_SYSTEM
         ;
         events:
+        - publish
+        - connect
         - receives
         - drops
         - awaits
