@@ -534,7 +534,7 @@ Package mts_tst {
                 topic_name corresponding to PX_PUBLISH_TOPIC;
           } then {
             the IUT entity sends a PUBLISH message containing
-                topic_name not corresponding to TOPIC_NAME_INVALID_UTF8;
+                topic_name not corresponding to TOPIC_NAME_INVALID_UTF8;    // valid topic name MUST contain only valid UTF-8
           }
         }
     }
