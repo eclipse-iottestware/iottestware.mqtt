@@ -31,6 +31,7 @@ Package mts_mqtt_commons {
         - drops
         - awaits
         - sends
+        - send
         - closes
         - closed
         - having
@@ -38,7 +39,7 @@ Package mts_mqtt_commons {
         - established
         - delivered   // published with QoS > 0 and performed PUBACK / PUBREC / PUBREL / PUBCOMP
         - subscribed
-        - checks_that
+        //- checks_that
         - times_out   // see [MQTT-3.1.2-24] when keep_alive * 1.5 exceeds
         ;
     }

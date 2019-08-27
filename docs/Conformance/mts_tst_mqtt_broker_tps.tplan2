@@ -3126,7 +3126,7 @@ Package mts_tst_mqtt {
     Expected behaviour
     ensure that {
       when {
-        the CLIENT entity times_out
+        the IUT entity times_out
       } then {
         the IUT entity closes the TCP_CONNECTION to the CLIENT entity
       }
