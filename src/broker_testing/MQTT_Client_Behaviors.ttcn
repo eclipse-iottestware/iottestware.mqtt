@@ -756,6 +756,36 @@
    }
 
    /*
+    * Send a subscibe message with a ZERO WIDTH NO-BREAK SPACE within the the topic
+    */
+   function f_send_subscribe_zwnbs_01(QoS p_requested_qos) runs on MQTT_Client_MTC
+   {
+     const octetstring c_ZWNBS := 'EFBBBF'O;
+
+     var integer v_pid := f_random_packet_id();
+     var UCHAR0_65535 v_topic_filter := PX_TOPIC_NAME;
+     var integer v_topic_len := lengthof(v_topic_filter) + 3; // add ZWNBS
+
+     // Note: adding a ZERO WIDTH NO-BREAK SPACE
+     @update(m_subscribe_payload) with
+     {
+       // appending ZWNBS with & does not work;
+       // append here manually via codec manipulation and adjust the topic length
+       erroneous(topic_filter) "after(raw) := c_ZWNBS";
+       erroneous(filterLength) "value(raw) := int2oct(v_topic_len, 2)"
+     }
+
+     var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(v_topic_filter, p_requested_qos)
+     var template MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := m_subscribe_payload_list_1(valueof(v_subscribe_payload))
+     var template MQTT_v3_1_1_Subscribe v_subscribe := m_subscribe_packet_02(v_pid, valueof(v_subscribe_payload_list))
+
+     fw_mqtt_subscribe(valueof(v_subscribe))
+
+     // release codec manipulation
+     @update(m_subscribe_payload)
+   }
+
+   /*
    * @ref https://mosquitto.org/blog/2018/09/security-advisory-cve-2018-12543/
    * @desc send a specifically malformed MQTT Packet:
    */
@@ -770,6 +800,32 @@
      var template MQTT_v3_1_1_Publish v_malformed_publish := t_publish_packet_qos_0(v_header, v_topic_name, v_payload)
 
      fw_mqtt_publish(valueof(v_malformed_publish))
+   }
+
+   /*
+    * Send a publish message with a ZERO WIDTH NO-BREAK SPACE within the the topic
+    */
+   function f_send_publish_zwnbs_01() runs on MQTT_Client_MTC
+   {
+     var template MQTT_v3_1_1_PublishHeader v_header := t_publish_header()
+     var octetstring v_payload := 'A5A5A5A5A5A5'O
+     const octetstring c_ZWNBS := 'EFBBBF'O; // ZERO WIDTH NO-BREAK SPACE
+     var integer v_topic_len := lengthof(PX_TOPIC_NAME) + 3; // add ZWNBS
+
+     // Note: adding a ZERO WIDTH NO-BREAK SPACE
+     @update(t_publish_packet2_qos_0) with
+     {
+       // appending ZWNBS with & does not work;
+       // append here manually via codec manipulation and adjust the topic length
+       erroneous(topic_name) "after(raw) := c_ZWNBS";
+       erroneous(nameLength) "value(raw) := int2oct(v_topic_len, 2)"
+     }
+
+     var template MQTT_v3_1_1_Publish v_send_pub := t_publish_packet2_qos_0(valueof(v_header), v_topic_len, PX_TOPIC_NAME, v_payload)
+     fw_mqtt_publish(valueof(v_send_pub))
+
+     // release codec manipulation
+     @update(t_publish_packet2_qos_0)
    }
 
    import from MQTT_Functions all;

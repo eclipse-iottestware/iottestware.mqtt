@@ -14,6 +14,9 @@ logs/
 .loadpath
 .recommenders
 
+# custom configs for development
+cfg/my_*.cfg
+
 # Titan
 .TITAN_properties
 .project

@@ -2294,6 +2294,36 @@ Package mts_tst_mqtt {
     }
   }
 
+  Test Purpose {
+    TP Id TP_MQTT_Broker_SUBSCRIBE_011
+
+    Test objective
+    "Topic Names and Topic Filters can include the space (zero width no-break space) character"
+    Reference
+      "[MQTT-1.5.3-3]"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+        the CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+        when {
+            the IUT entity receives a SUBSCRIBE message containing
+            packet_identifier corresponding to PACKET_ID,
+            payload containing
+                topic_filter corresponding to TOPIC_FILTER_WITH_ZWNBS,
+                requested_qos corresponding to AT_MOST_ONCE;
+            ;
+        } then {
+          the IUT entity sends a SUBACK message containing
+              packet_identifier corresponding to PACKET_ID;
+        }
+    }
+  }
+
 
   Test Purpose {
     TP Id TP_MQTT_Broker_SUBACK_001
@@ -3687,6 +3717,74 @@ Package mts_tst_mqtt {
         from the CLIENT_2 entity
       } then {
         the IUT entity sends no PUBLISH message to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_001
+
+    Test objective
+    "A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver"
+    Reference
+    "[MQTT-1.5.3-3], [MQTT-4.7.3-4]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+      the IUT entity receives a SUBSCRIBE message containing
+      payload containing
+          topic_filter corresponding to TOPIC_FILTER_WITH_ZWNBS,
+          requested_qos corresponding to AT_MOST_ONCE;
+      ;
+      from CLIENT_1 entity
+      } then {
+        the IUT entity sends no PUBLISH to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_002
+
+    Test objective
+    "A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver"
+    Reference
+    "[MQTT-1.5.3-3], [MQTT-4.7.3-4]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the TOPIC_FILTER_WITH_ZWNBS;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+      the IUT entity receives a SUBSCRIBE message containing
+      payload containing
+          topic_filter corresponding to PX_PUBLISH_TOPIC,
+          requested_qos corresponding to AT_MOST_ONCE;
+      ;
+      from CLIENT_1 entity
+      } then {
+        the IUT entity sends no PUBLISH to the CLIENT_2 entity
       }
     }
   }

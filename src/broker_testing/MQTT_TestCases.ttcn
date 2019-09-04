@@ -1115,6 +1115,25 @@ group subscribeGroup
 
     map(self:MQTT_PCO, system:MQTT_PCO)
   }
+
+  /*
+  * @purpose Topic Names and Topic Filters can include the space (zero width no-break space) character.
+  *
+  * @reference [MQTT-1.5.3-3]
+  */
+  testcase TC_MQTT_BROKER_SUBSCRIBE_011() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0))
+    {
+      f_TC_MQTT_BROKER_SUBSCRIBE_011()
+    }
+
+    f_clear_client()
+
+    map(self:MQTT_PCO, system:MQTT_PCO)
+  }
 } // subscribeGroup
 
 group subackGroup
@@ -1743,6 +1762,42 @@ group protocolFeaturesGroup {
     }
 
     f_clear_client_system(client_lwt, subscriber)
+  }
+
+  /*
+  * @purpose A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver.
+  *
+  * @reference [MQTT-1.5.3-3], [MQTT-4.7.3-4]
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_001(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver.
+  *
+  * @reference [MQTT-1.5.3-3], [MQTT-4.7.3-4]
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_002(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
   }
 } // protocolFeaturesGroup
 

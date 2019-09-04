@@ -55,6 +55,15 @@ module MQTT_Templates_PUBLISH
         packet_identifier := omit,
         payload := p_payload
       }
+
+      template MQTT_v3_1_1_Publish t_publish_packet2_qos_0(MQTT_v3_1_1_PublishHeader p_header, integer p_name_len, charstring p_topic_name, octetstring p_payload) :=
+      {
+        header := p_header,
+        nameLength := p_name_len,
+        topic_name := p_topic_name,
+        packet_identifier := omit,
+        payload := p_payload
+      }
     }
 
     group PUBLISH_MessageGroup
