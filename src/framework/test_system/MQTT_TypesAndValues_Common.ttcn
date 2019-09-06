@@ -16,5 +16,18 @@ module MQTT_TypesAndValues_Common
   type boolean BooleanReturnType with { extension "done" }
 
   type record of BooleanReturnType BooleanReturnType_List
+  
+  // common types for handling IPL4 connections
+  type enumerated TCP_State { Connected, Disconnected } // Connected if MQTTClientState != Disconnected
+  
+  type record IPL4_Connection {
+    integer id,
+    charstring remote_name, // the remote IP/hostname
+    integer remote_port,    // the remote port
+    charstring local_name,  // the local IP/hostname
+    integer local_port,     // the local port
+    boolean reuse_address,
+    TCP_State tcp_state
+  }
 
 } // module

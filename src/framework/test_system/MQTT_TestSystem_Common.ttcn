@@ -14,10 +14,13 @@ module MQTT_TestSystem_Common
 {
 
 //import from IPL4asp_Types all;
-import from IPL4asp_PortType all;
+//import from IPL4asp_PortType all;
 
 import from MQTTasp_Types all;
 import from MQTTasp_PortType all;
+
+import from UTasp_Types all;
+import from UTasp_PortType all;
 
 import from MQTT_TypesAndValues all;  // MQTT_Client_TypesAndValues
 import from MQTT_Broker_TypesAndValues all;
@@ -38,15 +41,24 @@ group common_components {
 group broker_components {
   /*
   * MQTT Broker Test Component contains capabilities and context of a MQTT Broker
+  * Note: MQTT_Broker_MTC emulates a Broker and is used to test Clients
   */
   type component MQTT_Broker_MTC extends MQTT_MTC
   {
     // timer locally available for MQTT_Broker_PTC; value retrieved from .cfg (PIXIT)
     timer tc_testcase_max := PX_MAX_TC_TIMER;
     var default vc_timeout_default;
+    var default vc_accept_mqtt_conn;
 
     var MQTT_BrokerContext ctx;
     var MQTT_ConnectionList vl_connections;
+    
+    var UT_ConnectionList vl_ut_connections;
+    port UTasp_PT UT_PCO;
+    
+    // TODO: this is a workaround for now
+    // first we will handle only one single UT connect, this is the ID the get from vl_ut_connections
+    var integer vl_ut_idx;
   }
 }
 
@@ -69,6 +81,7 @@ group client_components {
 
   /*
    * MQTT Client Test Component contains capabilities and context of a MQTT Client
+   * * Note: MQTT_Client_MTC emulates a Client and is used to test Brokers
    */
   type component MQTT_Client_MTC extends MQTT_MTC
   {

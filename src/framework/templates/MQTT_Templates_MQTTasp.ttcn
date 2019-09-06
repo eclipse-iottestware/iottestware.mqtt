@@ -15,6 +15,11 @@ module MQTT_Templates_MQTTasp {
 import from MQTT_v3_1_1_Types all;
 import from MQTTasp_Types all;
 
+template MQTTasp_Message mw_mqtt :=
+{
+  msg := { msg := ? },
+  conn := ?
+}
 
 /*
  * This template is used to match a MQTT_v3_1_1_Messages from any connection

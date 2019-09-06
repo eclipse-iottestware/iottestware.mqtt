@@ -15,9 +15,31 @@ module MQTT_Broker_Pixits {
   import from MQTT_Broker_TypesAndValues all;
 
    /*
+    * @desc the local interface on which to listen for incoming MQTT packets
+    * The test system will listen for MQTT on: <PX_LISTEN_HOSTNAME>:<PX_LISTEN_PORT>
+    */
+   modulepar charstring PX_LISTEN_HOSTNAME := "localhost"
+
+   /*
     * @desc the port on which to wait for incoming MQTT connections
     */
    modulepar IPL4_PortRange PX_LISTEN_PORT := 1883;
+   
+   /*
+    * @desc define if upper tester should be used
+    */
+   modulepar boolean PX_USE_UPPER_TESTER := true
+   
+   /*
+    * @desc the hostname / ip address of the Upper Tester
+    * The Upper Tester on the SUT must listen on: <PX_UPPER_TESTER_HOSTNAME>:<PX_UPPER_TESTER_PORT>
+    */
+   modulepar charstring PX_UPPER_TESTER_HOSTNAME := "localhost"
+
+   /*
+    * @desc the port of the Upper Tester
+    */
+   modulepar IPL4_PortRange PX_UPPER_TESTER_PORT := 1884
 
    /*
     * @desc the Client Identifier which the SUT will use to authenticate
@@ -92,6 +114,6 @@ module MQTT_Broker_Pixits {
      *       characters other than alphanum [MQTT-3.1.3-5]
      *
      */
-    modulepar boolean PX_ALLOW_LONG_CLIENT_IDS := false
-    modulepar boolean PX_ALLOW_SPECIAL_CHAR_CLIENT_IDS := false
+    modulepar boolean PX_ALLOW_LONG_CLIENT_IDS := true
+    modulepar boolean PX_ALLOW_SPECIAL_CHAR_CLIENT_IDS := true
 }

@@ -13,25 +13,16 @@
 module MQTTasp_Types {
 
 import from MQTT_v3_1_1_Types all;
+import from MQTT_TypesAndValues_Common all;
 import from IPL4asp_Types all;
 
 type ASP_Event MQTT_ASP_Event;  // map ASP_Event to avoid import of IPL4asp_Types
 
-type enumerated TCP_State { Connected, Disconnected } // Connected if MQTTClientState != Disconnected
 
 // Notes:
 // Wait_publish is used to mark dropped publish packets -> wait for re-transmission of publish on QoS > 0
 type enumerated MQTT_ClientState { Idle, Wait_connack, Connected, Wait_suback, Wait_unsuback, Wait_publish, Wait_puback, Wait_pubrec, Wait_pubrel, Wait_pubcomp,  Subscribed , Disconnected }
 
-type record IPL4_Connection {
-  integer id,
-  charstring remote_name, // the remote IP/hostname
-  integer remote_port,    // the remote port
-  charstring local_name,  // the local IP/hostname
-  integer local_port,     // the local port
-  boolean reuse_address,
-  TCP_State tcp_state
-}
 
 type record MQTT_Connection {
   IPL4_Connection ipl4,

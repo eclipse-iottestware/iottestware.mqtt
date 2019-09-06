@@ -1,0 +1,186 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module UT_Types
+{
+    // not needed, redefine duplicate types here directly to control the encoding
+    //import from MQTT_v3_1_1_Types all;
+    
+
+    external function f_encode_ut(in MQTT_UT_Message msg) return octetstring
+    with
+    {
+      extension "prototype (convert) encode(JSON)";
+      //extension "printing(pretty)";
+      extension "errorbehavior(ALL:ERROR)"
+    }
+
+    external function f_decode_ut(in octetstring p_stream) return MQTT_UT_Message
+    with
+    {
+      extension "prototype (convert) decode(JSON)"
+      extension "errorbehavior(ALL:ERROR)"
+    }
+
+    // redefine the QoS type because @MQTT_v3_1_1_Types.QoS cannot be encoded as JSON
+    type enumerated QoS_UT
+    {
+      AT_MOST_ONCE_DELIVERY(0),
+      AT_LEAST_ONCE_DELIVERY(1),
+      EXACTLY_ONE_DELIVERY(2)
+      //RESERVED(3) // this one is not needed for upper tester
+    } //with {
+      //variant "JSON: as number";
+      //encode "JSON"
+    //}
+    
+    type integer RETURN_CODE (0..255);
+
+    type enumerated MQTT_ControlPacket
+    {
+      CONNECT(1),
+      CONNACK(2),
+      PUBLISH(3),
+      PUBACK(4),
+      PUBREC(5),
+      PUBREL(6),
+      PUBCOMP(7),
+      SUBSCRIBE(8),
+      SUBACK(9),
+      UNSUBSCRIBE(10),
+      UNSUBACK(11),
+      PINGREQ(12),
+      PINGRESP(13),
+      DISCONNECT(14)
+    }
+
+    // define inner packet types
+    type record MQTT_UT_SubscribePayload
+    {
+      universal charstring topic_filter length(0..65535),
+      QoS_UT               requested_qos
+    }
+
+    type record of MQTT_UT_SubscribePayload MQTT_UT_SubscribePayloadList;
+    type record of RETURN_CODE ReturnCodeList;
+    type record of universal charstring UCHAR0_65535List;
+
+    type record MQTT_UT_LWT
+    {
+        QoS_UT               will_qos,
+        boolean              will_retain,
+        universal charstring will_topic length(0..65535),
+        universal charstring will_message length(0..65535)
+    } with {
+      encode "JSON"
+    }
+
+    // define control packets
+    type record MQTT_UT_Connect
+    {
+        charstring   host,
+        integer      port_num,
+        boolean      clean_session,
+        integer      keep_alive optional,
+        universal charstring client_identifier length(0..65535) optional,
+        MQTT_UT_LWT  lwt optional,
+        universal charstring user_name length(0..65535) optional,
+        octetstring  password length(0..65535) optional
+    } //with {
+      //variant(port_num) "JSON:port_num as port";
+    //}
+
+    type record MQTT_UT_ConnAck
+    {
+        boolean session_present,
+        RETURN_CODE connect_return_code
+    }
+
+    type record MQTT_UT_Publish
+    {
+        QoS_UT               qos_level,
+        boolean              retain_flag,
+        universal charstring topic_name length(0..65535),
+        // packet ids probably not accessible from client
+        //integer                       packet_identifier (0..65535) optional,
+        integer      payload_size optional  // just tell how many bytes
+    }
+
+    type record MQTT_UT_Subscribe
+    {
+      // packet ids probably not accessible from client
+      //integer                             packet_identifier (0..65535),
+      MQTT_UT_SubscribePayloadList payload
+    }
+
+    type record MQTT_UT_Suback
+    {
+      // packet ids probably not accessible from client
+      // integer                   packet_identifier (0..65535),
+      ReturnCodeList return_codes
+    }
+
+    type record MQTT_UT_UnsubscribePayload
+    {
+      UCHAR0_65535List topic_filter
+    }
+
+    type record MQTT_UT_Unsubscribe
+    {
+      // packet ids probably not accessible from client
+      //integer                             packet_identifier (0..65535),
+      MQTT_UT_UnsubscribePayload payload
+    }
+
+    type record MQTT_UT_Identifier
+    {
+      // this packet_identifier might required to acknowledge packets like PUBACK
+      integer packet_identifier (0..65535) optional
+    }
+
+    type record MQTT_UT_Empty
+    {
+      // TODO: doest that work?
+      // is this message type even required?
+    }
+
+    type union MQTT_UT_ReqResp
+    {
+        MQTT_UT_Connect           connect_msg,
+        MQTT_UT_ConnAck           connack,
+        MQTT_UT_Publish           publish,
+        MQTT_UT_Identifier        puback,
+        MQTT_UT_Identifier        pubrec,
+        MQTT_UT_Identifier        pubrel,
+        MQTT_UT_Identifier        pubcomp,
+        MQTT_UT_Subscribe         subscribe,
+        MQTT_UT_Suback            suback,
+        MQTT_UT_Unsubscribe       unsubscribe,
+        MQTT_UT_Identifier        unsuback,
+        MQTT_UT_Empty             pingreq,
+        MQTT_UT_Empty             pingresp,
+        MQTT_UT_Empty             disconnect_msg
+    } with {
+      variant "JSON: as value";
+      encode "JSON"
+    }
+
+    type record MQTT_UT_Message
+    {
+        MQTT_ControlPacket msg_type,
+        MQTT_UT_ReqResp msg,
+        charstring free_text optional,
+        charstring test_case
+    } with {
+      encode "JSON";
+    }
+}

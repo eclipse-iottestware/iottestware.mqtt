@@ -15,24 +15,9 @@ module MQTT_Broker_Testcases {
 import from MQTT_TestSystem_Common all;
 import from MQTT_Broker_Testcase_Functions all;
 
-// defaults
-import from MQTT_Defaults_Common all;
-
-// PIXITs
-import from MQTT_Broker_Pixits all;
-
 // Functions
 import from MQTT_Functions_SetUp all;
-import from MQTT_Functions_Network all;
-import from MQTT_Functions_Protocol all;
-import from MQTTasp_PortType all;
 
-// Types
-import from MQTTasp_Types all;
-
-// Templates
-import from MQTT_Templates_MQTTasp all;
-import from MQTT_Templates_CONNECT all;
 
 group connectGroup
 {

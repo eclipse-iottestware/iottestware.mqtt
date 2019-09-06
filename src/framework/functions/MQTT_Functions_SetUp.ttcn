@@ -15,10 +15,6 @@ module MQTT_Functions_SetUp
   import from MQTT_TestSystem_Common all;
   import from MQTT_TypesAndValues_Common all;
 
-  import from MQTT_Templates_MQTTasp all;
-  import from MQTT_Templates_CONNACK all;
-  import from MQTT_Templates_DISCONNECT all;
-
   import from MQTT_Pixits all;
   import from MQTT_Broker_Pixits all;
   import from MQTT_Defaults_Common all;
@@ -27,6 +23,11 @@ module MQTT_Functions_SetUp
   import from MQTT_Functions_Protocol all;
 
   import from IPL4asp_Types all;
+  
+  import from UTasp_CtrlFunct all;
+  import from UTasp_Types all;
+
+  import from Random_Helper all;
 
   group Broker
   {
@@ -37,21 +38,33 @@ module MQTT_Functions_SetUp
     function f_init_broker() runs on MQTT_Broker_MTC return boolean
     {
       log("[INIT](Initialize MQTT Broker PTC)")
-      map(self:MQTT_PCO, system:IPL4_PCO);
+      map(self:MQTT_PCO, system:MQTT_PCO);
+
+      if (PX_USE_UPPER_TESTER)
+      {
+        log("[INIT](Connect Upper Tester): ", PX_UPPER_TESTER_HOSTNAME, ":", PX_UPPER_TESTER_PORT)
+        var boolean v_ut_connect := f_connect_ut();
+        if (not v_ut_connect)
+        {
+          // TODO: test this case...
+          log("[INIT](Could not connect to Upper Tester ", PX_UPPER_TESTER_HOSTNAME, ":", PX_UPPER_TESTER_PORT)
+          stop;
+        }
+      }
 
       var Result vl_result := f_ipl4_listen(p_port := PX_LISTEN_PORT);
-
       if (not(ispresent(vl_result.connId)))
       {
-        log("[INIT](Could not connect TCP/TLS)");
+        log("[INIT](Could not bind TCP port ", PX_LISTEN_PORT, ")");
 
-        // TODO: test this case...
+        // TODO: test this case, similar construct caused already problems in the past
         // see https://github.com/eclipse/iottestware.mqtt/commit/1767d6bca1ef3e3958e05adf6e444b6d86f8ad9d
         stop;
       }
 
       // TODO: check if PX_MAX_TC_TIMER < 0.0 ??
       //if (PX_MAX_TC_TIMER > 0.0) { vl_testcase_max := PX_MAX_TC_TIMER }
+
 
       // TODO: check result
       ctx.connId := vl_result.connId
@@ -60,6 +73,9 @@ module MQTT_Functions_SetUp
       // start timer and activate the default behavior
       tc_testcase_max.start;
       vc_timeout_default := activate(a_timeout_default(tc_testcase_max, PX_ON_TIMEOUT_VERDICT, PX_ON_TIMEOUT_VERDICT_VAL))
+
+      // activate auto accept of incoming mqtt connections
+      vc_accept_mqtt_conn := activate(a_accept_mqtt_conn())
 
       return true;
     }
@@ -70,12 +86,70 @@ module MQTT_Functions_SetUp
 
       // deactivate the default timeout behavior
       deactivate(vc_timeout_default);
+      deactivate(vc_accept_mqtt_conn);
 
       // cleanly disconnect all connections
       f_disconnect_all();
+      
+      if (PX_USE_UPPER_TESTER)
+      {
+        log("[CLR](Disconnect Upper Tester)")
+        f_disconnect_ut();
+      }
 
-      unmap(self:MQTT_PCO, system:IPL4_PCO);
+      unmap(self:MQTT_PCO, system:MQTT_PCO);
       self.stop;
+    }
+    
+    
+    // TODO: move this function to upper_tester 
+    private function f_connect_ut() runs on MQTT_Broker_MTC
+    return boolean
+    {
+      map(self:UT_PCO, system:UT_PCO);
+      var boolean v_connectState := true;
+  
+      // set the remote Host
+      var UT_Connection v_ut_conn;
+      v_ut_conn.local_name := "0.0.0.0";
+      v_ut_conn.remote_name := PX_UPPER_TESTER_HOSTNAME;
+      v_ut_conn.local_port := f_random_port_number()
+      v_ut_conn.remote_port := PX_UPPER_TESTER_PORT;
+      v_ut_conn.reuse_address := true;
+      log("Connect to UT: ", v_ut_conn.remote_name, ":", v_ut_conn.remote_port, " from local Port: ", v_ut_conn.local_port);
+  
+      var Result vl_result := UTasp_CtrlFunct.f_UT_IPL4_connect(UT_PCO, v_ut_conn.remote_name, v_ut_conn.remote_port, v_ut_conn.local_name, v_ut_conn.local_port, -1, {tcp := {}}, {{reuseAddress := {enable := v_ut_conn.reuse_address}}});
+  
+      if (not(ispresent(vl_result.connId)))
+      {
+        v_ut_conn.id := -1;
+        v_ut_conn.tcp_state := Disconnected;
+        v_connectState := false;
+      } else {
+        v_ut_conn.id := vl_result.connId;
+        v_ut_conn.tcp_state := Connected;
+        // TODO: how to get the message length of a UT message? lengthof(bytestream) ?
+        //var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
+        //f_IPL4_setGetMsgLen(UT_PCO, v_cid, getMsg_Func, {});
+        
+        vl_ut_idx := v_ut_conn.id;
+        vl_ut_connections[vl_ut_idx] := v_ut_conn;
+      }
+  
+      return v_connectState;
+    }
+    
+    // TODO: move this function to upper_tester
+    private function f_disconnect_ut() runs on MQTT_Broker_MTC
+    {
+      var Result vl_result;
+  
+      log("Closing Upper Tester connection " & int2str(vl_ut_idx));
+      if (vl_ut_idx >= 0)
+      {
+        vl_result := UTasp_CtrlFunct.f_UT_IPL4_close(UT_PCO, vl_ut_idx);
+        unmap(self:UT_PCO, system:UT_PCO);
+      }
     }
   } // group Broker
 

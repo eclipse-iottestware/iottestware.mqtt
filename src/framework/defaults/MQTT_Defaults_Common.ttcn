@@ -13,6 +13,7 @@
 module MQTT_Defaults_Common {
 
 import from MQTT_TestSystem_Common all;
+import from MQTTasp_Types all;
 
 altstep a_timeout_default(timer p_timer, boolean p_set_verdict := false, verdicttype p_verdict := inconc) runs on MQTT_MTC
 {
@@ -22,6 +23,15 @@ altstep a_timeout_default(timer p_timer, boolean p_set_verdict := false, verdict
       setverdict(p_verdict, "PTC timed out")
     }
     break;
+  }
+}
+
+altstep a_accept_mqtt_conn() runs on MQTT_Broker_MTC
+{
+  [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
+        log("Received MQTT_ASP_Event: Connect on MQTT_PCO")
+        // TODO: save this connection to vl_connections?
+        repeat;
   }
 }
 

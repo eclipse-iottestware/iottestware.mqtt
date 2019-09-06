@@ -1,0 +1,52 @@
+module UT_Functions {
+
+import from MQTT_TestSystem_Common all;
+import from MQTT_Functions_Protocol all;
+import from MQTTasp_PortType all;
+import from MQTTasp_Types all;
+import from MQTT_Broker_Pixits all;
+
+import from UT_Types all;
+import from UT_Templates all;
+import from UTasp_Types all;
+
+import from MQTT_Templates_MQTTasp all;
+import from MQTT_Templates_CONNECT all;
+
+function f_ut_trigger(template MQTT_UT_Message p_trigger_msg) runs on MQTT_Broker_MTC
+{
+  if (PX_USE_UPPER_TESTER)
+  {
+    var UT_Connection v_conn := vl_ut_connections[vl_ut_idx]
+    var template UTasp_Message v_asp_msg := m_ut_message(p_trigger_msg, v_conn)
+    log("[UT] (trigger): ", v_asp_msg)
+    UT_PCO.send(valueof(v_asp_msg));
+  }
+}
+
+/*
+* @desc trigger to connect for initial condition. 01 will trigger to connect without any payload
+*/
+function f_ut_initial_connect_01(charstring p_test_case_name) runs on MQTT_Broker_MTC
+{
+  if (PX_USE_UPPER_TESTER)
+  {
+    var UT_Connection v_conn := vl_ut_connections[vl_ut_idx]
+    var charstring v_free_text := "Initial condition"
+    var charstring v_tc := "Init " & p_test_case_name
+    var template UTasp_Message v_asp_msg := m_ut_message(m_ut_client_connect_pre_condition(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text, v_tc), v_conn)
+    UT_PCO.send(valueof(v_asp_msg));
+
+    var template MQTTasp_Message vt_connect_valid := mw_mqtt_message(mdw_connect_valid_mqtt_x);
+    var MQTTasp_Message v_received;
+    alt {
+      [] MQTT_PCO.receive(vt_connect_valid) -> value v_received {
+        var MQTT_Connection v_conn_2 := v_received.conn
+        f_add_connection(v_conn_2)  // add connection to brokers list
+        f_send_connack(v_conn_2, 0)
+        break;
+      }
+    }
+  }
+}
+}

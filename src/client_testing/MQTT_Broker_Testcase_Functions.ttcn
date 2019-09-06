@@ -15,17 +15,14 @@ module MQTT_Broker_Testcase_Functions {
 import from MQTT_TestSystem_Common all;
 
 // defaults
-import from MQTT_Defaults_Common all;
 import from MQTT_Defaults_CONNACK all;
 
 // PIXITs
 import from MQTT_Broker_Pixits all;
 
 // Functions
-import from MQTT_Functions_SetUp all;
 import from MQTT_Functions_Conformance all;
 import from MQTT_Functions_Protocol all;
-import from MQTT_Functions_Network all;
 import from MQTTasp_PortType all;
 
 // Types
@@ -37,10 +34,16 @@ import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
 import from MQTT_Templates_PUBLISH all;
 
+// Upper Tester
+import from UT_Types all;
+import from UT_Templates all;
+import from UT_Functions all;
+
 import from UTF8_Helper all;
 
 group connectGroup
 {
+
   /*
   * @purpose TODO
   *
@@ -51,8 +54,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    // [UT] upper tester command via logging forwarded to the webserver
-    log("[UT](send CONNECT): ", mw_connect_header);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check Header flags"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_01(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -83,7 +89,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT): ", mw_connect_protocol_name);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check Protocol name"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_02(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -119,7 +129,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT): ", mw_connect_protocol_level);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check Protocol level"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_03(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -129,10 +143,10 @@ group connectGroup
 
         if (f_connect_protocol_lvl_valid(v_received.msg.msg.connect_msg)) {
           f_send_connack(v_conn)
-          setverdict(pass, "Protocol Level checked")
+          setverdict(pass, "Protocol level checked")
         } else {
           f_unacceptable_protocol(v_conn)
-          setverdict(fail, "Protocol Level for MQTT v3.1.1 must be 4")
+          setverdict(fail, "Protocol level for MQTT v3.1.1 must be 4")
         }
       }
     } // alt
@@ -148,7 +162,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT): ", mw_connect_reserved);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check Reserved flag"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_04(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -178,7 +196,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT): ", mw_connect_will_flag);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check LWT flag"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_05(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -218,7 +240,12 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT): ", mw_connect_will_flag('0'B));
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check LWT flags"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_06(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -227,12 +254,15 @@ group connectGroup
         log("[TC_MQTT_Client_CONNECT_06](received connect): ", v_received.msg.msg.connect_msg)
 
         if(match(v_received.msg, mw_connect_will_flag)) {
+          
+          // pre set to pass and decrease to fail if some missbehavious found
+          setverdict(pass, "Will flag and Will QoS checked")
 
           // check if will_qos is valid
           //TODO: mw_connect_will_flag matching only valid?
-          var QoS vt_invalid_qos := AT_MOST_ONCE_DELIVERY
+          var QoS vt_invalid_qos := RESERVED
           if(match(vt_invalid_qos, v_received.msg.msg.connect_msg.flags.will_qos)){
-            setverdict(fail, "Received CONNECT contains Will Qos > 0")
+            setverdict(fail, "Received CONNECT contains Will Qos == 3")
           }
 
           // check if will_retain
@@ -249,7 +279,7 @@ group connectGroup
 
           if(getverdict == pass) {
             f_send_connack(v_conn)
-            setverdict(pass, "Will flag and Will QoS checked")
+            //setverdict(pass, "Will flag and Will QoS checked")
           } else {
             // close network connection; already failed
             f_terminate_due_to_violation(v_conn)
@@ -274,7 +304,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT): ", mw_connect_credentials_empty);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check empty credentials"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_07(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -282,12 +316,12 @@ group connectGroup
 
         log("[TC_MQTT_Client_CONNECT_07](received connect): ", v_received.msg.msg.connect_msg)
 
-        if (match(v_received.msg, mw_connect_credentials_empty)) {
+        if (match(v_received.msg.msg.connect_msg.flags, mw_connect_credentials_empty.msg.connect_msg.flags)) {
           f_send_connack(v_conn)
           setverdict(pass, "No credentials behaviour checked")
         } else {
           // close network connection
-          f_terminate_due_to_violation(v_conn)
+          f_send_connack(v_conn, 5) // not authorized to connect
           setverdict(fail, "not match (usr_flag='0'B : pswd_flag='0'B : payload=omit)")
         }
       }
@@ -308,7 +342,11 @@ group connectGroup
     var BIT1n v_password_flag := '0'B
     var template MQTT_v3_1_1_Message vt_conn_msg := mw_connect_credentials_payload(v_user_name_flag, v_password_flag)
 
-    log("[UT](send CONNECT): ", vt_conn_msg);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check username without password"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_08(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -353,7 +391,11 @@ group connectGroup
     var BIT1n v_password_flag := '1'B
     var template MQTT_v3_1_1_Message vt_conn_msg := mw_connect_credentials_payload(v_user_name_flag, v_password_flag)
 
-    log("[UT](send CONNECT): ", vt_conn_msg);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check for credentials"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_09(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -380,10 +422,6 @@ group connectGroup
           setverdict(pass, "Username and Passwort set correctly")
         }
       }
-      [] MQTT_PCO.receive {
-        log("Received unexpected PDU")
-        setverdict(fail, "received unexpected PDU")
-      }
     } // alt
   }
 
@@ -407,7 +445,11 @@ group connectGroup
     var template MQTT_v3_1_1_Message vt_conn_msg := m_connect_credentials_payload_lwt(v_client_id, v_will_topic, v_will_msg, v_user_name, v_password)
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT with PAYLOAD): ", vt_conn_msg.msg.connect_msg.payload);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check connect payload fields"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_10(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -417,8 +459,8 @@ group connectGroup
         log("[TC_MQTT_Client_CONNECT_10](received connect): ", v_received.msg.msg.connect_msg)
         setverdict(pass, "Order of fields in CONNECT Payload checked")
       }
-      [] MQTT_PCO.receive {
-        log("Received unexpected PDU")
+      [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+        log("Received unexpected PDU: ", v_received)
         // TODO: f_terminate_due_to_violation(v_conn)  // NOTE: not conformant response!! checking all fields would be still required here!
         setverdict(fail, "received unexpected PDU")
       }
@@ -435,7 +477,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT with valid CLIENT_ID): ");
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check if client ID is valid"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_11(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -452,7 +498,7 @@ group connectGroup
           else
           {
             f_terminate_due_to_violation(v_conn)
-            setverdict(fail, "Client ID", v_client_id.stringItem, " is invalid")
+            setverdict(fail, "Client ID ", v_client_id.stringItem, " is invalid")
           }
         }
         else
@@ -461,8 +507,8 @@ group connectGroup
           setverdict(fail, "No Client ID was given")
         }
       }
-      [] MQTT_PCO.receive {
-        log("Received unexpected PDU")
+      [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+        log("Received unexpected PDU: ", v_received)
         setverdict(fail, "received unexpected PDU")
       }
     } // alt
@@ -478,7 +524,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT without CLIENT_ID and Clean Session): ", mdw_connect_msg_clean_session);
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check if client ID is valid UTF-8"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_12(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -514,9 +564,6 @@ group connectGroup
         log("Received unexpected PDU: ", v_received)
         setverdict(fail, "received unexpected PDU")
       }
-      [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
-        setverdict(fail, "received unexpected ASP Event")
-      }
     }
   }
 
@@ -530,7 +577,11 @@ group connectGroup
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
 
-    log("[UT](send CONNECT with Will flag and a valid Will Topic):");
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check if the will topic is valid UTF-8"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_13(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -565,9 +616,6 @@ group connectGroup
         log("Received unexpected PDU: ", v_received)
         setverdict(fail, "received unexpected PDU")
       }
-      [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
-        setverdict(fail, "received unexpected ASP Event")
-      }
     }
   }
 
@@ -580,6 +628,11 @@ group connectGroup
   {
     var MQTTasp_Message v_received
     var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
+
+    // trigger the upper tester
+    var charstring v_free_text := "Please send CONNECT to check if the user name is valid UTF-8"
+    var template MQTT_UT_Message v_trigger := m_ut_client_connect_14(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
 
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
@@ -615,9 +668,6 @@ group connectGroup
         log("Received unexpected PDU: ", v_received)
         setverdict(fail, "received unexpected PDU")
       }
-      [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
-        setverdict(fail, "received unexpected ASP Event")
-      }
     }
   }
 } // group connectGroup
@@ -632,10 +682,18 @@ group publishGroup
   function f_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_MTC
   {
     var MQTTasp_Message v_received
-    var default v_connack_default := activate(a_mqtt_connack_default())
+    //var default v_connack_default := activate(a_mqtt_connack_default())
     var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
 
-    log("[UT](send PUBLISH packet with QoS 0):");
+    // Initial condition: trigger the upper tester to connect
+    var charstring v_tc := "TC_MQTT_Client_PUBLISH_01"
+    f_ut_initial_connect_01(v_tc)
+    
+    // trigger the upper tester to publish with QoS 0
+    var charstring v_free_text := "Please send PUBLISH with QoS 0"
+    var template MQTT_UT_Message v_trigger := m_ut_client_publish_01(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_publish) -> value v_received {
         var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(AT_MOST_ONCE_DELIVERY)
@@ -655,9 +713,12 @@ group publishGroup
           setverdict(fail, "received PUBLISH has wrong QoS")
         }
       }
+      [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+        setverdict(fail, "unexpected PDU")
+      }
     }
 
-    deactivate(v_connack_default)
+    //deactivate(v_connack_default)
   }
 
   /*
@@ -672,18 +733,26 @@ group publishGroup
     var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
     timer t_retransmission := PX_PUB_RETRANSMISSION_TIMER
 
-    log("[UT](send PUBLISH packet with QoS 1):");
+    // Initial condition: trigger the upper tester to connect
+    var charstring v_tc := "TC_MQTT_Client_PUBLISH_02"
+    f_ut_initial_connect_01(v_tc)
+    
+    // trigger the upper tester to publish with QoS 1
+    var charstring v_free_text := "Please send PUBLISH with QoS 1"
+    var template MQTT_UT_Message v_trigger := m_ut_client_publish_02(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_publish) -> value v_received {
         var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(AT_LEAST_ONCE_DELIVERY)
         if(match(v_received.msg.msg.publish.header, v_pub_qos))
         {
+          t_retransmission.start
           if(v_received.conn.client_state != Wait_publish)
           {
             // NOTE: drop the first publish packet and set client state to
             // dropping the packet should enforce re-transmission
             f_change_connection_client_state(v_received.conn, Wait_publish)
-            t_retransmission.start
             repeat;
           }
           else
@@ -724,7 +793,15 @@ group publishGroup
     var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
     timer t_retransmission := PX_PUB_RETRANSMISSION_TIMER
 
-    log("[UT](send PUBLISH packet with QoS 2):");
+        // Initial condition: trigger the upper tester to connect
+    var charstring v_tc := "TC_MQTT_Client_PUBLISH_03"
+    f_ut_initial_connect_01(v_tc)
+    
+    // trigger the upper tester to publish with QoS 1
+    var charstring v_free_text := "Please send PUBLISH with QoS 2"
+    var template MQTT_UT_Message v_trigger := m_ut_client_publish_03(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+    
     alt {
       [] MQTT_PCO.receive(vt_publish) -> value v_received {
         var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(EXACTLY_ONE_DELIVERY)

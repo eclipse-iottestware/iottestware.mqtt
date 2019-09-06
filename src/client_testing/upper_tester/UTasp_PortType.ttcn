@@ -1,0 +1,80 @@
+/*******************************************************************************
+ * Copyright (c) 2019 Relayr GmbH
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Alexander Kaiser
+ *   Sascha Hackel
+ *   Axel Rennoch
+ *******************************************************************************/
+module UTasp_PortType {
+
+  import from UTasp_Types all;
+  import from UT_Types all;
+  import from MQTT_TypesAndValues_Common all;
+  import from IPL4asp_PortType all;
+  import from IPL4asp_Types all;
+
+  // Dual faced port for Upper Tester
+  type port UTasp_PT message {
+    out charstring
+    in UT_ASP_Event
+    inout UTasp_Message
+  } with {
+    extension "user IPL4asp_PT
+    out
+    (
+      UTasp_Message -> ASP_SendTo : function(f_enc_upper_tester);
+      charstring    -> ASP_Send   : function(f_enc_ut_asp_send)
+    )
+    in
+    (
+      ASP_RecvFrom              -> UTasp_Message : function(f_dec_upper_tester);
+      ASP_Event                 -> UT_ASP_Event  : function(f_dec_ut_asp_event);
+      ASP_ConnId_ReadyToRelease -> -             : discard
+    )"
+  }
+
+  private function f_enc_upper_tester(in UTasp_Message p_in, out ASP_SendTo p_out) return integer
+  {
+    log("[UT](Encode UT Message): ", p_in)
+    var octetstring v_encoded := f_encode_ut(p_in.msg)
+
+    p_out.connId := p_in.conn.id;
+    p_out.remName := p_in.conn.remote_name;
+    p_out.remPort := p_in.conn.remote_port;
+    p_out.proto := {tcp := {}};
+    p_out.msg := v_encoded;
+
+    return 0;
+  } with {extension "prototype(backtrack)" }
+
+  private function f_dec_upper_tester(in ASP_RecvFrom p_in, out UTasp_Message p_out) return integer
+  {
+    log("[UT](Decode ASP_RecvFrom): ", p_in);
+    var MQTT_UT_Message v_ut_msg := f_decode_ut(p_in.msg)
+
+    p_out.msg := v_ut_msg;
+    p_out.conn.id := p_in.connId;
+    p_out.conn.remote_name := p_in.remName;
+    p_out.conn.remote_port := p_in.remPort;
+    p_out.conn.tcp_state := Connected;
+
+    return 0;
+  } with {extension "prototype(backtrack)" }
+
+  function f_enc_ut_asp_send(in charstring p_in, out ASP_Send p_out) return integer
+  {
+    return 0;
+  } with {extension "prototype(backtrack)" }
+
+  function f_dec_ut_asp_event(in ASP_Event p_in, out UT_ASP_Event p_out) return integer
+  {
+    p_out := p_in
+
+    return 0;
+  } with {extension "prototype(backtrack)" }
+}
