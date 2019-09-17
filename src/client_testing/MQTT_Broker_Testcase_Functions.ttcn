@@ -58,7 +58,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check Header flags"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_01(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -93,7 +93,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check Protocol name"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_02(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -133,7 +133,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check Protocol level"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_03(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -166,7 +166,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check Reserved flag"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_04(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -200,7 +200,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check LWT flag"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_05(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -244,8 +244,8 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check LWT flags"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_06(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
-    
+
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -254,7 +254,7 @@ group connectGroup
         log("[TC_MQTT_Client_CONNECT_06](received connect): ", v_received.msg.msg.connect_msg)
 
         if(match(v_received.msg, mw_connect_will_flag)) {
-          
+
           // pre set to pass and decrease to fail if some missbehavious found
           setverdict(pass, "Will flag and Will QoS checked")
 
@@ -308,7 +308,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check empty credentials"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_07(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -346,7 +346,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check username without password"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_08(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -395,7 +395,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check for credentials"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_09(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -449,7 +449,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check connect payload fields"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_10(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -481,7 +481,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check if client ID is valid"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_11(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -528,7 +528,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check if client ID is valid UTF-8"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_12(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -581,7 +581,7 @@ group connectGroup
     var charstring v_free_text := "Please send CONNECT to check if the will topic is valid UTF-8"
     var template MQTT_UT_Message v_trigger := m_ut_client_connect_13(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
         var MQTT_Connection v_conn := v_received.conn
@@ -686,14 +686,13 @@ group publishGroup
     var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
 
     // Initial condition: trigger the upper tester to connect
-    var charstring v_tc := "TC_MQTT_Client_PUBLISH_01"
-    f_ut_initial_connect_01(v_tc)
-    
+    f_ut_initial_connect_01()
+
     // trigger the upper tester to publish with QoS 0
     var charstring v_free_text := "Please send PUBLISH with QoS 0"
     var template MQTT_UT_Message v_trigger := m_ut_client_publish_01(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_publish) -> value v_received {
         var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(AT_MOST_ONCE_DELIVERY)
@@ -734,14 +733,13 @@ group publishGroup
     timer t_retransmission := PX_PUB_RETRANSMISSION_TIMER
 
     // Initial condition: trigger the upper tester to connect
-    var charstring v_tc := "TC_MQTT_Client_PUBLISH_02"
-    f_ut_initial_connect_01(v_tc)
-    
+    f_ut_initial_connect_01()
+
     // trigger the upper tester to publish with QoS 1
     var charstring v_free_text := "Please send PUBLISH with QoS 1"
     var template MQTT_UT_Message v_trigger := m_ut_client_publish_02(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_publish) -> value v_received {
         var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(AT_LEAST_ONCE_DELIVERY)
@@ -793,15 +791,14 @@ group publishGroup
     var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
     timer t_retransmission := PX_PUB_RETRANSMISSION_TIMER
 
-        // Initial condition: trigger the upper tester to connect
-    var charstring v_tc := "TC_MQTT_Client_PUBLISH_03"
-    f_ut_initial_connect_01(v_tc)
-    
+    // Initial condition: trigger the upper tester to connect
+    f_ut_initial_connect_01()
+
     // trigger the upper tester to publish with QoS 1
     var charstring v_free_text := "Please send PUBLISH with QoS 2"
     var template MQTT_UT_Message v_trigger := m_ut_client_publish_03(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
     f_ut_trigger(v_trigger)
-    
+
     alt {
       [] MQTT_PCO.receive(vt_publish) -> value v_received {
         var template MQTT_v3_1_1_PublishHeader v_pub_qos := mdw_publish_header_qos(EXACTLY_ONE_DELIVERY)
@@ -834,6 +831,74 @@ group publishGroup
       }
       [] t_retransmission.timeout {
         setverdict(fail, "no retransmission of PUBLISH with DUP 1")
+      }
+    }
+
+    deactivate(v_connack_default)
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_04() runs on MQTT_Broker_MTC
+  {
+    var MQTTasp_Message v_received
+    var default v_connack_default := activate(a_mqtt_connack_default())
+    var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
+
+    // Initial condition: trigger the upper tester to connect
+    f_ut_initial_connect_01()
+
+    // trigger the upper tester to publish with QoS 1
+    var charstring v_free_text := "Please send PUBLISH with a valid topic name"
+    var template MQTT_UT_Message v_trigger := m_ut_client_publish_04(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+
+    alt {
+      [] MQTT_PCO.receive(vt_publish) -> value v_received {
+        var UTF8EncodedString v_topic_name := f_utf8_from_charstring(v_received.msg.msg.publish.topic_name)
+        if(f_is_valid_utf8(v_topic_name))
+        {
+          setverdict(pass, "Publish topic name is valid UTF-8")
+        } else {
+          setverdict(fail, "Publish topic name is invalid UTF-8")
+        }
+      }
+    }
+
+    deactivate(v_connack_default)
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_05() runs on MQTT_Broker_MTC
+  {
+    var MQTTasp_Message v_received
+    var default v_connack_default := activate(a_mqtt_connack_default())
+    var template MQTTasp_Message vt_publish := mw_mqtt_message(mw_publish_all)
+
+    // Initial condition: trigger the upper tester to connect
+    f_ut_initial_connect_01()
+
+    // trigger the upper tester to publish with QoS 1
+    var charstring v_free_text := "Please send PUBLISH with a valid topic name"
+    var template MQTT_UT_Message v_trigger := m_ut_client_publish_05(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text)
+    f_ut_trigger(v_trigger)
+
+    alt {
+      [] MQTT_PCO.receive(vt_publish) -> value v_received {
+        var UTF8EncodedString v_topic_name := f_utf8_from_charstring(v_received.msg.msg.publish.topic_name)
+        if(f_topic_valid(v_topic_name))
+        {
+          setverdict(pass, "Publish topic name is valid")
+        } else {
+          setverdict(fail, "Publish topic name is invalid")
+        }
       }
     }
 

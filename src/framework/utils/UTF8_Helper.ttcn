@@ -17,7 +17,7 @@ module UTF8_Helper {
 
   function f_utf8_from_charstring(universal charstring p_in) return UTF8EncodedString
   {
-    return { stringLength := lengthof(p_in), stringItem := p_in }
+    return { stringLength := lengthof(unichar2oct(p_in, "UTF-8")), stringItem := p_in }
   }
 
   function f_octstring_from_charstring(universal charstring p_in) return OctStringWithLength
@@ -36,10 +36,13 @@ module UTF8_Helper {
     const integer c_high_surrogate := 55551; // decimal code point for U+DFFF
     const integer c_null_character := 0;     // null character U+0000
 
-    // gives the number of encoded (UTF-8) characters, whereas p_in.stringLength contains the number of octets
-    var integer v_string_length := lengthof(p_in.stringItem);
     var boolean v_return := true
 
+    // check the surrogates explicitly
+    // gives the number of encoded (UTF-8) characters, whereas p_in.stringLength contains the number of octets
+    var integer v_string_length := lengthof(p_in.stringItem);
+
+    // Note: is this checking enough?
     for(var integer i := 0; i < v_string_length; i := i + 1)
     {
       // get one single UTF-8 char from string
@@ -57,6 +60,7 @@ module UTF8_Helper {
 
     return v_return
   }
+
 
   /*
    * Function returns a template (ft_) of utf8 encodable charstring

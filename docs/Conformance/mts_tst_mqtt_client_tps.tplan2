@@ -530,8 +530,7 @@ Package mts_tst {
         Expected behaviour
         ensure that {
           when {
-            the IUT entity is triggered to send a PUBLISH message containing
-                topic_name corresponding to PX_PUBLISH_TOPIC;
+            the IUT entity is triggered to send a PUBLISH message
           } then {
             the IUT entity sends a PUBLISH message containing
                 topic_name not corresponding to TOPIC_NAME_INVALID_UTF8;    // valid topic name MUST contain only valid UTF-8
@@ -557,8 +556,7 @@ Package mts_tst {
         Expected behaviour
         ensure that {
           when {
-            the IUT entity is triggered to send a PUBLISH message containing
-                topic_name corresponding to PX_PUBLISH_TOPIC;
+            the IUT entity is triggered to send a PUBLISH message
           } then {
             the IUT entity sends a PUBLISH message containing
                 topic_name corresponding to TOPIC_NAME_VALID;   // valid topic name MUST NOT contain wildcards
@@ -591,7 +589,7 @@ Package mts_tst {
             the IUT entity sends a SUBSCRIBE message containing
                 topic_filter corresponding to PX_PUBLISH_TOPIC,
                 requested_qos corresponding to AT_MOST_ONCE;
-                
+
             and
             the IUT entity receives a PUBLISH message containing
                 header containing
@@ -600,7 +598,7 @@ Package mts_tst {
             ;
             and
             the IUT entity sends no response message
-                
+
           }
         }
     }
@@ -630,7 +628,7 @@ Package mts_tst {
             the IUT entity sends a SUBSCRIBE message containing
                 topic_filter corresponding to PX_PUBLISH_TOPIC,
                 requested_qos corresponding to AT_LEAST_ONCE;
-                
+
             and
             the IUT entity receives a PUBLISH message containing
                 header containing
@@ -670,7 +668,7 @@ Package mts_tst {
             the IUT entity sends a SUBSCRIBE message containing
                 topic_filter corresponding to PX_PUBLISH_TOPIC,
                 requested_qos corresponding to EXACTLY_ONCE;
-                
+
             and
             the IUT entity receives a PUBLISH message containing
                 header containing

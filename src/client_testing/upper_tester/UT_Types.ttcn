@@ -14,7 +14,7 @@ module UT_Types
 {
     // not needed, redefine duplicate types here directly to control the encoding
     //import from MQTT_v3_1_1_Types all;
-    
+
 
     external function f_encode_ut(in MQTT_UT_Message msg) return octetstring
     with
@@ -31,6 +31,9 @@ module UT_Types
       extension "errorbehavior(ALL:ERROR)"
     }
 
+    // used to signal free choice for a string
+    const universal charstring WILDCARD := "*"
+
     // redefine the QoS type because @MQTT_v3_1_1_Types.QoS cannot be encoded as JSON
     type enumerated QoS_UT
     {
@@ -42,7 +45,7 @@ module UT_Types
       //variant "JSON: as number";
       //encode "JSON"
     //}
-    
+
     type integer RETURN_CODE (0..255);
 
     type enumerated MQTT_ControlPacket

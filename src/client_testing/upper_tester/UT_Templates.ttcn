@@ -14,8 +14,8 @@ module UT_Templates {
     import from UTasp_Types all;
     import from UT_Types all;
     import from MQTT_Broker_Pixits all;
-  
-    template MQTT_UT_Message m_ut_client_connect_pre_condition(charstring p_host, integer p_port_num, charstring p_free_text, charstring p_test_case) :=
+
+    template MQTT_UT_Message m_ut_client_connect_pre_condition(charstring p_host, integer p_port_num, charstring p_free_text) :=
     {
       msg_type := CONNECT,
       msg := {
@@ -31,9 +31,9 @@ module UT_Templates {
         }
       },
       free_text := p_free_text,
-      test_case := p_test_case
+      test_case := testcasename()
     }
-    
+
     template MQTT_UT_Message m_ut_client_connect_01(charstring p_host, integer p_port_num, charstring p_free_text) :=
     {
       msg_type := CONNECT,
@@ -50,27 +50,21 @@ module UT_Templates {
         }
       },
       free_text := p_free_text,
-      test_case := "TC_MQTT_Client_CONNECT_01"
+      test_case := testcasename()
     } // TODO: how to omit optional fields automatically?
-    
+
     // technically the same as m_ut_client_connect_01... used should be used only in f_MQTT_Client_CONNECT_02
     template MQTT_UT_Message m_ut_client_connect_02(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_01 := {
-      test_case := "TC_MQTT_Client_CONNECT_02"
-    }
-    
+    modifies m_ut_client_connect_01 := { }
+
     template MQTT_UT_Message m_ut_client_connect_03(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_01 := {
-      test_case := "TC_MQTT_Client_CONNECT_03"
-    }
-    
+    modifies m_ut_client_connect_01 := { }
+
     template MQTT_UT_Message m_ut_client_connect_04(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_01 := {
-      test_case := "TC_MQTT_Client_CONNECT_04"
-    }
-    
+    modifies m_ut_client_connect_01 := { }
+
     template MQTT_UT_Message m_ut_client_connect_05(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_01 := 
+    modifies m_ut_client_connect_01 :=
     {
       msg := {
         connect_msg := {
@@ -81,21 +75,15 @@ module UT_Templates {
             will_message := PX_WILL_MESSAGE
           }
         }
-      },
-      test_case := "TC_MQTT_Client_CONNECT_05"
+      }
     }
-    
+
     template MQTT_UT_Message m_ut_client_connect_06(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_05 := 
-    {
-      test_case := "TC_MQTT_Client_CONNECT_06"
-    }
-    
+    modifies m_ut_client_connect_05 := { }
+
     template MQTT_UT_Message m_ut_client_connect_07(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_01 := {
-      test_case := "TC_MQTT_Client_CONNECT_07"
-    }
-    
+    modifies m_ut_client_connect_01 := { }
+
     template MQTT_UT_Message m_ut_client_connect_08(charstring p_host, integer p_port_num, charstring p_free_text)
     modifies m_ut_client_connect_01 := {
       msg := {
@@ -103,20 +91,18 @@ module UT_Templates {
           user_name := PX_USER_NAME,
           password := omit
         }
-      },
-      test_case := "TC_MQTT_Client_CONNECT_08"
+      }
     }
-    
+
     template MQTT_UT_Message m_ut_client_connect_09(charstring p_host, integer p_port_num, charstring p_free_text)
     modifies m_ut_client_connect_08 := {
       msg := {
         connect_msg := {
           password := unichar2oct(PX_PASSWORD)
         }
-      },
-      test_case := "TC_MQTT_Client_CONNECT_09"
+      }
     }
-    
+
     template MQTT_UT_Message m_ut_client_connect_10(charstring p_host, integer p_port_num, charstring p_free_text)
     modifies m_ut_client_connect_01 := {
       msg := {
@@ -131,43 +117,36 @@ module UT_Templates {
           user_name := PX_USER_NAME,
           password := unichar2oct(PX_PASSWORD)
         }
-      },
-      test_case := "TC_MQTT_Client_CONNECT_10"
+      }
     }
-    
+
     template MQTT_UT_Message m_ut_client_connect_11(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_01 := 
+    modifies m_ut_client_connect_01 :=
     {
       msg := {
         connect_msg := {
           clean_session := false
         }
-      },
-      test_case := "TC_MQTT_Client_CONNECT_11"
+      }
     }
-    
+
     template MQTT_UT_Message m_ut_client_connect_12(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_01 := 
+    modifies m_ut_client_connect_01 :=
     {
       msg := {
         connect_msg := {
           clean_session := true,
           client_identifier := omit
         }
-      },
-      test_case := "TC_MQTT_Client_CONNECT_12"
+      }
     }
-    
+
     template MQTT_UT_Message m_ut_client_connect_13(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_05 := {
-      test_case := "TC_MQTT_Client_CONNECT_13"
-    }
-    
+    modifies m_ut_client_connect_05 := { }
+
     template MQTT_UT_Message m_ut_client_connect_14(charstring p_host, integer p_port_num, charstring p_free_text)
-    modifies m_ut_client_connect_08 := {
-      test_case := "TC_MQTT_Client_CONNECT_14"
-    }
-    
+    modifies m_ut_client_connect_08 := { }
+
     template MQTT_UT_Message m_ut_client_publish_01(charstring p_host, integer p_port_num, charstring p_free_text) :=
     {
       msg_type := PUBLISH,
@@ -180,28 +159,38 @@ module UT_Templates {
         }
       },
       free_text := p_free_text,
-      test_case := "TC_MQTT_Client_PUBLISH_01"
+      test_case := testcasename()
     }
-    
+
     template MQTT_UT_Message m_ut_client_publish_02(charstring p_host, integer p_port_num, charstring p_free_text)
     modifies m_ut_client_publish_01 := {
       msg := {
         publish := {
           qos_level := AT_LEAST_ONCE_DELIVERY
         }
-      },
-      test_case := "TC_MQTT_Client_PUBLISH_02"
+      }
     }
-    
+
     template MQTT_UT_Message m_ut_client_publish_03(charstring p_host, integer p_port_num, charstring p_free_text)
     modifies m_ut_client_publish_01 := {
       msg := {
         publish := {
           qos_level := EXACTLY_ONE_DELIVERY
         }
-      },
-      test_case := "TC_MQTT_Client_PUBLISH_03"
+      }
     }
+
+    template MQTT_UT_Message m_ut_client_publish_04(charstring p_host, integer p_port_num, charstring p_free_text)
+    modifies m_ut_client_publish_01 := {
+      msg := {
+        publish := {
+          topic_name := WILDCARD
+        }
+      }
+    }
+
+    template MQTT_UT_Message m_ut_client_publish_05(charstring p_host, integer p_port_num, charstring p_free_text)
+    modifies m_ut_client_publish_04 := {}
 
     template UTasp_Message m_ut_message(template MQTT_UT_Message p_msg, UT_Connection p_conn) :=
     {
