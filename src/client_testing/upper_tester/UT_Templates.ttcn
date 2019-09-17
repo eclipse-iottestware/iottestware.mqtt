@@ -15,6 +15,7 @@ module UT_Templates {
     import from UT_Types all;
     import from MQTT_Broker_Pixits all;
 
+    /* templates for initial conditions */
     template MQTT_UT_Message m_ut_client_connect_pre_condition(charstring p_host, integer p_port_num, charstring p_free_text) :=
     {
       msg_type := CONNECT,
@@ -34,6 +35,21 @@ module UT_Templates {
       test_case := testcasename()
     }
 
+    template MQTT_UT_Message m_ut_client_subscribe_pre_condition(charstring p_free_text, QoS_UT p_qos) :=
+    {
+      msg_type := SUBSCRIBE,
+      msg := {
+        subscribe := {
+          payload := {
+            { topic_filter := PX_PUBLISH_TOPIC, requested_qos := p_qos }
+          }
+        }
+      },
+      free_text := p_free_text,
+      test_case := testcasename()
+    }
+
+    /* testcase specific templates */
     template MQTT_UT_Message m_ut_client_connect_01(charstring p_host, integer p_port_num, charstring p_free_text) :=
     {
       msg_type := CONNECT,

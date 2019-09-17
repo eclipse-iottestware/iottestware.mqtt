@@ -12,6 +12,7 @@ import from UTasp_Types all;
 
 import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
+import from MQTT_Templates_SUBSCRIBE all;
 
 function f_ut_trigger(template MQTT_UT_Message p_trigger_msg) runs on MQTT_Broker_MTC
 {
@@ -31,20 +32,43 @@ function f_ut_initial_connect_01() runs on MQTT_Broker_MTC
 {
   if (PX_USE_UPPER_TESTER)
   {
-    var UT_Connection v_conn := vl_ut_connections[vl_ut_idx]
-    var charstring v_free_text := "Initial condition"
-    var charstring v_test_case_name := testcasename()
-    var charstring v_tc := "Init " & v_test_case_name
-    var template UTasp_Message v_asp_msg := m_ut_message(m_ut_client_connect_pre_condition(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text), v_conn)
+    var UT_Connection v_ut_conn := vl_ut_connections[vl_ut_idx]
+    var charstring v_free_text := "Initial condition: connect"
+    var template UTasp_Message v_asp_msg := m_ut_message(m_ut_client_connect_pre_condition(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text), v_ut_conn)
     UT_PCO.send(valueof(v_asp_msg));
 
     var template MQTTasp_Message vt_connect_valid := mw_mqtt_message(mdw_connect_valid_mqtt_x);
     var MQTTasp_Message v_received;
     alt {
       [] MQTT_PCO.receive(vt_connect_valid) -> value v_received {
-        var MQTT_Connection v_conn_2 := v_received.conn
-        f_add_connection(v_conn_2)  // add connection to brokers list
-        f_send_connack(v_conn_2, 0)
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn)  // add connection to brokers list
+        f_send_connack(v_conn, 0)
+        break;
+      }
+    }
+  }
+}
+
+/*
+* @desc trigger to subscribe
+*/
+function f_ut_subscribe(QoS_UT p_qos := AT_MOST_ONCE_DELIVERY, out MQTT_Connection p_conn) runs on MQTT_Broker_MTC
+{
+  if (PX_USE_UPPER_TESTER)
+  {
+    var UT_Connection v_ut_conn := vl_ut_connections[vl_ut_idx]
+    var charstring v_free_text := "Initial condition: subscribe"
+    var template UTasp_Message v_asp_msg := m_ut_message(m_ut_client_subscribe_pre_condition(v_free_text, p_qos), v_ut_conn)
+    UT_PCO.send(valueof(v_asp_msg));
+
+    var template MQTTasp_Message vt_subscribe_valid := mw_mqtt_message(mw_subscribe_valid)
+    var MQTTasp_Message v_received
+    alt {
+      [] MQTT_PCO.receive(vt_subscribe_valid) -> value v_received {
+        p_conn := v_received.conn
+        var integer v_packet_id := v_received.msg.msg.subscribe.packet_identifier
+        f_send_suback(p_conn, v_packet_id, {0})
         break;
       }
     }

@@ -312,7 +312,7 @@ Package mts_tst {
           when {
               the IUT entity is triggered to send a CONNECT message containing
               payload containing
-                client_identifier corresponding to VALID_CLIENT_ID;
+                client_identifier corresponding to VALID_CLIENT_ID;   // TODO: required to trigger a concrete Client ID?
               ;
           } then {
               // TODO: sufficient for [MQTT-3.1.3-4] ?
@@ -371,7 +371,7 @@ Package mts_tst {
                 will_flag indicating value '1'B;
               ,
               payload containing
-                will_topic corresponding to PX_WILL_TOPIC;
+                will_topic corresponding to PX_WILL_TOPIC;    // TODO: required to trigger a concrete topic?
               ;
           } then {
               // TODO: sufficient for [MQTT-3.1.3-10] ?
@@ -404,7 +404,7 @@ Package mts_tst {
                 user_name_flag indicating value '1'B;
               ,
               payload containing
-                user_name corresponding to PX_MQTT_USER_NAME;
+                user_name corresponding to PX_MQTT_USER_NAME;     // TODO: required to trigger a concrete username?
               ;
           } then {
               // TODO: sufficient for [MQTT-3.1.3-11] ?
@@ -577,28 +577,19 @@ Package mts_tst {
         Initial conditions
         with {
             the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+            and
+            the IUT entity subscribed the PX_PUBLISH_TOPIC on the TEST_SYSTEM entity
         }
 
         Expected behaviour
         ensure that {
           when {
-            the IUT entity is triggered to send a SUBSCRIBE message containing
-                topic_filter corresponding to PX_PUBLISH_TOPIC,
-                requested_qos corresponding to AT_MOST_ONCE;
-          } then {
-            the IUT entity sends a SUBSCRIBE message containing
-                topic_filter corresponding to PX_PUBLISH_TOPIC,
-                requested_qos corresponding to AT_MOST_ONCE;
-
-            and
             the IUT entity receives a PUBLISH message containing
                 header containing
                     qos_level corresponding to AT_MOST_ONCE,
                 topic_name corresponding to PX_PUBLISH_TOPIC;
-            ;
-            and
+          } then {
             the IUT entity sends no response message
-
           }
         }
     }
@@ -615,29 +606,21 @@ Package mts_tst {
 
         Initial conditions
         with {
-            the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+          the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+          and
+          the IUT entity subscribed the PX_PUBLISH_TOPIC on the TEST_SYSTEM entity
         }
 
         Expected behaviour
         ensure that {
           when {
-            the IUT entity is triggered to send a SUBSCRIBE message containing
-                topic_filter corresponding to PX_PUBLISH_TOPIC,
-                requested_qos corresponding to AT_LEAST_ONCE;
-          } then {
-            the IUT entity sends a SUBSCRIBE message containing
-                topic_filter corresponding to PX_PUBLISH_TOPIC,
-                requested_qos corresponding to AT_LEAST_ONCE;
-
-            and
             the IUT entity receives a PUBLISH message containing
                 header containing
                     qos_level corresponding to AT_LEAST_ONCE,
                 packet_identifier corresponding to PACKET_ID,
                 topic_name corresponding to PX_PUBLISH_TOPIC;
-            ;
-            and
-            the IUT entity sends no PUBACK message containing
+          } then {
+            the IUT entity sends a PUBACK message containing
                 packet_identifier corresponding to PACKET_ID;
           }
         }
@@ -655,35 +638,21 @@ Package mts_tst {
 
         Initial conditions
         with {
-            the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+          the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+          and
+          the IUT entity subscribed the PX_PUBLISH_TOPIC on the TEST_SYSTEM entity
         }
 
         Expected behaviour
         ensure that {
           when {
-            the IUT entity is triggered to send a SUBSCRIBE message containing
-                topic_filter corresponding to PX_PUBLISH_TOPIC,
-                requested_qos corresponding to EXACTLY_ONCE;
-          } then {
-            the IUT entity sends a SUBSCRIBE message containing
-                topic_filter corresponding to PX_PUBLISH_TOPIC,
-                requested_qos corresponding to EXACTLY_ONCE;
-
-            and
             the IUT entity receives a PUBLISH message containing
                 header containing
                     qos_level corresponding to EXACTLY_ONCE,
                 packet_identifier corresponding to PACKET_ID,
                 topic_name corresponding to PX_PUBLISH_TOPIC;
-            ;
-            and
-            the IUT entity sends no PUBREC message containing
-                packet_identifier corresponding to PACKET_ID;
-            and
-            the IUT entity receives a PUBREL message containing
-                packet_identifier corresponding to PACKET_ID;
-            and
-            the IUT entity sends a PUBCOMP message containing
+          } then {
+            the IUT entity sends a PUBREC message containing
                 packet_identifier corresponding to PACKET_ID;
           }
         }

@@ -24,12 +24,12 @@ module MQTT_Broker_Pixits {
     * @desc the port on which to wait for incoming MQTT connections
     */
    modulepar IPL4_PortRange PX_LISTEN_PORT := 1883;
-   
+
    /*
     * @desc define if upper tester should be used
     */
    modulepar boolean PX_USE_UPPER_TESTER := true
-   
+
    /*
     * @desc the hostname / ip address of the Upper Tester
     * The Upper Tester on the SUT must listen on: <PX_UPPER_TESTER_HOSTNAME>:<PX_UPPER_TESTER_PORT>
@@ -55,6 +55,11 @@ module MQTT_Broker_Pixits {
     * @desc the password which the SUT will use to authenticate
     */
    modulepar universal charstring PX_PASSWORD := "SUT_PASSWORD"
+
+   /*
+    * @desc TODO
+    */
+   modulepar universal charstring PX_PUBLISH_TOPIC := "testware/publish/topic"
 
    /*
     * @desc TODO
@@ -95,6 +100,11 @@ module MQTT_Broker_Pixits {
     * @remark this value is not defined within the MQTT specification
     */
    modulepar float PX_PUB_RETRANSMISSION_TIMER := 5.0;
+
+   /*
+    * @desc max duration to wait for a "NO RESPONSE"
+    */
+   modulepar float PX_AWAIT_NO_RESPONSE_TIMER := 5.0
 
    /**********************************************************************
     * configuration of optional behaviors

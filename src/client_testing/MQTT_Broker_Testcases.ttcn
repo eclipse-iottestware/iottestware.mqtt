@@ -279,7 +279,7 @@ group connectGroup
   testcase TC_MQTT_Client_PUBLISH_06() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
-      //f_MQTT_Client_PUBLISH_06()
+      f_MQTT_Client_PUBLISH_06()
     }
     f_clear_broker();
   }
@@ -292,7 +292,7 @@ group connectGroup
   testcase TC_MQTT_Client_PUBLISH_07() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
-      //f_MQTT_Client_PUBLISH_07()
+      f_MQTT_Client_PUBLISH_07()
     }
     f_clear_broker();
   }
@@ -305,7 +305,7 @@ group connectGroup
   testcase TC_MQTT_Client_PUBLISH_08() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
-      //f_MQTT_Client_PUBLISH_08()
+      f_MQTT_Client_PUBLISH_08()
     }
     f_clear_broker();
   }

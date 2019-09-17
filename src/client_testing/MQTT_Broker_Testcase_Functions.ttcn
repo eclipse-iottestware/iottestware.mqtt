@@ -33,6 +33,8 @@ import from MQTT_v3_1_1_Types all;
 import from MQTT_Templates_MQTTasp all;
 import from MQTT_Templates_CONNECT all;
 import from MQTT_Templates_PUBLISH all;
+import from MQTT_Templates_PUBACK all;
+import from MQTT_Templates_PUBREC all;
 
 // Upper Tester
 import from UT_Types all;
@@ -904,30 +906,133 @@ group publishGroup
 
     deactivate(v_connack_default)
   }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_06() runs on MQTT_Broker_MTC
+  {
+    var MQTTasp_Message v_received
+    var MQTT_Connection v_conn
+    var default v_connack_default := activate(a_mqtt_connack_default())
+
+    // Initial condition: trigger the upper tester to connect and subscribe
+    f_ut_initial_connect_01()
+    f_ut_subscribe(AT_MOST_ONCE_DELIVERY, v_conn)
+
+    if(isbound(v_conn))
+    {
+      // expected bahaviour
+      var octetstring v_payload := '0123456789ABCDEF'O
+      var UTF8EncodedString v_topic := f_utf8_from_charstring(PX_PUBLISH_TOPIC)
+      var MQTT_v3_1_1_Publish v_publish := valueof(t_publish_packet_qos_0(valueof(t_publish_header), v_topic, v_payload))
+      f_send_publish(v_conn, v_publish)
+
+      timer t_timer := PX_AWAIT_NO_RESPONSE_TIMER
+      t_timer.start
+
+      alt {
+        [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+          setverdict(fail, "Received unexpected message ", v_received)
+        }
+        [] t_timer.timeout {
+          setverdict(pass, "IUT correctly send no response")
+        }
+      }
+    } else {
+      setverdict(inconc, "IUT did not subscribe")
+    }
+
+    deactivate(v_connack_default)
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_07() runs on MQTT_Broker_MTC
+  {
+    var MQTTasp_Message v_received
+    var MQTT_Connection v_conn
+    var default v_connack_default := activate(a_mqtt_connack_default())
+
+    // Initial condition: trigger the upper tester to connect and subscribe
+    f_ut_initial_connect_01()
+    f_ut_subscribe(AT_MOST_ONCE_DELIVERY, v_conn)
+
+    if(isbound(v_conn))
+    {
+      // expected bahaviour
+      var octetstring v_payload := '0123456789ABCDEF'O
+      var UTF8EncodedString v_topic := f_utf8_from_charstring(PX_PUBLISH_TOPIC)
+      var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(p_qos := AT_LEAST_ONCE_DELIVERY))
+      var integer v_packet_id := 123
+
+      var MQTT_v3_1_1_Publish v_publish := valueof(t_publish_packet(v_pub_header, v_packet_id, v_topic, v_payload))
+      var template MQTT_v3_1_1_Message v_message := {msg := { publish := v_publish }}
+      var template MQTTasp_Message v_expect := mw_mqtt_message(mw_puback_packet_id(v_packet_id))
+
+      f_send_mqtt(v_conn, v_message)
+      alt {
+        [] MQTT_PCO.receive(v_expect) -> value v_received {
+          setverdict(pass, "IUT respond correctly with PUBACK")
+        }
+        [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+          setverdict(fail, "IUT respond with unexpected message ", v_received)
+        }
+      }
+    } else {
+      setverdict(inconc, "IUT did not subscribe")
+    }
+
+    deactivate(v_connack_default)
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference TODO
+  */
+  function f_MQTT_Client_PUBLISH_08() runs on MQTT_Broker_MTC
+  {
+    var MQTTasp_Message v_received
+    var MQTT_Connection v_conn
+    var default v_connack_default := activate(a_mqtt_connack_default())
+
+    // Initial condition: trigger the upper tester to connect and subscribe
+    f_ut_initial_connect_01()
+    f_ut_subscribe(AT_MOST_ONCE_DELIVERY, v_conn)
+
+    if(isbound(v_conn))
+    {
+      // expected bahaviour
+      var octetstring v_payload := '0123456789ABCDEF'O
+      var UTF8EncodedString v_topic := f_utf8_from_charstring(PX_PUBLISH_TOPIC)
+      var MQTT_v3_1_1_PublishHeader v_pub_header := valueof(t_publish_header(p_qos := EXACTLY_ONE_DELIVERY))
+      var integer v_packet_id := 123
+
+      var MQTT_v3_1_1_Publish v_publish := valueof(t_publish_packet(v_pub_header, v_packet_id, v_topic, v_payload))
+      var template MQTT_v3_1_1_Message v_message := {msg := { publish := v_publish }}
+      var template MQTTasp_Message v_expect := mw_mqtt_message(mw_pubrec_packet_id(v_packet_id))
+
+      f_send_mqtt(v_conn, v_message)
+      alt {
+        [] MQTT_PCO.receive(v_expect) -> value v_received {
+          setverdict(pass, "IUT respond correctly with PUBREC")
+        }
+        [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+          setverdict(fail, "IUT respond with unexpected message ", v_received)
+        }
+      }
+    } else {
+      setverdict(inconc, "IUT did not subscribe")
+    }
+
+    deactivate(v_connack_default)
+  }
 } // group publishGroup
 
 } // module
-
-
-/*
-* @purpose TODO
-*
-* @reference TODO
-*
-function f_MQTT_Client_TEMPLATE() runs on MQTT_Broker_MTC
-{
-  var MQTTasp_Message v_received
-  var template MQTTasp_Message vt_connect_all := mw_mqtt_message(mw_connect);
-
-  alt {
-    [] MQTT_PCO.receive(vt_connect_all) -> value v_received {
-      var MQTT_Connection v_conn := v_received.conn
-      f_add_connection(v_conn);
-      // TODO:
-    }
-    [] MQTT_PCO.receive(?) -> value v_received{
-      log("Received unexpected PDU: ", v_received)
-      setverdict(fail, "received unexpected PDU")
-    }
-  }
-}*/
