@@ -751,23 +751,29 @@ group publishGroup
   }
 
   /*
-  * @purpose
-  *
-  * @reference [MQTT-4.7.3-3]
-  */
-  testcase TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client
-  {
-    if(f_init())
-    {
-      f_TC_MQTT_BROKER_PUBLISH_008();
-    }
-    f_cleanUp();
-  }
-
-  /*
   * @purpose In the QoS 0 delivery protocol, the Sender MUST send a PUBLISH packet with QoS=0, DUP=0.
   *
   * @reference [MQTT-4.3.1-1]
+  */
+  testcase TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0))
+    {
+      f_TC_MQTT_BROKER_PUBLISH_008()
+    }
+
+    f_clear_client()
+
+    map(self:MQTT_PCO, system:MQTT_PCO)
+  }
+
+  /*
+  * @purpose In the QoS 0 delivery protocol, a PUBLISH Packet MUST NOT contain a Packet Identifier"
+  * @remark It should be impossible for Brokers to pass this test!
+  *         As the Packet Identifier is optional, it will be interpreted as part of payload coming after the topic_name.
+  * @reference [MQTT-2.3.1-5]
   */
   testcase TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client_MTC
   {
@@ -784,35 +790,15 @@ group publishGroup
   }
 
   /*
-  * @purpose In the QoS 0 delivery protocol, a PUBLISH Packet MUST NOT contain a Packet Identifier"
-  * @remark It should be impossible for Brokers to pass this test!
-  *         As the Packet Identifier is optional, it will be interpreted as part of payload coming after the topic_name.
-  * @reference [MQTT-2.3.1-5]
-  */
-  testcase TC_MQTT_BROKER_PUBLISH_010() runs on MQTT_Client_MTC
-  {
-    map(self:MQTT_PCO, system:MQTT_PCO)
-
-    if(f_init_client(0))
-    {
-      f_TC_MQTT_BROKER_PUBLISH_010()
-    }
-
-    f_clear_client()
-
-    map(self:MQTT_PCO, system:MQTT_PCO)
-  }
-
-  /*
   * @purpose In case of QoS = 1 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
   *
   * @reference [MQTT-2.3.1-1]
   */
-  testcase TC_MQTT_BROKER_PUBLISH_011() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_PUBLISH_010() runs on MQTT_Client
   {
     if(f_init())
     {
-      f_TC_MQTT_BROKER_PUBLISH_011();
+      f_TC_MQTT_BROKER_PUBLISH_010();
     }
     f_cleanUp();
   }
@@ -822,11 +808,11 @@ group publishGroup
   *
   * @reference [MQTT-2.3.1-1]
   */
-  testcase TC_MQTT_BROKER_PUBLISH_012() runs on MQTT_Client
+  testcase TC_MQTT_BROKER_PUBLISH_011() runs on MQTT_Client
   {
     if(f_init())
     {
-      f_TC_MQTT_BROKER_PUBLISH_012();
+      f_TC_MQTT_BROKER_PUBLISH_011();
     }
     f_cleanUp();
   }

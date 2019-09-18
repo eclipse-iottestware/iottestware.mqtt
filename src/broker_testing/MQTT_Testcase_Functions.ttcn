@@ -1488,12 +1488,7 @@ group publishFunctionsGroup
     }
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client
-  {
-    setverdict(fail, "TODO")
-  }
-
-  function f_TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client_MTC
+  function f_TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client_MTC
   {
     // publish retained message
     var BIT1n v_dup_flag := '1'B
@@ -1514,7 +1509,7 @@ group publishFunctionsGroup
     f_mqtt_receive_ipl4_close()
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_010() runs on MQTT_Client_MTC
+  function f_TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client_MTC
   {
     // publish retained message
     var BIT1n v_dup_flag := '0'B
@@ -1536,7 +1531,7 @@ group publishFunctionsGroup
     f_mqtt_receive_ipl4_close()
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_011() runs on MQTT_Client
+  function f_TC_MQTT_BROKER_PUBLISH_010() runs on MQTT_Client
   {
     f_connectMqtt();
 
@@ -1559,7 +1554,7 @@ group publishFunctionsGroup
     }
   }
 
-  function f_TC_MQTT_BROKER_PUBLISH_012() runs on MQTT_Client
+  function f_TC_MQTT_BROKER_PUBLISH_011() runs on MQTT_Client
   {
     f_connectMqtt();
 
@@ -3092,18 +3087,18 @@ group protocolFeaturesFunctionsGroup
     p_attacker.start(f_mqtt_connect_valid())
     p_probe.start(f_mqtt_connect_valid())
     all component.done;
-  
+
     p_probe.start(f_ipl4_probe(PX_PROBE_TIME))
     p_attacker.start(f_send_malformed_subscribe_01())
     all component.done
   }
-  
+
   function f_TC_MQTT_BROKER_SEC_CVE_002(MQTT_Client_MTC p_attacker, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
     p_attacker.start(f_mqtt_connect_valid())
     p_probe.start(f_mqtt_connect_valid())
     all component.done;
-  
+
     p_probe.start(f_ipl4_probe(PX_PROBE_TIME))
     p_attacker.start(f_send_malformed_publish_01())
     all component.done
@@ -3116,16 +3111,16 @@ group protocolFeaturesFunctionsGroup
   {
     p_probe.start(f_mqtt_connect_valid())
     all component.done;
-  
+
     p_probe.start(f_ipl4_probe(PX_PROBE_TIME))
-  
+
     var integer v_clients_len := lengthof(p_attacker_list)
     for(var integer i := 0; i < v_clients_len; i := i + 1)
     {
       var MQTT_Client_MTC v_cc := p_attacker_list[i]
       v_cc.start(f_malformed_connect_01(100, 65535))
     }
-  
+
     all component.done
   }
 

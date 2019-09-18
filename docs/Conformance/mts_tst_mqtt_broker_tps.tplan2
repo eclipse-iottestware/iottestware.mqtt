@@ -3789,6 +3789,4 @@ Package mts_tst_mqtt {
     }
   }
 
-  // TODO: what about will_qos? -> implement for FEAT_QOS?
-
 }
