@@ -141,6 +141,18 @@ module MQTT_Templates_PUBLISH
         }
       }
 
+      template MQTT_v3_1_1_Message mdw_publish_payload(octetstring p_payload)
+      modifies mw_publish_basic :=
+      {
+        msg :=
+        {
+          publish :=
+          {
+            payload := p_payload
+          }
+        }
+      }
+
       template MQTT_v3_1_1_Message mdw_publish_qos(QoS p_qos_level)
       modifies mw_publish_basic :=
       {
@@ -178,6 +190,30 @@ module MQTT_Templates_PUBLISH
             payload := ?
           }
         }
+      }
+
+      template MQTT_v3_1_1_Publish mw_publish_packet_topic_qos0(template universal charstring p_topic_name) :=
+      {
+        header := mdw_publish_header_qos(AT_MOST_ONCE_DELIVERY),
+        nameLength := ?,
+        topic_name := p_topic_name,
+        packet_identifier := omit,
+        payload := ?
+      }
+
+      template MQTT_v3_1_1_Publish mw_publish_packet_qos(QoS p_qos_level) :=
+      {
+        header := mdw_publish_header_qos(p_qos_level),
+        nameLength := ?,
+        topic_name := ?,
+        packet_identifier := ?,
+        payload := ?
+      }
+
+      template MQTT_v3_1_1_Publish mdw_publish_packet_qos0(QoS p_qos_level)
+      modifies mw_publish_packet_qos :=
+      {
+        packet_identifier := omit
       }
 
       template MQTT_v3_1_1_Publish mw_publish_packet_retain_qos0(BIT1n p_retain_flag := '1'B) :=

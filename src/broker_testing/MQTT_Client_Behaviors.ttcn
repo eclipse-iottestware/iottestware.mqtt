@@ -170,9 +170,63 @@
      }
    }
 
+   function f_mqtt_connect_04(BIT1n p_clean_session := '1'B) runs on MQTT_Client_MTC
+   {
+     // establish TCP connection
+     if(f_ipl4_connect())
+     {
+       var integer v_return_code := 0
+
+       var UTF8EncodedString v_client_id := f_utf8_from_charstring(credentials.clientId)
+       var UTF8EncodedString v_username := f_utf8_from_charstring(credentials.username)
+       var OctStringWithLength v_password := f_octstring_from_charstring(credentials.password)
+
+       var template MQTT_v3_1_1_ConnectFlags v_connect_flags := md_connect_credentials_clean_session(p_clean_session)
+       var template MQTT_v3_1_1_ConnectPayload v_connect_payload := m_connect_payload_credentials(v_client_id, v_username, v_password)
+       var template MQTT_v3_1_1_Message v_connect_packet := m_connect_message_base_02(v_connect_flags, v_connect_payload)
+       var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection)
+
+       MQTT_PCO.send(valueof(vt_connect))
+
+       var template MQTTasp_Message v_receive := mw_mqtt_message(mw_connack_rc(v_return_code))
+       timer t_timeout := PX_MAX_RESPONSE_TIME;
+       t_timeout.start
+       alt {
+         [] MQTT_PCO.receive(v_receive) {
+           connection.client_state := Connected
+           break;
+         }
+         [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) {
+           setverdict(fail, "CONNACK contains wrong return code")
+           break
+         }
+         [] t_timeout.timeout {
+           setverdict(fail, "No CONNACK received")
+           break;
+         }
+       }
+     }
+     else
+     {
+       setverdict(fail, "Client could not connect to ", PX_SUT_HOSTNAME, ":", PX_SUT_PORT)
+     }
+   }
+
    function f_mqtt_send_publish(MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
    {
      f_send_publish(connection, p_publish)
+   }
+
+   /*
+    * @desc no concrete requirement except of the packet id and QoS MUST be 1 or 2 (QoS = 0 does not have an ID)
+    */
+   function f_mqtt_send_publish_packetid(QoS p_qos, integer p_packet_id, octetstring p_payload := 'A5A5A5'O) runs on MQTT_Client_MTC
+   {
+     var MQTT_v3_1_1_PublishHeader v_ph := valueof(t_publish_header('0'B, p_qos, '0'B))
+     var UTF8EncodedString v_topic := f_utf8_from_charstring(PX_TOPIC_NAME)
+     var octetstring v_payload := p_payload
+     var MQTT_v3_1_1_Publish v_pub := valueof(t_publish_packet(v_ph, p_packet_id, v_topic, v_payload))
+     f_send_publish(connection, v_pub)
    }
 
    function f_mqtt_send_publish_header(MQTT_v3_1_1_PublishHeader p_header, octetstring p_payload := 'A5A5A5'O) runs on MQTT_Client_MTC
@@ -207,6 +261,31 @@
        }
        [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
          setverdict(fail, "Received unexpected message ", v_received)
+       }
+       [] t_timeout.timeout {
+         setverdict(fail, "No PUBLISH received")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   /*
+   * @desc this function is required if other messages might arrive in parallel. Skip these messages and wait for expected one
+   */
+   function f_mqtt_receive_publish_02(template MQTT_v3_1_1_Publish p_publish) runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expect := mw_mqtt_message({msg := { publish := p_publish }})
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [] MQTT_PCO.receive(v_expect) {
+         setverdict(pass, "Received PUBLISH")
+         break;
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         repeat;
        }
        [] t_timeout.timeout {
          setverdict(fail, "No PUBLISH received")
@@ -256,6 +335,58 @@
        }
        [] t_timeout.timeout {
          setverdict(fail, "Receive PUBLISH timed out after ", p_timeout, " sec. for transmission of ", p_estimated_size, " of Bytes")
+         break;
+       }
+     }
+     t_timeout.stop
+   }
+
+   /*
+    * @desc this function is used to check the retransmission of two packets in a given order. Identify the packets according to the carrying payload
+    * because the packet id itself is non-deterministic and unknown
+    */
+   function f_mqtt_receive_publish_ordered_retransmition(QoS p_qos, octetstring p_pl_1, octetstring p_pl_2) runs on MQTT_Client_MTC
+   {
+     var template MQTTasp_Message v_expect_1 := mw_mqtt_message(mdw_publish_payload(p_pl_1))
+     var template MQTTasp_Message v_expect_2 := mw_mqtt_message(mdw_publish_payload(p_pl_2))
+
+     var integer v_awaiting_msg := 0
+
+     var MQTTasp_Message v_received
+     timer t_timeout := PX_MAX_RESPONSE_TIME;
+     t_timeout.start
+     alt {
+       [v_awaiting_msg == 0] MQTT_PCO.receive(v_expect_1) -> value v_received {
+         v_awaiting_msg := 1  // skip the first message and wait for a retransmission
+
+         // trigger a re-connect without cleaning the session in hope of receiving this message agina
+         f_ipl4_disconnect()
+         f_mqtt_connect_04('0'B)
+         repeat;
+       }
+       [v_awaiting_msg == 1] MQTT_PCO.receive(v_expect_1) -> value v_received {
+         v_awaiting_msg := 2
+
+         // received re-transmission, release the broker from his pain
+         f_send_pub_response(v_received.conn, p_qos, v_received.msg.msg.publish.packet_identifier)
+         repeat
+       }
+       [v_awaiting_msg == 2] MQTT_PCO.receive(v_expect_2) -> value v_received {
+         v_awaiting_msg := -1 // kill the guards!
+         setverdict(pass, "Received PUBLISH messages in correct order")
+         f_send_pub_response(v_received.conn, p_qos, v_received.msg.msg.publish.packet_identifier)
+         break;
+       }
+       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
+         setverdict(fail, "Received unexpected message ", v_received)
+         break;
+       }
+       [v_awaiting_msg == 0] t_timeout.timeout {
+         setverdict(fail, "Timeout without receiving the first message")
+         break;
+       }
+       [v_awaiting_msg == 1] t_timeout.timeout {
+         setverdict(fail, "Timeout without receiving a re-transmission")
          break;
        }
      }
@@ -529,9 +660,14 @@
 
    function f_mqtt_subscribe(QoS p_requested_qos) runs on MQTT_Client_MTC
    {
+     f_mqtt_subscribe_topic(p_requested_qos, PX_TOPIC_NAME)
+   }
+
+   function f_mqtt_subscribe_topic(QoS p_requested_qos, universal charstring p_topic_filter) runs on MQTT_Client_MTC
+   {
      var integer v_packet_id := f_random_packet_id()
-     var universal charstring v_topic_filter := PX_TOPIC_NAME
-     var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(PX_TOPIC_NAME, p_requested_qos)
+     var universal charstring v_topic_filter := p_topic_filter
+     var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(v_topic_filter, p_requested_qos)
      var MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := {valueof(v_subscribe_payload)}
      var template MQTT_v3_1_1_Subscribe v_subscribe := m_subscribe_packet(v_packet_id, v_subscribe_payload_list)
 

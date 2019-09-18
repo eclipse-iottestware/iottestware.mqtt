@@ -1726,7 +1726,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT MUST send PUBACK packet in the order in which the corresponding PUBLISH packets where received (QoS 1 messages)"
     Reference
-    "[MQTT-4.6.0-2]"
+    "[MQTT-4.6.0-2], [MQTT-3.3.4-1], [MQTT-4.6.0-6]"
     PICS Selection PICS_BROKER_QOS_1
 
     Initial conditions
@@ -1809,7 +1809,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT MUST send PUBREC packets in the order in which the corresponding PUBLISH packets were received (QoS 2 messages)"
     Reference
-    "[MQTT-4.6.0-3]"
+    "[MQTT-4.6.0-3], [MQTT-3.3.4-1], [MQTT-4.6.0-6]"
     PICS Selection PICS_BROKER_QOS_2
 
     Initial conditions
@@ -1884,7 +1884,7 @@ Package mts_tst_mqtt {
     Test objective
     "It MUST send PUBREL packets in the order in which the corresponding PUBREC packets were received (QoS 2 messages)"
     Reference
-    "[MQTT-4.6.0-4]"
+    "[MQTT-4.6.0-4], [MQTT-4.6.0-6]"
     PICS Selection PICS_BROKER_QOS_2
 
     Initial conditions
@@ -3725,7 +3725,7 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_FEAT_PUBSUB_001
 
     Test objective
-    "A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver"
+    "A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ('ZERO WIDTH NO-BREAK SPACE') wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver"
     Reference
     "[MQTT-1.5.3-3], [MQTT-4.7.3-4]"
 
@@ -3737,7 +3737,7 @@ Package mts_tst_mqtt {
       and
       the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
       and
-      the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC;
+      the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC
     }
 
     Expected behaviour
@@ -3748,7 +3748,7 @@ Package mts_tst_mqtt {
           topic_filter corresponding to TOPIC_FILTER_WITH_ZWNBS,
           requested_qos corresponding to AT_MOST_ONCE;
       ;
-      from CLIENT_1 entity
+      from the CLIENT_1 entity
       } then {
         the IUT entity sends no PUBLISH to the CLIENT_2 entity
       }
@@ -3759,7 +3759,7 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_FEAT_PUBSUB_002
 
     Test objective
-    "A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver"
+    "A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ('ZERO WIDTH NO-BREAK SPACE') wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver"
     Reference
     "[MQTT-1.5.3-3], [MQTT-4.7.3-4]"
 
@@ -3771,7 +3771,7 @@ Package mts_tst_mqtt {
       and
       the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
       and
-      the CLIENT_2 entity subscribed the TOPIC_FILTER_WITH_ZWNBS;
+      the CLIENT_2 entity subscribed the TOPIC_FILTER_WITH_ZWNBS
     }
 
     Expected behaviour
@@ -3782,11 +3782,491 @@ Package mts_tst_mqtt {
           topic_filter corresponding to PX_PUBLISH_TOPIC,
           requested_qos corresponding to AT_MOST_ONCE;
       ;
-      from CLIENT_1 entity
+      from the CLIENT_1 entity
       } then {
         the IUT entity sends no PUBLISH to the CLIENT_2 entity
       }
     }
   }
 
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_003
+
+    Test objective
+    "The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character"
+    Reference
+    "[MQTT-4.7.2-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the TOPIC_FILTER_MULTI_LEVEL_ALL
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_SYS;
+        from the CLIENT_1 entity
+      } then {
+        the IUT entity sends no PUBLISH message to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_004
+
+    Test objective
+    "The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character"
+    Reference
+    "[MQTT-4.7.2-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the TOPIC_FILTER_SINGLE_LEVEL
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_SYS;
+        from the CLIENT_1 entity
+      } then {
+        the IUT entity sends no PUBLISH message to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_005
+
+    Test objective
+    "The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character"
+    Reference
+    "[MQTT-4.7.2-1]"
+
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the TOPIC_FILTER_MULTI_LEVEL_SYS_ALL
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_SYS;
+        from the CLIENT_1 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        topic_name corresponding to TOPIC_NAME_SYS;
+        to the CLIENT_2 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_006
+
+    Test objective
+    "When it re-sends any PUBLISH packets, it MUST re-send them in the order in which the original PUBLISH packets were sent (this applies to QoS 1 and QoS 2 messages)"
+    Reference
+    "[MQTT-4.6.0-1], [MQTT-4.6.0-6], [MQTT-4.4.0-1]"
+
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+        requested_qos corresponding to AT_LEAST_ONCE;
+      to the IUT entity
+      and
+      the CLIENT_1 entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_1;
+      ;
+      to the IUT entity
+      and
+      the CLIENT_1 entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_2;
+      ;
+      to the IUT entity
+      and
+      the IUT entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_1;
+      ;
+      to the CLIENT_2 entity
+      and
+      the IUT entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_2;
+      ;
+      to the CLIENT_2 entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity received no PUBACK message containing
+          packet_identifier corresponding to PACKET_ID_1;
+        and
+        the IUT entity received no PUBACK message containing
+          packet_identifier corresponding to PACKET_ID_2;
+      } then {
+        the IUT entity sends a PUBLISH message containing
+          publish_header containing
+              qos_level corresponding to AT_LEAST_ONCE,
+          topic_name corresponding to PX_PUBLISH_TOPIC,
+          packet_identifier corresponding to PACKET_ID_1;
+        ;
+        and
+        the IUT entity sends a PUBLISH message containing
+          publish_header containing
+              qos_level corresponding to AT_LEAST_ONCE,
+          topic_name corresponding to PX_PUBLISH_TOPIC,
+          packet_identifier corresponding to PACKET_ID_2;
+        ;
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_PUBSUB_007
+
+    Test objective
+    "When it re-sends any PUBLISH packets, it MUST re-send them in the order in which the original PUBLISH packets were sent (this applies to QoS 1 and QoS 2 messages)"
+    Reference
+    "[MQTT-4.6.0-1], [MQTT-4.6.0-6], [MQTT-4.4.0-1]"
+
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+      the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the CLIENT_2 entity subscribed the PX_PUBLISH_TOPIC containing
+        requested_qos corresponding to EXACTLY_ONCE;
+      to the IUT entity
+      and
+      the CLIENT_1 entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to EXACTLY_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_1;
+      ;
+      to the IUT entity
+      and
+      the CLIENT_1 entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to EXACTLY_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_2;
+      ;
+      to the IUT entity
+      and
+      the IUT entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to EXACTLY_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_1;
+      ;
+      to the CLIENT_2 entity
+      and
+      the IUT entity sent a PUBLISH message containing
+        publish_header containing
+            qos_level corresponding to EXACTLY_ONCE,
+        topic_name corresponding to PX_PUBLISH_TOPIC,
+        packet_identifier corresponding to PACKET_ID_2;
+      ;
+      to the CLIENT_2 entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity not received a PUBREC message containing
+          packet_identifier corresponding to PACKET_ID_1;
+        and
+        the IUT entity not received a PUBREC message containing
+          packet_identifier corresponding to PACKET_ID_2;
+      } then {
+        the IUT entity sends a PUBLISH message containing
+          publish_header containing
+              qos_level corresponding to EXACTLY_ONCE,
+          topic_name corresponding to PX_PUBLISH_TOPIC,
+          packet_identifier corresponding to PACKET_ID_1;
+        ;
+        and
+        the IUT entity sends a PUBLISH message containing
+          publish_header containing
+              qos_level corresponding to EXACTLY_ONCE,
+          topic_name corresponding to PX_PUBLISH_TOPIC,
+          packet_identifier corresponding to PACKET_ID_2;
+        ;
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_QOS_001
+
+    Test objective
+    "In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions"
+    Reference
+    "[MQTT-3.3.5-1]"
+
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID containing
+            qos_level corresponding to AT_MOST_ONCE;
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID_OVERLAP containing
+            qos_level corresponding to AT_LEAST_ONCE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_MOST_ONCE,
+        topic_name corresponding to TOPIC_NAME_VALID_OVERLAP;
+        ;
+        from the CLIENT_2 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE;
+        ;
+        to the CLIENT_1 entity
+        or
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_MOST_ONCE;
+        ;
+        to the CLIENT_1 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_QOS_002
+
+    Test objective
+    "In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions"
+    Reference
+    "[MQTT-3.3.5-1]"
+
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID containing
+            qos_level corresponding to AT_MOST_ONCE;
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID_OVERLAP containing
+            qos_level corresponding to EXACTLY_ONCE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_MOST_ONCE,
+        topic_name corresponding to TOPIC_NAME_VALID_OVERLAP;
+        ;
+        from the CLIENT_2 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to EXACTLY_ONCE;
+        ;
+        to the CLIENT_1 entity
+        or
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_MOST_ONCE;
+        ;
+        to the CLIENT_1 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_QOS_003
+
+    Test objective
+    "In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions"
+    Reference
+    "[MQTT-3.3.5-1]"
+
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID containing
+            qos_level corresponding to AT_LEAST_ONCE;
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID_OVERLAP containing
+            qos_level corresponding to EXACTLY_ONCE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to TOPIC_NAME_VALID_OVERLAP;
+        ;
+        from the CLIENT_2 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to EXACTLY_ONCE;
+        ;
+        to the CLIENT_1 entity
+        or
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE;
+        ;
+        to the CLIENT_1 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_QOS_004
+
+    Test objective
+    "In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions"
+    Reference
+    "[MQTT-3.3.5-1]"
+
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID containing
+            qos_level corresponding to AT_LEAST_ONCE;
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID_OVERLAP containing
+            qos_level corresponding to AT_MOST_ONCE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to TOPIC_NAME_VALID_OVERLAP;
+        ;
+        from the CLIENT_2 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_MOST_ONCE;
+        ;
+        to the CLIENT_1 entity
+      }
+    }
+  }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_FEAT_QOS_005
+
+    Test objective
+    "In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions"
+    Reference
+    "[MQTT-3.3.5-1]"
+
+    PICS Selection PICS_BROKER_QOS_2
+
+    Initial conditions
+    with {
+        the CLIENT_1 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_2 entity having a MQTT_CONNECTION to the IUT entity
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID containing
+            qos_level corresponding to EXACTLY_ONCE;
+        and
+        the CLIENT_1 entity subscribed the TOPIC_FILTER_VALID_OVERLAP containing
+            qos_level corresponding to AT_LEAST_ONCE;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to EXACTLY_ONCE,
+        topic_name corresponding to TOPIC_NAME_VALID_OVERLAP;
+        ;
+        from the CLIENT_2 entity
+      } then {
+        the IUT entity sends a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE;
+        ;
+        to the CLIENT_1 entity
+      }
+    }
+  }
 }

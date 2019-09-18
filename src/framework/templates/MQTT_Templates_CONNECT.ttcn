@@ -61,6 +61,12 @@ module MQTT_Templates_CONNECT
           password_flag := '1'B
         }
 
+        template MQTT_v3_1_1_ConnectFlags md_connect_credentials_clean_session(BIT1n p_clean_session := '1'B)
+        modifies md_connect_credentials :=
+        {
+          clean_session := p_clean_session
+        }
+
         template MQTT_v3_1_1_ConnectFlags md_connect_flags_lwt(BIT1n p_will_flag := '1'B, BIT1n p_will_retain := '0'B, QoS p_will_qos := AT_MOST_ONCE_DELIVERY)
         modifies m_connect_flags_basic :=
         {

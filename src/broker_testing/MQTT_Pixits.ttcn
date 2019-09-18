@@ -76,4 +76,16 @@ module MQTT_Pixits {
      * @desc
      */
     modulepar charstring PX_WILL_MESSAGE := "LWT MESSAGE"
+
+    /*
+     * @desc the specification is unclear about upgrading QoS.
+     *       While downgrading is quite obvious (e.g. described in https://www.hivemq.com/blog/mqtt-essentials-part-6-mqtt-quality-of-service-levels/)
+     *       upgrading is not explicitly mentioned and barely used or implemented
+     */
+    modulepar boolean PX_UPGRADE_QOS := false
+
+    /*
+     * @desc defines if clients are allowed to publish to topics beginning with $SYS
+     */
+    modulepar boolean PX_ALLOWED_PUBLISH_SYS := false
 }

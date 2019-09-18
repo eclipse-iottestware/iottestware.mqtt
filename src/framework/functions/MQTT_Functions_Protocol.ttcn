@@ -138,6 +138,23 @@ module MQTT_Functions_Protocol
       }
     }
 
+    function f_send_pub_response(inout MQTT_Connection p_conn, QoS p_qos, integer p_packet_id) runs on MQTT_MTC
+    {
+      if(p_qos == AT_MOST_ONCE_DELIVERY)
+      {
+        // nothing to do here
+      }
+      else if(p_qos == AT_LEAST_ONCE_DELIVERY)
+      {
+        f_send_puback(p_conn, p_packet_id)
+      }
+      else if(p_qos == EXACTLY_ONE_DELIVERY)
+      {
+        f_send_pubrec(p_conn, p_packet_id)
+        // TODO: getting pubrel here and response with pubcomp!
+      }
+    }
+
     /*
      * @desc response with a PUBACK
      */

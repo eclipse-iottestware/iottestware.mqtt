@@ -1785,6 +1785,186 @@ group protocolFeaturesGroup {
 
     f_clear_client_system(publisher, subscriber)
   }
+
+  /*
+  * @purpose The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character
+  *
+  * @reference [MQTT-4.7.2-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_003(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character
+  *
+  * @reference [MQTT-4.7.2-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_004(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character
+  *
+  * @reference [MQTT-4.7.2-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_005(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose When it re-sends any PUBLISH packets, it MUST re-send them in the order in which the original PUBLISH packets were sent (this applies to QoS 1 and QoS 2 messages)
+  *
+  * @reference [MQTT-4.6.0-1], [MQTT-4.6.0-6], [MQTT-4.4.0-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_006() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_006(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose When it re-sends any PUBLISH packets, it MUST re-send them in the order in which the original PUBLISH packets were sent (this applies to QoS 1 and QoS 2 messages)
+  *
+  * @reference [MQTT-4.6.0-1], [MQTT-4.6.0-6], [MQTT-4.4.0-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_PUBSUB_007() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_PUBSUB_007(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
+  *
+  * @reference [MQTT-3.3.5-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_QOS_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_QOS_001(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
+  *
+  * @reference [MQTT-3.3.5-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_QOS_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_QOS_002(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
+  *
+  * @reference [MQTT-3.3.5-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_QOS_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_QOS_003(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
+  *
+  * @reference [MQTT-3.3.5-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_QOS_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_QOS_004(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
+
+  /*
+  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
+  *
+  * @reference [MQTT-3.3.5-1]
+  */
+  testcase TC_MQTT_BROKER_FEAT_QOS_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC publisher := MQTT_Client_MTC.create("Publisher") alive;
+    var MQTT_Client_MTC subscriber := MQTT_Client_MTC.create("Subscriber") alive;
+
+    if(f_init_client_system(publisher, subscriber))
+    {
+      f_TC_MQTT_BROKER_FEAT_QOS_005(publisher, subscriber)
+    }
+
+    f_clear_client_system(publisher, subscriber)
+  }
 } // protocolFeaturesGroup
 
 group cveGroup {

@@ -28,8 +28,10 @@ Package mts_mqtt_commons {
         - publish
         - connect
         - receives
+        - received
         - drops
         - awaits
+        - sent
         - sends
         - send
         - closes
@@ -55,7 +57,7 @@ Package mts_mqtt_commons {
         QoS AT_MOST_ONCE;   // '00'B = 0
         QoS AT_LEAST_ONCE;  // '01'B = 1
         QoS EXACTLY_ONCE;   // '10'B = 2
-        QoS VALID_QOS;		// [0..2]
+        QoS VALID_QOS;      // [0..2]
         QoS INVALID_QOS;    // '11'B = 3
 
         // ####################
@@ -83,18 +85,24 @@ Package mts_mqtt_commons {
 
         // topics and topic filters
         UTF8String TOPIC_FILTER_VALID;              // valid topic filter should also match the PIXIT TOPIC
+        UTF8String TOPIC_FILTER_VALID_OVERLAP;      // valid topic filter with wildcard overlapping TOPIC_FILTER_VALID
         UTF8String TOPIC_FILTER_SINGLE_LEVEL;       // valid topic filter with single level wild card e.g. abc/+/def
         UTF8String TOPIC_FILTER_SINGLE_LEVEL_INVALID; // invalid topic filter with single level wild card [MQTT-4.7.1-3] e.g. abc/def+/ghi
+        UTF8String TOPIC_FILTER_MULTI_LEVEL_ALL;    // valid topic filter for all topics (#)
+        UTF8String TOPIC_FILTER_MULTI_LEVEL_SYS_ALL;// valid topic filter $SYS/#
         UTF8String TOPIC_FILTER_MULTI_LEVEL;        // valid topic filter with multi level wild card e.g. abc/def/#
         UTF8String TOPIC_FILTER_MULTI_LEVEL_INVALID;// invalid topic filter with multi level wild card [MQTT-4.7.1-2] e.g. abc/#/def
         UTF8String TOPIC_FILTER_INVALID;            // invalid topic filter according to MQTT: e.g. abc/#/def
         UTF8String TOPIC_FILTER_ZERO_CHARS;         // invalid topic filter with zero characters
         UTF8String TOPIC_FILTER_WITH_ZWNBS;         // valid topic filter with a ZERO WIDTH NO-BREAK SPACE
-        UTF8String TOPIC_NAME_VALID;                // valid topic name according to spec. (e.g. no wildcards)
+        UTF8String TOPIC_NAME_VALID;                // valid topic name according to spec. (e.g. no wildcards), matching TOPIC_FILTER_VALID
+        UTF8String TOPIC_NAME_VALID_OVERLAP;        // valid topic name matching TOPIC_FILTER_VALID_OVERLAP
         UTF8String TOPIC_NAME_ZERO_CHARS;           // invalid topic name with zero characters
         UTF8String TOPIC_NAME_INVALID;              // valid UTF-8 but invalid topic name (e.g. contains wildcards)
         UTF8String TOPIC_NAME_WC_MULTI_LVL;         // valid UTF-8 but invalid topic name because it contains multi-level wildcards
         UTF8String TOPIC_NAME_WC_SINGLE_LVL;        // valid UTF-8 but invalid topic name because it contains single-level wildcards
+        UTF8String TOPIC_NAME_SYS;                  // topic name for reserved topics starting with $
+
         UTF8String_invalid TOPIC_NAME_INVALID_UTF8; // invalid: general invalid UTF-8 topic name
         UTF8String_invalid TOPIC_NAME_0000;
         UTF8String_invalid WILL_TOPIC_D800;         // invalid: contains non-UTF8 chars: U+D800

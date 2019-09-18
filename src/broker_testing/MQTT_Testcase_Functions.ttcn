@@ -3080,6 +3080,300 @@ group protocolFeaturesFunctionsGroup
     p_subscriber.start(f_mqtt_receive_no_publish())
     all component.done;
   }
+
+  function f_TC_MQTT_BROKER_FEAT_PUBSUB_003(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    // see non-normative comments in http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718108
+    var universal charstring v_topic_filter := "#"
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_MOST_ONCE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    /* expected bahaviour */
+    var octetstring v_payload := 'A0A0'O;
+    var integer v_packet_id := 1234
+    var UTF8EncodedString v_topic_name_sys := f_utf8_from_charstring("$")
+    var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, AT_MOST_ONCE_DELIVERY, '0'B)
+    var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, v_topic_name_sys, v_payload)
+
+    p_subscriber.start(f_mqtt_receive_no_publish())
+    p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_PUBSUB_004(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    // see non-normative comments in http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718108
+    var universal charstring v_topic_filter := "+/monitor/Clients"
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_MOST_ONCE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    /* expected bahaviour */
+    var octetstring v_payload := 'A0A0'O;
+    var integer v_packet_id := 1234
+    var UTF8EncodedString v_topic_name_sys := f_utf8_from_charstring("$SYS/monitor/Clients")
+    var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, AT_MOST_ONCE_DELIVERY, '0'B)
+    var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, v_topic_name_sys, v_payload)
+
+    p_subscriber.start(f_mqtt_receive_no_publish())
+    p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_PUBSUB_005(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    const universal charstring c_base_topic_filter := "$SYS/eclipse/iot/"
+
+    // see non-normative comments in http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718108
+    var universal charstring v_topic_filter := "$SYS/#"                            // avoid getting a verdict from other internal messages
+    var universal charstring v_topic_name_sys := c_base_topic_filter & "testware"  // avoid getting a verdict from other internal messages
+    var template universal charstring v_topic_filter_sys := pattern "$SYS/?*"
+    if(PX_ALLOWED_PUBLISH_SYS) { v_topic_filter := c_base_topic_filter & "#" }
+
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_MOST_ONCE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    /* expected bahaviour */
+
+    // by default we'll be waiting for a single incoming message on $SYS/#
+    var template MQTT_v3_1_1_Publish v_receive_publish := mw_publish_packet_topic_qos0(v_topic_filter_sys)
+    // if we are allowed to publish to $SYS, then we'll be waiting for a specific eclipse iot-testware message
+    if(PX_ALLOWED_PUBLISH_SYS)
+    {
+      // instead of listening for "$SYS/?" listen for "$SYS/eclipse/iot/?"
+      v_topic_filter_sys := pattern c_base_topic_filter & "?*"
+      v_receive_publish := mw_publish_packet_topic_qos0(v_topic_filter_sys)
+
+      var octetstring v_payload := 'A0A0'O;
+      var integer v_packet_id := 1234
+      var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, AT_MOST_ONCE_DELIVERY, '0'B)
+      var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, f_utf8_from_charstring(v_topic_name_sys), v_payload)
+
+      p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    }
+
+    p_subscriber.start(f_mqtt_receive_publish_02(v_receive_publish))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_PUBSUB_006(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(AT_LEAST_ONCE_DELIVERY))
+    p_subscriber.done
+
+    var integer v_pid_1 := 1234
+    var integer v_pid_2 := 5678
+    var octetstring v_pl_1 := 'AAAA'O
+    var octetstring v_pl_2 := 'BBBB'O
+
+    // start listening for published messages
+    p_subscriber.start(f_mqtt_receive_publish_ordered_retransmition(AT_LEAST_ONCE_DELIVERY, v_pl_1, v_pl_2))
+
+    // send PACKET_ID_1
+    p_publisher.start(f_mqtt_send_publish_packetid(AT_LEAST_ONCE_DELIVERY, v_pid_1, v_pl_1))
+    p_publisher.done
+    // send PACKET_ID_2
+    p_publisher.start(f_mqtt_send_publish_packetid(AT_LEAST_ONCE_DELIVERY, v_pid_2, v_pl_2))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_PUBSUB_007(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    p_subscriber.start(f_mqtt_subscribe(EXACTLY_ONE_DELIVERY))
+    p_subscriber.done
+
+    var integer v_pid_1 := 1234
+    var integer v_pid_2 := 5678
+    var octetstring v_pl_1 := 'AAAA'O
+    var octetstring v_pl_2 := 'BBBB'O
+
+    // start listening for published messages
+    p_subscriber.start(f_mqtt_receive_publish_ordered_retransmition(EXACTLY_ONE_DELIVERY, v_pl_1, v_pl_2))
+
+    // send PACKET_ID_1
+    p_publisher.start(f_mqtt_send_publish_packetid(EXACTLY_ONE_DELIVERY, v_pid_1, v_pl_1))
+    p_publisher.done
+    // send PACKET_ID_2
+    p_publisher.start(f_mqtt_send_publish_packetid(EXACTLY_ONE_DELIVERY, v_pid_2, v_pl_2))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_QOS_001(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    var universal charstring v_topic_filter := PX_TOPIC_NAME
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_MOST_ONCE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    var universal charstring v_topic_filter_overlap := v_topic_filter & "#"
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_LEAST_ONCE_DELIVERY, v_topic_filter_overlap))
+    p_subscriber.done
+
+    /* expected bahaviour */
+    var octetstring v_payload := 'A0A0'O;
+    var integer v_packet_id := 1234
+    var UTF8EncodedString v_topic_name_overlap := f_utf8_from_charstring(v_topic_filter & "test")
+
+    var template MQTT_v3_1_1_Publish v_receive_publish := mdw_publish_packet_qos0(AT_MOST_ONCE_DELIVERY)
+    // expected QoS is configurable in PIXITS
+    if(PX_UPGRADE_QOS) { v_receive_publish := mw_publish_packet_qos(AT_LEAST_ONCE_DELIVERY) }
+
+    var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, AT_MOST_ONCE_DELIVERY, '0'B)
+    var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, v_topic_name_overlap, v_payload)
+
+    p_subscriber.start(f_mqtt_receive_publish(v_receive_publish))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_QOS_002(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    var universal charstring v_topic_filter := PX_TOPIC_NAME
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_MOST_ONCE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    var universal charstring v_topic_filter_overlap := v_topic_filter & "#"
+    p_subscriber.start(f_mqtt_subscribe_topic(EXACTLY_ONE_DELIVERY, v_topic_filter_overlap))
+    p_subscriber.done
+
+    /* expected bahaviour */
+    var octetstring v_payload := 'A0A0'O;
+    var integer v_packet_id := 1234
+    var UTF8EncodedString v_topic_name_overlap := f_utf8_from_charstring(v_topic_filter & "test")
+
+    var template MQTT_v3_1_1_Publish v_receive_publish := mdw_publish_packet_qos0(AT_MOST_ONCE_DELIVERY)
+    // expected QoS is configurable in PIXITS
+    if(PX_UPGRADE_QOS) { v_receive_publish := mw_publish_packet_qos(EXACTLY_ONE_DELIVERY) }
+
+    var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, AT_MOST_ONCE_DELIVERY, '0'B)
+    var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, v_topic_name_overlap, v_payload)
+
+    p_subscriber.start(f_mqtt_receive_publish(v_receive_publish))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_QOS_003(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    var universal charstring v_topic_filter := PX_TOPIC_NAME
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_LEAST_ONCE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    var universal charstring v_topic_filter_overlap := v_topic_filter & "#"
+    p_subscriber.start(f_mqtt_subscribe_topic(EXACTLY_ONE_DELIVERY, v_topic_filter_overlap))
+    p_subscriber.done
+
+    /* expected bahaviour */
+    var octetstring v_payload := 'A0A0'O;
+    var integer v_packet_id := 1234
+    var UTF8EncodedString v_topic_name_overlap := f_utf8_from_charstring(v_topic_filter & "test")
+
+    var template MQTT_v3_1_1_Publish v_receive_publish := mw_publish_packet_qos(AT_LEAST_ONCE_DELIVERY)
+    // expected QoS is configurable in PIXITS
+    if(PX_UPGRADE_QOS) { v_receive_publish := mw_publish_packet_qos(EXACTLY_ONE_DELIVERY) }
+
+    var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, AT_LEAST_ONCE_DELIVERY, '0'B)
+    var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, v_topic_name_overlap, v_payload)
+
+    p_subscriber.start(f_mqtt_receive_publish(v_receive_publish))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_QOS_004(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    var universal charstring v_topic_filter := PX_TOPIC_NAME
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_LEAST_ONCE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    var universal charstring v_topic_filter_overlap := v_topic_filter & "#"
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_MOST_ONCE_DELIVERY, v_topic_filter_overlap))
+    p_subscriber.done
+
+    /* expected bahaviour */
+    var octetstring v_payload := 'A0A0'O;
+    var integer v_packet_id := 1234
+    var UTF8EncodedString v_topic_name_overlap := f_utf8_from_charstring(v_topic_filter & "test")
+
+    var template MQTT_v3_1_1_Publish v_receive_publish := mdw_publish_packet_qos0(AT_MOST_ONCE_DELIVERY)
+
+    var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, AT_LEAST_ONCE_DELIVERY, '0'B)
+    var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, v_topic_name_overlap, v_payload)
+
+    p_subscriber.start(f_mqtt_receive_publish(v_receive_publish))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    all component.done;
+  }
+
+  function f_TC_MQTT_BROKER_FEAT_QOS_005(MQTT_Client_MTC p_publisher, MQTT_Client_MTC p_subscriber) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    /* Initial conditions */
+    p_publisher.start(f_mqtt_connect_valid())
+    p_subscriber.start(f_mqtt_connect_valid())
+    all component.done;
+
+    var universal charstring v_topic_filter := PX_TOPIC_NAME
+    p_subscriber.start(f_mqtt_subscribe_topic(EXACTLY_ONE_DELIVERY, v_topic_filter))
+    p_subscriber.done
+
+    var universal charstring v_topic_filter_overlap := v_topic_filter & "#"
+    p_subscriber.start(f_mqtt_subscribe_topic(AT_LEAST_ONCE_DELIVERY, v_topic_filter_overlap))
+    p_subscriber.done
+
+    /* expected bahaviour */
+    var octetstring v_payload := 'A0A0'O;
+    var integer v_packet_id := 1234
+    var UTF8EncodedString v_topic_name_overlap := f_utf8_from_charstring(v_topic_filter & "test")
+
+    var template MQTT_v3_1_1_Publish v_receive_publish := mw_publish_packet_qos(AT_LEAST_ONCE_DELIVERY)
+
+    var template MQTT_v3_1_1_PublishHeader v_send_header := t_publish_header('0'B, EXACTLY_ONE_DELIVERY, '0'B)
+    var template MQTT_v3_1_1_Publish v_send_publish := t_publish_packet(valueof(v_send_header), v_packet_id, v_topic_name_overlap, v_payload)
+
+    p_subscriber.start(f_mqtt_receive_publish(v_receive_publish))
+    p_publisher.start(f_mqtt_send_publish(valueof(v_send_publish)))
+    all component.done;
+  }
 } // protocolFeaturesFunctionsGroup
 
   function f_TC_MQTT_BROKER_SEC_CVE_001(MQTT_Client_MTC p_attacker, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
