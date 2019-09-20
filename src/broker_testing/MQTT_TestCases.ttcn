@@ -2001,9 +2001,26 @@ group cveGroup {
   }
 
   /*
-  * https://mosquitto.org/blog/2018/09/security-advisory-cve-2018-12543/
+  * https://bugs.eclipse.org/bugs/show_bug.cgi?id=551160
   */
-  testcase TC_MQTT_BROKER_SEC_CVE_003() runs on MQTT_Client_MTC system MQTT_Client_SecurityTestSystem
+  testcase TC_MQTT_BROKER_SEC_CVE_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    var MQTT_Client_MTC attacker := MQTT_Client_MTC.create("Attacker") alive;
+    var MQTT_Client_MTC probe := MQTT_Client_MTC.create("Probe") alive;
+
+    if(f_init_client_system(attacker, probe))
+    {
+      f_TC_MQTT_BROKER_SEC_CVE_004(attacker, probe)
+    }
+
+    f_clear_client_system(attacker, probe)
+  }
+
+  /*
+  * https://mosquitto.org/blog/2018/09/security-advisory-cve-2018-12543/
+  * Note: does not work yet!
+  *
+  testcase TC_MQTT_BROKER_SEC_CVE_xxx() runs on MQTT_Client_MTC system MQTT_Client_SecurityTestSystem
   {
     var MQTT_Client_MTC attacker_0 := MQTT_Client_MTC.create("Attacker_0") alive;
     var MQTT_Client_MTC attacker_1 := MQTT_Client_MTC.create("Attacker_1") alive;
@@ -2019,7 +2036,7 @@ group cveGroup {
     }
 
     f_clear_client_security_system(v_list, probe)
-  }
+  }*/
 } // cveGroup
 
 } // module MQTT_TestCases

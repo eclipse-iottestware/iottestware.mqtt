@@ -3398,10 +3398,23 @@ group protocolFeaturesFunctionsGroup
     all component.done
   }
 
+  function f_TC_MQTT_BROKER_SEC_CVE_003(MQTT_Client_MTC p_attacker, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_TestSystem
+  {
+    p_probe.start(f_mqtt_connect_valid())
+    p_attacker.start(f_mqtt_connect_valid())
+    all component.done;
+
+    p_probe.start(f_ipl4_probe(PX_PROBE_TIME))
+    p_attacker.start(f_send_subscribe_cve_2019_11779())
+    all component.done
+
+    all component.done
+  }
+
   /*
   * Note: still experimental and does not work yet for affected IUT
-  */
-  function f_TC_MQTT_BROKER_SEC_CVE_003(MQTT_Client_List p_attacker_list, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_SecurityTestSystem
+  *
+  function f_TC_MQTT_BROKER_SEC_CVE_xxx(MQTT_Client_List p_attacker_list, MQTT_Client_MTC p_probe) runs on MQTT_Client_MTC system MQTT_Client_SecurityTestSystem
   {
     p_probe.start(f_mqtt_connect_valid())
     all component.done;
@@ -3416,6 +3429,5 @@ group protocolFeaturesFunctionsGroup
     }
 
     all component.done
-  }
-
+  }*/
 } // MQTT_Testcase_Functions

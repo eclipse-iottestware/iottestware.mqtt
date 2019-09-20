@@ -15,6 +15,8 @@ Package mts_tst_mqtt {
     UTF8String TOPIC_NAME_SEC_CVE_02;  // topic name used in TP_MQTT_Broker_SEC_CVE_002: e.g. $TEST
 
     Int16 PX_PROBE_CON_KEEP_ALIVE;       // the Keep alive time the PROBE_CLIENT should stay connected
+
+    UTF8String TOPIC_FILTER_SEC_CVE_03;  // topic filter used in TP_MQTT_Broker_SEC_CVE_03
   }
 
   Test Purpose {
@@ -81,4 +83,32 @@ Package mts_tst_mqtt {
       }
     }
   }
+
+  Test Purpose {
+    TP Id TP_MQTT_Broker_SEC_CVE_003
+    Test objective
+    "If a malicious client sends a Subscribe packet containing a topic that consists of approximately 65400 topic hierarchy separators ('/' character), than a stack overflow can occur"
+    Reference
+    "CVE-2019-11779"
+    PICS Selection PICS_BROKER_BASIC
+
+    Initial conditions
+    with {
+      the ATTACKER_CLIENT entity having a MQTT_CONNECTION to the IUT entity
+      and
+      the PROBE_CLIENT entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a SUBSCRIBE message containing
+          payload containing
+            topic_filter corresponding to TOPIC_FILTER_SEC_CVE_03;;
+          from the ATTACKER_CLIENT entity
+        } then {
+            the IUT entity not closes the TCP_CONNECTION for the PROBE_CLIENT entity
+        }
+      }
+    }
 }
