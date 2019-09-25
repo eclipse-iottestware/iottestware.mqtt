@@ -37,7 +37,7 @@
    import from Random_Helper all;
 
    /*
-    * @desc f_mqtt_connect_01 sends a most basic MQTT Connect message with credentials from MQTT_Client_MTC
+    * @desc f_mqtt_connect_valid sends a most basic MQTT Connect message with credentials from MQTT_Client_MTC
     * TODO: refactor f_mqtt_connect_[] functions
     * TODO: move to MQTT_Functions_Protocol (??)
     */
@@ -68,6 +68,50 @@
          }
          [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) -> value v_response {
            setverdict(fail, "CONNACK returned unexpected code: ", p_return_code, " != ", v_response.msg.msg.connack.connect_return_code)
+           break
+         }
+         [] t_timeout.timeout {
+           setverdict(fail, "No CONNACK received")
+           break;
+         }
+       }
+     }
+     else
+     {
+       setverdict(fail, "Client could not connect to ", PX_SUT_HOSTNAME, ":", PX_SUT_PORT)
+     }
+   }
+
+   /*
+   * @desc sends a connect packet with invalid credentials and expects to receive a CONNACK with return code 0x05
+   */
+   function f_mqtt_connect_invalid(integer p_return_code := 5) runs on MQTT_Client_MTC
+   {
+     // establish TCP connection
+     if(f_ipl4_connect())
+     {
+       var UTF8EncodedString v_client_id := f_utf8_from_charstring(credentials.clientId & "_inv")
+       var UTF8EncodedString v_username := f_utf8_from_charstring(credentials.username & "_inv")
+       var OctStringWithLength v_password := f_octstring_from_charstring(credentials.password & "_inv")
+
+       var template MQTT_v3_1_1_ConnectFlags v_connect_flags := md_connect_credentials
+       var template MQTT_v3_1_1_ConnectPayload v_connect_payload := m_connect_payload_credentials(v_client_id, v_username, v_password)
+       var template MQTT_v3_1_1_Message v_connect_packet := m_connect_message_base_02(v_connect_flags, v_connect_payload)
+       var template MQTTasp_Message vt_connect := m_mqtt_message_conn(v_connect_packet, connection)
+       var MQTTasp_Message v_response
+
+       MQTT_PCO.send(valueof(vt_connect))
+
+       var template MQTTasp_Message v_receive := mw_mqtt_message(mw_connack_rc(p_return_code))
+       timer t_timeout := PX_MAX_RESPONSE_TIME;
+       t_timeout.start
+       alt {
+         [] MQTT_PCO.receive(v_receive) {
+           connection.client_state := Rejected
+           break;
+         }
+         [] MQTT_PCO.receive(mw_mqtt_message(mw_connack)) -> value v_response {
+           setverdict(inconc, "CONNACK returned unexpected code: ", p_return_code, " != ", v_response.msg.msg.connack.connect_return_code)
            break
          }
          [] t_timeout.timeout {

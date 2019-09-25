@@ -51,6 +51,56 @@ function f_ut_initial_connect_01() runs on MQTT_Broker_MTC
 }
 
 /*
+* @desc trigger to connect for initial condition. 02 will trigger to connect with a given keep alive value
+*/
+function f_ut_initial_connect_02(integer p_keep_alive) runs on MQTT_Broker_MTC
+{
+  if (PX_USE_UPPER_TESTER)
+  {
+    var UT_Connection v_ut_conn := vl_ut_connections[vl_ut_idx]
+    var charstring v_free_text := "Initial condition: connect"
+    var template UTasp_Message v_asp_msg := m_ut_message(m_ut_client_connect_pre_condition_keep_alive(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text, p_keep_alive), v_ut_conn)
+    UT_PCO.send(valueof(v_asp_msg));
+
+    var template MQTTasp_Message vt_connect_valid := mw_mqtt_message(mdw_connect_valid_mqtt_x);
+    var MQTTasp_Message v_received;
+    alt {
+      [] MQTT_PCO.receive(vt_connect_valid) -> value v_received {
+        var MQTT_Connection v_conn := v_received.conn
+        f_add_connection(v_conn)  // add connection to brokers list
+        f_send_connack(v_conn, 0)
+        break;
+      }
+    }
+  }
+}
+
+/*
+* @desc trigger to connect for initial condition. 03 will trigger a connect without waiting for the actual connect and response with connack
+*/
+function f_ut_initial_connect_03() runs on MQTT_Broker_MTC
+{
+  if (PX_USE_UPPER_TESTER)
+  {
+    var UT_Connection v_ut_conn := vl_ut_connections[vl_ut_idx]
+    var charstring v_free_text := "Initial condition: connect"
+    var template UTasp_Message v_asp_msg := m_ut_message(m_ut_client_connect_pre_condition(PX_LISTEN_HOSTNAME, PX_LISTEN_PORT, v_free_text), v_ut_conn)
+    UT_PCO.send(valueof(v_asp_msg));
+  }
+}
+
+function f_ut_publish(QoS_UT p_qos := AT_MOST_ONCE_DELIVERY) runs on MQTT_Broker_MTC
+{
+  if (PX_USE_UPPER_TESTER)
+  {
+    var UT_Connection v_ut_conn := vl_ut_connections[vl_ut_idx]
+    var charstring v_free_text := "Initial condition: publish " & int2str(enum2int(p_qos))
+    var template UTasp_Message v_asp_msg := m_ut_message(m_ut_client_publish_pre_condition(v_free_text, p_qos), v_ut_conn)
+    UT_PCO.send(valueof(v_asp_msg));
+  }
+}
+
+/*
 * @desc trigger to subscribe
 */
 function f_ut_subscribe(QoS_UT p_qos := AT_MOST_ONCE_DELIVERY, out MQTT_Connection p_conn) runs on MQTT_Broker_MTC

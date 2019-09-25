@@ -48,14 +48,14 @@ group broker_components {
     // timer locally available for MQTT_Broker_PTC; value retrieved from .cfg (PIXIT)
     timer tc_testcase_max := PX_MAX_TC_TIMER;
     var default vc_timeout_default;
-    var default vc_accept_mqtt_conn;
+    var default vc_accept_tcp_conn;
 
     var MQTT_BrokerContext ctx;
     var MQTT_ConnectionList vl_connections;
-    
+
     var UT_ConnectionList vl_ut_connections;
     port UTasp_PT UT_PCO;
-    
+
     // TODO: this is a workaround for now
     // first we will handle only one single UT connect, this is the ID the get from vl_ut_connections
     var integer vl_ut_idx;

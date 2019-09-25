@@ -500,6 +500,25 @@ group connectGroup
 
     unmap(self:MQTT_PCO, system:MQTT_PCO)
   }
+
+  /*
+  * @purpose If the IUT rejects the CONNECT, the IUT MUST NOT process any data sent by the client after the CONNECT packet
+  *
+  * @reference [MQTT-3.2.0-1]
+  */
+  testcase TC_MQTT_BROKER_CONNECT_032() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0) and f_ipl4_connect())
+    {
+      f_TC_MQTT_BROKER_CONNECT_032()
+    }
+
+    f_clear_client()
+
+    unmap(self:MQTT_PCO, system:MQTT_PCO)
+  }
 } // connectGroup
 
 group connackGroup
@@ -815,6 +834,25 @@ group publishGroup
       f_TC_MQTT_BROKER_PUBLISH_011();
     }
     f_cleanUp();
+  }
+
+  /*
+  * @purpose If the IUT does not authorize a PUBLISH to be performed by a Client; it has no way of informing that Client. The IUT MUST either make a positive acknowledgement, according to the normal QoS rules, or close the Network Connection
+  *
+  * @reference [MQTT-3.3.5-2]
+  */
+  testcase TC_MQTT_BROKER_PUBLISH_012() runs on MQTT_Client_MTC
+  {
+    map(self:MQTT_PCO, system:MQTT_PCO)
+
+    if(f_init_client(0))
+    {
+      f_TC_MQTT_BROKER_PUBLISH_012()
+    }
+
+    f_clear_client()
+
+    map(self:MQTT_PCO, system:MQTT_PCO)
   }
 } // publishGroup
 
@@ -2010,7 +2048,7 @@ group cveGroup {
 
     if(f_init_client_system(attacker, probe))
     {
-      f_TC_MQTT_BROKER_SEC_CVE_004(attacker, probe)
+      f_TC_MQTT_BROKER_SEC_CVE_003(attacker, probe)
     }
 
     f_clear_client_system(attacker, probe)

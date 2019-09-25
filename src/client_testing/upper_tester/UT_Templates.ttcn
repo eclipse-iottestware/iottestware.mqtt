@@ -35,6 +35,31 @@ module UT_Templates {
       test_case := testcasename()
     }
 
+    template MQTT_UT_Message m_ut_client_connect_pre_condition_keep_alive(charstring p_host, integer p_port_num, charstring p_free_text, integer p_keep_alive)
+    modifies m_ut_client_connect_pre_condition :=
+    {
+      msg := {
+        connect_msg := {
+          keep_alive := p_keep_alive
+        }
+      }
+    }
+
+    template MQTT_UT_Message m_ut_client_publish_pre_condition(charstring p_free_text, QoS_UT p_qos) :=
+    {
+      msg_type := PUBLISH,
+      msg := {
+        publish := {
+          qos_level := p_qos,
+          retain_flag := false,
+          topic_name := PX_PUBLISH_TOPIC,
+          payload_size := omit
+        }
+      },
+      free_text := p_free_text,
+      test_case := testcasename()
+    }
+
     template MQTT_UT_Message m_ut_client_subscribe_pre_condition(charstring p_free_text, QoS_UT p_qos) :=
     {
       msg_type := SUBSCRIBE,
@@ -163,14 +188,14 @@ module UT_Templates {
     template MQTT_UT_Message m_ut_client_connect_14(charstring p_host, integer p_port_num, charstring p_free_text)
     modifies m_ut_client_connect_08 := { }
 
-    template MQTT_UT_Message m_ut_client_publish_01(charstring p_host, integer p_port_num, charstring p_free_text) :=
+    template MQTT_UT_Message m_ut_client_publish_01(charstring p_free_text) :=
     {
       msg_type := PUBLISH,
       msg := {
         publish := {
           qos_level := AT_MOST_ONCE_DELIVERY,
           retain_flag := false,
-          topic_name := PX_WILL_TOPIC,
+          topic_name := PX_PUBLISH_TOPIC,
           payload_size := omit
         }
       },
@@ -178,7 +203,7 @@ module UT_Templates {
       test_case := testcasename()
     }
 
-    template MQTT_UT_Message m_ut_client_publish_02(charstring p_host, integer p_port_num, charstring p_free_text)
+    template MQTT_UT_Message m_ut_client_publish_02(charstring p_free_text)
     modifies m_ut_client_publish_01 := {
       msg := {
         publish := {
@@ -187,7 +212,7 @@ module UT_Templates {
       }
     }
 
-    template MQTT_UT_Message m_ut_client_publish_03(charstring p_host, integer p_port_num, charstring p_free_text)
+    template MQTT_UT_Message m_ut_client_publish_03(charstring p_free_text)
     modifies m_ut_client_publish_01 := {
       msg := {
         publish := {
@@ -196,7 +221,7 @@ module UT_Templates {
       }
     }
 
-    template MQTT_UT_Message m_ut_client_publish_04(charstring p_host, integer p_port_num, charstring p_free_text)
+    template MQTT_UT_Message m_ut_client_publish_04(charstring p_free_text)
     modifies m_ut_client_publish_01 := {
       msg := {
         publish := {
@@ -205,8 +230,89 @@ module UT_Templates {
       }
     }
 
-    template MQTT_UT_Message m_ut_client_publish_05(charstring p_host, integer p_port_num, charstring p_free_text)
+    template MQTT_UT_Message m_ut_client_publish_05(charstring p_free_text)
     modifies m_ut_client_publish_04 := {}
+
+    template MQTT_UT_Message m_ut_client_publish_09(charstring p_free_text)
+    modifies m_ut_client_publish_01 := {
+      msg := {
+        publish := {
+          qos_level := AT_LEAST_ONCE_DELIVERY
+        }
+      }
+    }
+
+    template MQTT_UT_Message m_ut_client_publish_10(charstring p_free_text)
+    modifies m_ut_client_publish_01 := {
+      msg := {
+        publish := {
+          qos_level := AT_LEAST_ONCE_DELIVERY
+        }
+      }
+    }
+
+    template MQTT_UT_Message m_ut_client_publish_11(charstring p_free_text)
+    modifies m_ut_client_publish_01 := {
+      msg := {
+        publish := {
+          qos_level := AT_MOST_ONCE_DELIVERY
+        }
+      }
+    }
+
+    template MQTT_UT_Message m_ut_client_subscribe_01(charstring p_free_text) :=
+    {
+      msg_type := SUBSCRIBE,
+      msg := {
+        subscribe := {
+          payload := {
+            { topic_filter := PX_PUBLISH_TOPIC, requested_qos := AT_MOST_ONCE_DELIVERY }
+          }
+        }
+      },
+      free_text := p_free_text,
+      test_case := testcasename()
+    }
+
+    template MQTT_UT_Message m_ut_client_subscribe_02(charstring p_free_text)
+    modifies m_ut_client_subscribe_01 := {}
+
+    template MQTT_UT_Message m_ut_client_subscribe_03(charstring p_free_text)
+    modifies m_ut_client_subscribe_01 := {}
+
+    template MQTT_UT_Message m_ut_client_unsubscribe_01(charstring p_free_text) :=
+    {
+      msg_type := UNSUBSCRIBE,
+      msg := {
+        unsubscribe := {
+          payload := { PX_PUBLISH_TOPIC }
+        }
+      },
+      free_text := p_free_text,
+      test_case := testcasename()
+    }
+
+    template MQTT_UT_Message m_ut_client_unsubscribe_02(charstring p_free_text)
+    modifies m_ut_client_unsubscribe_01 :=
+    {
+      msg := {
+        unsubscribe := {
+          payload := { WILDCARD }
+        }
+      }
+    }
+
+    template MQTT_UT_Message m_ut_client_disconnect_01(charstring p_free_text) := {
+      msg_type := DISCONNECT,
+      msg := {
+        disconnect_msg := { }
+      },
+      free_text := p_free_text,
+      test_case := testcasename()
+    }
+
+    template MQTT_UT_Message m_ut_client_disconnect_02(charstring p_free_text)
+    modifies m_ut_client_disconnect_01 := {}
 
     template UTasp_Message m_ut_message(template MQTT_UT_Message p_msg, UT_Connection p_conn) :=
     {

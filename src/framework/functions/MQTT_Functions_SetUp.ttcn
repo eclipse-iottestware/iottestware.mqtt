@@ -23,7 +23,7 @@ module MQTT_Functions_SetUp
   import from MQTT_Functions_Protocol all;
 
   import from IPL4asp_Types all;
-  
+
   import from UTasp_CtrlFunct all;
   import from UTasp_Types all;
 
@@ -35,7 +35,7 @@ module MQTT_Functions_SetUp
     * initialize a broker MTC
     * @return
     */
-    function f_init_broker() runs on MQTT_Broker_MTC return boolean
+    function f_init_broker(boolean p_auto_connack := true) runs on MQTT_Broker_MTC return boolean
     {
       log("[INIT](Initialize MQTT Broker PTC)")
       map(self:MQTT_PCO, system:MQTT_PCO);
@@ -74,8 +74,8 @@ module MQTT_Functions_SetUp
       tc_testcase_max.start;
       vc_timeout_default := activate(a_timeout_default(tc_testcase_max, PX_ON_TIMEOUT_VERDICT, PX_ON_TIMEOUT_VERDICT_VAL))
 
-      // activate auto accept of incoming mqtt connections
-      vc_accept_mqtt_conn := activate(a_accept_mqtt_conn())
+      // activate auto accept of incoming tcp connections
+      vc_accept_tcp_conn := activate(a_accept_tcp_conn())
 
       return true;
     }
@@ -86,11 +86,11 @@ module MQTT_Functions_SetUp
 
       // deactivate the default timeout behavior
       deactivate(vc_timeout_default);
-      deactivate(vc_accept_mqtt_conn);
+      deactivate(vc_accept_tcp_conn);
 
       // cleanly disconnect all connections
       f_disconnect_all();
-      
+
       if (PX_USE_UPPER_TESTER)
       {
         log("[CLR](Disconnect Upper Tester)")
@@ -100,15 +100,15 @@ module MQTT_Functions_SetUp
       unmap(self:MQTT_PCO, system:MQTT_PCO);
       self.stop;
     }
-    
-    
-    // TODO: move this function to upper_tester 
+
+
+    // TODO: move this function to upper_tester
     private function f_connect_ut() runs on MQTT_Broker_MTC
     return boolean
     {
       map(self:UT_PCO, system:UT_PCO);
       var boolean v_connectState := true;
-  
+
       // set the remote Host
       var UT_Connection v_ut_conn;
       v_ut_conn.local_name := "0.0.0.0";
@@ -117,9 +117,9 @@ module MQTT_Functions_SetUp
       v_ut_conn.remote_port := PX_UPPER_TESTER_PORT;
       v_ut_conn.reuse_address := true;
       log("Connect to UT: ", v_ut_conn.remote_name, ":", v_ut_conn.remote_port, " from local Port: ", v_ut_conn.local_port);
-  
+
       var Result vl_result := UTasp_CtrlFunct.f_UT_IPL4_connect(UT_PCO, v_ut_conn.remote_name, v_ut_conn.remote_port, v_ut_conn.local_name, v_ut_conn.local_port, -1, {tcp := {}}, {{reuseAddress := {enable := v_ut_conn.reuse_address}}});
-  
+
       if (not(ispresent(vl_result.connId)))
       {
         v_ut_conn.id := -1;
@@ -131,19 +131,19 @@ module MQTT_Functions_SetUp
         // TODO: how to get the message length of a UT message? lengthof(bytestream) ?
         //var f_IPL4_getMsgLen getMsg_Func := refers(f_GetMsgLengthMQTT);
         //f_IPL4_setGetMsgLen(UT_PCO, v_cid, getMsg_Func, {});
-        
+
         vl_ut_idx := v_ut_conn.id;
         vl_ut_connections[vl_ut_idx] := v_ut_conn;
       }
-  
+
       return v_connectState;
     }
-    
+
     // TODO: move this function to upper_tester
     private function f_disconnect_ut() runs on MQTT_Broker_MTC
     {
       var Result vl_result;
-  
+
       log("Closing Upper Tester connection " & int2str(vl_ut_idx));
       if (vl_ut_idx >= 0)
       {

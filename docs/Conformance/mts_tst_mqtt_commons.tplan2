@@ -77,6 +77,7 @@ Package mts_mqtt_commons {
         Int16 PACKET_ID_2;    // required for TPs where packet IDs need to be distinguished
         Int16 PACKET_ID_3;
         Int16 PACKET_ID_ZERO; // invalid packet id = 0x00
+        Int16 PACKET_ID_NON_ZERO;
 
         // invalid MQTT credentials
         UTF8String MQTT_USER_NAME_INVALID;              // invalid user name from application perspective
@@ -102,6 +103,7 @@ Package mts_mqtt_commons {
         UTF8String TOPIC_NAME_WC_MULTI_LVL;         // valid UTF-8 but invalid topic name because it contains multi-level wildcards
         UTF8String TOPIC_NAME_WC_SINGLE_LVL;        // valid UTF-8 but invalid topic name because it contains single-level wildcards
         UTF8String TOPIC_NAME_SYS;                  // topic name for reserved topics starting with $
+        UTF8String TOPIC_NAME_RESTRICTED;           // valid topic name which is restricted by special credentials
 
         UTF8String_invalid TOPIC_NAME_INVALID_UTF8; // invalid: general invalid UTF-8 topic name
         UTF8String_invalid TOPIC_NAME_0000;
@@ -109,6 +111,7 @@ Package mts_mqtt_commons {
         UTF8String_invalid WILL_TOPIC_0000;         // invalid: contains non-UTF8 chars: U+0000
         UTF8String_invalid TOPIC_FILTER_D800;       // invalid: contains non-UTF8 chars: U+D800
         UTF8String_invalid TOPIC_FILTER_0000;       // invalid: contains non-UTF8 chars: U+0000
+        UTF8String_invalid TOPIC_FILTER_INVALID_UTF8; // invalid: general invalid UTF-8 topic filter
 
         UTF8String USER_NAME_VALID_UTF8;
 

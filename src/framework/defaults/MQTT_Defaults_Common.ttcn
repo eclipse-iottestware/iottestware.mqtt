@@ -26,7 +26,7 @@ altstep a_timeout_default(timer p_timer, boolean p_set_verdict := false, verdict
   }
 }
 
-altstep a_accept_mqtt_conn() runs on MQTT_Broker_MTC
+altstep a_accept_tcp_conn() runs on MQTT_Broker_MTC
 {
   [] MQTT_PCO.receive(MQTT_ASP_Event:?) {
         log("Received MQTT_ASP_Event: Connect on MQTT_PCO")

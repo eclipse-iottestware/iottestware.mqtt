@@ -420,6 +420,30 @@ Package mts_tst {
     }
 
     Test Purpose {
+      TP Id TP_MQTT_Client_CONNACK_01
+
+      Test objective
+      "The IUT MUST close the network connection if fixed header flags in CONNACK Control Packet are invalid"
+      Reference
+      "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-4.8.0-1]"
+
+      Initial conditions
+      with {
+          the IUT entity is triggered to send a CONNECT message
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a CONNACK message containing
+          header_flags indicating value '1111'B;
+        } then {
+          the IUT entity closes the TCP_CONNECTION
+        }
+      }
+    }
+
+    Test Purpose {
         TP Id TP_MQTT_Client_PUBLISH_01
 
         Test objective
@@ -578,7 +602,7 @@ Package mts_tst {
         with {
             the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
             and
-            the IUT entity subscribed the PX_PUBLISH_TOPIC on the TEST_SYSTEM entity
+            the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
         }
 
         Expected behaviour
@@ -587,7 +611,7 @@ Package mts_tst {
             the IUT entity receives a PUBLISH message containing
                 header containing
                     qos_level corresponding to AT_MOST_ONCE,
-                topic_name corresponding to PX_PUBLISH_TOPIC;
+                topic_name corresponding to PX_PUBLISH_TOPIC;;
           } then {
             the IUT entity sends no response message
           }
@@ -608,7 +632,7 @@ Package mts_tst {
         with {
           the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
           and
-          the IUT entity subscribed the PX_PUBLISH_TOPIC on the TEST_SYSTEM entity
+          the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
         }
 
         Expected behaviour
@@ -618,7 +642,7 @@ Package mts_tst {
                 header containing
                     qos_level corresponding to AT_LEAST_ONCE,
                 packet_identifier corresponding to PACKET_ID,
-                topic_name corresponding to PX_PUBLISH_TOPIC;
+                topic_name corresponding to PX_PUBLISH_TOPIC;;
           } then {
             the IUT entity sends a PUBACK message containing
                 packet_identifier corresponding to PACKET_ID;
@@ -640,7 +664,7 @@ Package mts_tst {
         with {
           the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
           and
-          the IUT entity subscribed the PX_PUBLISH_TOPIC on the TEST_SYSTEM entity
+          the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
         }
 
         Expected behaviour
@@ -650,7 +674,7 @@ Package mts_tst {
                 header containing
                     qos_level corresponding to EXACTLY_ONCE,
                 packet_identifier corresponding to PACKET_ID,
-                topic_name corresponding to PX_PUBLISH_TOPIC;
+                topic_name corresponding to PX_PUBLISH_TOPIC;;
           } then {
             the IUT entity sends a PUBREC message containing
                 packet_identifier corresponding to PACKET_ID;
@@ -658,10 +682,502 @@ Package mts_tst {
         }
     }
 
-
-/*
     Test Purpose {
-        TP Id TP_MQTT_Client_PINGREQ_01
+      TP Id TP_MQTT_Client_PUBLISH_09
+
+      Test objective
+      "Each time the IUT sends a new PUBLISH control packet with QoS > 0 it MUST assign a non-zero packet identifier"
+
+      Reference
+      "[MQTT-2.3.1-1]"
+
+      PICS Selection PICS_CLIENT_QOS_1
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity is triggered to send a PUBLISH message containing
+          header containing
+              qos_level corresponding to AT_LEAST_ONCE;;
+        } then {
+          the IUT entity sends a PUBLISH message containing
+              packet_identifier corresponding to PACKET_ID_NON_ZERO;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBLISH_10
+
+      Test objective
+      "Each time the IUT sends a new PUBLISH control packet with QoS > 0 it MUST assign a currently unused and non-zero packet identifier"
+
+      Reference
+      "[MQTT-2.3.1-2]"
+
+      PICS Selection PICS_CLIENT_QOS_1
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity is triggered to send a PUBLISH message containing
+          header containing
+              qos_level corresponding to AT_LEAST_ONCE;;
+          and
+          the IUT entity is triggered to send a PUBLISH message containing
+          header containing
+              qos_level corresponding to AT_LEAST_ONCE;;
+        } then {
+          the IUT entity sends a PUBLISH message containing
+              packet_identifier corresponding to PACKET_ID_1;
+          and
+          the IUT entity sends a PUBLISH message containing
+              packet_identifier corresponding to PACKET_ID_2;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBLISH_11
+
+      Test objective
+      "A PUBLISH Packet MUST NOT contain a packet identifier if its QoS value is set to 0"
+
+      Reference
+      "[MQTT-2.3.1-5]"
+
+      PICS Selection PICS_CLIENT_BASIC
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity is triggered to send a PUBLISH message containing
+          header containing
+              qos_level corresponding to AT_MOST_ONCE;;
+        } then {
+          the IUT entity sends a PUBLISH message containing
+              packet_identifier indicating value omit;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBACK_01
+
+      Test objective
+      "Header flags in PUBACK Control Packet are reserved for future use"
+      Reference
+      "[MQTT-2.2.2-1]"
+
+      PICS Selection PICS_CLIENT_BASIC
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        and
+        the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a PUBLISH message containing
+              header containing
+                  qos_level corresponding to AT_LEAST_ONCE,
+              topic_name corresponding to PX_PUBLISH_TOPIC;;
+        } then {
+          the IUT entity sends a PUBACK message containing
+              header_flags indicating value '0000'B;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBACK_02
+
+      Test objective
+      "A PUBACK packet MUST contain the same packet identifier as the PUBLISH packet that was originally sent"
+      Reference
+      "[MQTT-2.3.1-6]"
+
+      PICS Selection PICS_CLIENT_QOS_1
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        and
+        the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a PUBLISH message containing
+              header containing
+                  qos_level corresponding to AT_LEAST_ONCE,
+              topic_name corresponding to PX_PUBLISH_TOPIC,
+              packet_identifier corresponding to PACKET_ID;;
+        } then {
+          the IUT entity sends a PUBACK message containing
+              packet_identifier corresponding to PACKET_ID;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBREC_01
+
+      Test objective
+      "Header flags in PUBREC Control Packet are reserved for future use"
+      Reference
+      "[MQTT-2.2.2-1]"
+
+      PICS Selection PICS_CLIENT_QOS_2
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        and
+        the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a PUBLISH message containing
+              header containing
+                  qos_level corresponding to EXACTLY_ONCE,
+              topic_name corresponding to PX_PUBLISH_TOPIC;;
+        } then {
+          the IUT entity sends a PUBREC message containing
+              header_flags indicating value '0000'B;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBREC_02
+
+      Test objective
+      "A PUBREC packet MUST contain the same packet identifier as the PUBLISH packet that was originally sent"
+      Reference
+      "[MQTT-2.3.1-6]"
+
+      PICS Selection PICS_CLIENT_QOS_2
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        and
+        the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a PUBLISH message containing
+              header containing
+                  qos_level corresponding to EXACTLY_ONCE,
+              topic_name corresponding to PX_PUBLISH_TOPIC,
+              packet_identifier corresponding to PACKET_ID;;
+        } then {
+          the IUT entity sends a PUBREC message containing
+              acket_identifier corresponding to PACKET_ID;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBREL_01
+
+      Test objective
+      "Header flags in PUBREL Control Packet are reserved for future use"
+      Reference
+      "[MQTT-2.2.2-1]"
+
+      PICS Selection PICS_CLIENT_QOS_2
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a PUBREC message
+        } then {
+          the IUT entity sends a PUBREL message containing
+              header_flags indicating value '0000'B;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBREL_02
+
+      Test objective
+      "A PUBREL packet MUST contain the same packet identifier as the PUBLISH packet that was originally sent"
+      Reference
+      "[MQTT-2.3.1-6]"
+
+      PICS Selection PICS_CLIENT_QOS_2
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a PUBREC message containing
+            packet_identifier corresponding to PACKET_ID;
+        } then {
+          the IUT entity sends a PUBREL message containing
+              packet_identifier corresponding to PACKET_ID;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_PUBCOMP_01
+
+      Test objective
+      "Header flags in PUBCOMP Control Packet are reserved for future use"
+      Reference
+      "[MQTT-2.2.2-1]"
+
+      PICS Selection PICS_CLIENT_BASIC
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        and
+        the IUT entity subscribed the PX_PUBLISH_TOPIC to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity receives a PUBREL message
+        } then {
+          the IUT entity sends a PUBCOMP message containing
+              header_flags indicating value '0000'B;
+        }
+      }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_SUBSCRIBE_01
+
+        Test objective
+        "Header flags in SUBSCRIBE Control Packet are reserved for future use"
+        Reference
+        "[MQTT-2.2.2-1], [MQTT-3.8.1-1]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Initial conditions
+        with {
+          the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        }
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity is triggered to send a SUBSCRIBE message
+          } then {
+              the IUT entity sends a SUBSCRIBE message containing
+                header_flags indicating value '0010'B;
+          }
+        }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_SUBSCRIBE_02
+
+      Test objective
+      "Each time the IUT sends a SUBSCRIBE control packet it must contain a non-zero 16-bit packet identifier"
+
+      Reference
+      "[MQTT-2.3.1-2]"
+
+      PICS Selection PICS_CLIENT_BASIC
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity is triggered to send a SUBSCRIBE message
+        } then {
+          the IUT entity sends a SUBSCRIBE message containing
+              packet_identifier corresponding to PACKET_ID_1;
+        }
+      }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_SUBSCRIBE_03
+
+      Test objective
+      "Each time the IUT sends a new SUBSCRIBE control packet it MUST assign a currently unused and non-zero packet identifier"
+
+      Reference
+      "[MQTT-2.3.1-2]"
+
+      PICS Selection PICS_CLIENT_BASIC
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+          the IUT entity is triggered to send a SUBSCRIBE message
+          and
+          the IUT entity is triggered to send a SUBSCRIBE message
+        } then {
+          the IUT entity sends a SUBSCRIBE message containing
+              packet_identifier corresponding to PACKET_ID_1;
+          and
+          the IUT entity sends a SUBSCRIBE message containing
+              packet_identifier corresponding to PACKET_ID_2;
+        }
+      }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_UNSUBSCRIBE_01
+
+        Test objective
+        "Header flags in UNSUBSCRIBE Control Packet are reserved for future use"
+
+        Reference
+        "[MQTT-2.2.2-1], [MQTT-3.10.1-1]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Initial conditions
+        with {
+          the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        }
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity is triggered to send a UNSUBSCRIBE message
+          } then {
+              the IUT entity sends a UNSUBSCRIBE message containing
+                header_flags indicating value '0010'B;
+          }
+        }
+    }
+
+    Test Purpose {
+      TP Id TP_MQTT_Client_UNSUBSCRIBE_02
+
+      Test objective
+      "The Topic Filters in an UNSUBSCRIBE packet MUST be UTF-8 encoded strings"
+
+      Reference
+      "[MQTT-3.10.3-1]"
+
+      PICS Selection PICS_CLIENT_BASIC
+
+      Initial conditions
+      with {
+        the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+      }
+
+      Expected behaviour
+      ensure that {
+        when {
+            the IUT entity is triggered to send a UNSUBSCRIBE message
+        } then {
+            the IUT entity sends a UNSUBSCRIBE message containing
+              payload containing
+                topic_filter not corresponding to TOPIC_FILTER_INVALID_UTF8;;
+        }
+      }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_DISCONNECT_01
+
+        Test objective
+        "Header flags in DISCONNECT Control Packet are reserved for future use"
+        Reference
+        "[MQTT-2.2.2-1]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Initial conditions
+        with {
+          the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        }
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity is triggered to send a DISCONNECT message
+          } then {
+              the IUT entity sends a DISCONNECT message containing
+                header_flags indicating value '0000'B;
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_DISCONNECT_02
+
+        Test objective
+        "After sending a DISCONNECT Packet the Client MUST close the Network Connection"
+        Reference
+        "[MQTT-3.14.4-1]"
+
+        PICS Selection PICS_CLIENT_BASIC
+
+        Initial conditions
+        with {
+          the IUT entity having a MQTT_CONNECTION to the TEST_SYSTEM entity
+        }
+
+        Expected behaviour
+        ensure that {
+          when {
+              the IUT entity is triggered to send a DISCONNECT message
+          } then {
+              the IUT entity sends a DISCONNECT message
+              and
+              the IUT entity closes the TCP_CONNECTION
+          }
+        }
+    }
+
+    Test Purpose {
+        TP Id TP_MQTT_Client_FEAT_KEEPALIVE_01
 
         Test objective
         "It is the responsibility of the Client to ensure that the interval between Control Packets being sent does not exceed the Keep Alive value."
@@ -672,19 +1188,17 @@ Package mts_tst {
 
         Initial conditions
         with {
-            the IUT entity having a present MQTT_CONNECTION to the TEST_SYSTEM entity
-            // TODO: the CONNECT Packet must contain keep_alive > 0
+            the IUT entity having a MQTT_CONNECTION containing
+              keep_alive corresponding to PX_KEEP_ALIVE;
         }
 
         Expected behaviour
         ensure that {
           when {
-              the IUT entity sends no messages actively
+              the MQTT_CONNECTION entity times_out
           } then {
-              the TEST_SYSTEM entity receives a PINGREQ message within "keep alive interval" // TODO: how to formulate the timing aspect?
+              the IUT entity sends a PINGREQ message
           }
         }
     }
-    * Note: MQTT Spec defines more behaviors for PINGREQ / PINGRESP on Page 27 without conformance statements
-    */
 }

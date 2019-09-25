@@ -91,6 +91,17 @@ module MQTT_Templates_DISCONNECT
             disconnect_msg := ?
           }
         }
+
+        template MQTT_v3_1_1_Message mw_disconnect_flags(BIT4n p_flags := '0000'B) :=
+        {
+          msg :=
+          {
+            disconnect_msg :=
+            {
+              header := mw_disconnect_header(p_flags)
+            }
+          }
+        }
       }
     }
   }

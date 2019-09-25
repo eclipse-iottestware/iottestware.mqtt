@@ -37,6 +37,11 @@ module MQTT_Pixits {
     // modulepar charstring PX_TOPIC_FILTER := PX_TOPIC_NAME & "/#"
 
     /*
+     * @desc this topic must not be accessible by the client
+     */
+    modulepar charstring PX_TOPIC_NAME_RESTRICTED := "eclipse/iot/testware/restricted"
+
+    /*
      * @desc defines the time in seconds how long the TS will wait for responses from the SUT
      */
     modulepar float PX_MAX_RESPONSE_TIME := 5.0;

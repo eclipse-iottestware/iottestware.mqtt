@@ -21,7 +21,7 @@ type ASP_Event MQTT_ASP_Event;  // map ASP_Event to avoid import of IPL4asp_Type
 
 // Notes:
 // Wait_publish is used to mark dropped publish packets -> wait for re-transmission of publish on QoS > 0
-type enumerated MQTT_ClientState { Idle, Wait_connack, Connected, Wait_suback, Wait_unsuback, Wait_publish, Wait_puback, Wait_pubrec, Wait_pubrel, Wait_pubcomp,  Subscribed , Disconnected }
+type enumerated MQTT_ClientState { Idle, Wait_connack, Connected, Wait_suback, Wait_unsuback, Wait_publish, Wait_puback, Wait_pubrec, Wait_pubrel, Wait_pubcomp,  Subscribed , Disconnected, Rejected }
 
 
 type record MQTT_Connection {

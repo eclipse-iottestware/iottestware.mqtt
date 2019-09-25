@@ -263,6 +263,12 @@ module MQTT_Functions_Protocol
       f_send_mqtt(p_conn, vt_suback)
     }
 
+    function f_send_suback_1(inout MQTT_Connection p_conn, integer p_packet_id, integer p_return_code) runs on MQTT_Broker_MTC
+    {
+      var IntegerList v_rc := { p_return_code }
+      f_send_suback(p_conn, p_packet_id, v_rc)
+    }
+
     /*
      * @desc response with a UNSUBACK
      */

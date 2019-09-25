@@ -964,6 +964,43 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
+    TP Id TP_MQTT_Broker_CONNECT_032
+
+    Test objective
+    "If the IUT rejects the CONNECT, the IUT MUST NOT process any data sent by the client after the CONNECT packet"
+
+    Reference
+    "[MQTT-3.2.0-1]"
+
+    PICS Selection PICS_BROKER_AUTH
+
+    Initial conditions
+    with {
+      the IUT entity received a CONNECT message containing
+        connect_flags containing
+            user_name_flag indicating value '1'B,
+            password_flag indicating value '1'B,
+        payload containing
+            user_name corresponding to MQTT_USER_NAME_INVALID,
+            password corresponding to MQTT_PASSWORD_INVALID;;;
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a SUBSCRIBE message
+      } then {
+        the IUT entity sends a CONNACK message containing
+          connect_return_code indicating value 0x05;
+        and
+        the IUT entity sends no SUBACK message
+        and
+        the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
     TP Id TP_MQTT_Broker_CONNACK_001
 
     Test objective
@@ -1678,6 +1715,38 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
+    TP Id TP_MQTT_Broker_PUBLISH_012
+
+    Test objective
+    "If the IUT does not authorize a PUBLISH to be performed by a Client; it has no way of informing that Client. The IUT MUST either make a positive acknowledgement, according to the normal QoS rules, or close the Network Connection"
+
+    Reference
+    "[MQTT-3.3.5-2]"
+
+    PICS Selection PICS_BROKER_QOS_1
+
+    Initial conditions
+    with {
+      the TEST_SYSTEM entity having a MQTT_CONNECTION to the IUT entity
+    }
+
+    Expected behaviour
+    ensure that {
+      when {
+        the IUT entity receives a PUBLISH message containing
+        header containing
+          qos_level corresponding to AT_LEAST_ONCE,
+        topic_name corresponding to TOPIC_NAME_RESTRICTED;
+        ;
+      } then {
+          the IUT entity sends a PUBACK message
+          or
+          the IUT entity closes the TCP_CONNECTION
+      }
+    }
+  }
+
+  Test Purpose {
     TP Id TP_MQTT_Broker_PUBACK_001
 
     Test objective
@@ -1726,7 +1795,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT MUST send PUBACK packet in the order in which the corresponding PUBLISH packets where received (QoS 1 messages)"
     Reference
-    "[MQTT-4.6.0-2], [MQTT-3.3.4-1], [MQTT-4.6.0-6]"
+    "[MQTT-4.6.0-2], [MQTT-3.3.4-1], [MQTT-4.6.0-6], [MQTT-2.3.1-6]"
     PICS Selection PICS_BROKER_QOS_1
 
     Initial conditions
@@ -1809,7 +1878,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT MUST send PUBREC packets in the order in which the corresponding PUBLISH packets were received (QoS 2 messages)"
     Reference
-    "[MQTT-4.6.0-3], [MQTT-3.3.4-1], [MQTT-4.6.0-6]"
+    "[MQTT-4.6.0-3], [MQTT-3.3.4-1], [MQTT-4.6.0-6], [MQTT-2.3.1-6]"
     PICS Selection PICS_BROKER_QOS_2
 
     Initial conditions
@@ -1884,7 +1953,7 @@ Package mts_tst_mqtt {
     Test objective
     "It MUST send PUBREL packets in the order in which the corresponding PUBREC packets were received (QoS 2 messages)"
     Reference
-    "[MQTT-4.6.0-4], [MQTT-4.6.0-6]"
+    "[MQTT-4.6.0-4], [MQTT-4.6.0-6], [MQTT-2.3.1-6]"
     PICS Selection PICS_BROKER_QOS_2
 
     Initial conditions
@@ -2042,8 +2111,7 @@ Package mts_tst_mqtt {
                 requested_qos corresponding to AT_LEAST_ONCE;
             ;
         } then {
-            the IUT entity sends a SUBACK message containing
-                packet_identifier corresponding to PACKET_ID_ZERO;
+            the IUT entity closes the TCP_CONNECTION
         }
     }
   }
@@ -2356,9 +2424,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_SUBACK_002
 
     Test objective
-    "SUBSCRIBE (in case where QoS > 0) Control Packet MUST contain a non-zero 16-bit Packet Identifier"
+    "A SUBACK MUST contain the packet identifier that was used in the corresponding SUBSCRIBE packet."
+
     Reference
-      "[MQTT-2.3.1-1], [MQTT-2.3.1-7], [MQTT-3.8.4-1], [MQTT-3.8.4-2]"
+    "[MQTT-2.3.1-1], [MQTT-2.3.1-7], [MQTT-3.8.4-1], [MQTT-3.8.4-2]"
+
     PICS Selection PICS_BROKER_QOS_1
 
     Initial conditions
@@ -2750,7 +2820,7 @@ Package mts_tst_mqtt {
     Test objective
     "The IUT MUST respond to an UNSUBSCRIBE request by sending an UNSUBACK control packet. The UNSUBACK control packet MUST have the same Packet Identifier as the UNSUBSCRIBE Control Packet."
     Reference
-      "[MQTT-3.10.4-4]"
+      "[MQTT-3.10.4-4], [MQTT-2.3.1-7]"
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
@@ -3743,11 +3813,10 @@ Package mts_tst_mqtt {
     Expected behaviour
     ensure that {
       when {
-      the IUT entity receives a SUBSCRIBE message containing
-      payload containing
-          topic_filter corresponding to TOPIC_FILTER_WITH_ZWNBS,
-          requested_qos corresponding to AT_MOST_ONCE;
-      ;
+      the IUT entity receives a PUBLISH message containing
+      publish_header containing
+        qos_level corresponding to AT_MOST_ONCE,
+      topic_name corresponding to TOPIC_FILTER_WITH_ZWNBS;;
       from the CLIENT_1 entity
       } then {
         the IUT entity sends no PUBLISH to the CLIENT_2 entity

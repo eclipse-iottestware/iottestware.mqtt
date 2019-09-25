@@ -132,16 +132,17 @@ module UT_Types
       ReturnCodeList return_codes
     }
 
+    /*
     type record MQTT_UT_UnsubscribePayload
     {
       UCHAR0_65535List topic_filter
-    }
+    }*/
 
     type record MQTT_UT_Unsubscribe
     {
       // packet ids probably not accessible from client
       //integer                             packet_identifier (0..65535),
-      MQTT_UT_UnsubscribePayload payload
+      UCHAR0_65535List payload
     }
 
     type record MQTT_UT_Identifier

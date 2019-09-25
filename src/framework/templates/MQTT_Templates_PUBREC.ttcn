@@ -104,6 +104,18 @@ module MQTT_Templates_PUBREC
           }
         }
 
+        template MQTT_v3_1_1_Message mw_pubrec_header_flags(BIT4n p_flags := '0000'B) :=
+        {
+          msg :=
+          {
+            pubrec :=
+            {
+              header := mw_pubrec_header(p_flags),
+              packet_identifier := ?
+            }
+          }
+        }
+
         template MQTT_v3_1_1_Message mw_pubrec_packet_id(integer p_packetId) :=
         {
           msg :=

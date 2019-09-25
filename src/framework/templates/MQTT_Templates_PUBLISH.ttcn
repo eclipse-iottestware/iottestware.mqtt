@@ -271,6 +271,21 @@ module MQTT_Templates_PUBLISH
         }
       }
 
+      template MQTT_v3_1_1_Message mw_publish_message_qos0 :=
+      {
+        msg :=
+        {
+          publish := mdw_publish_packet_qos0(AT_MOST_ONCE_DELIVERY)
+        }
+      }
+
+      template MQTT_v3_1_1_Message mw_publish_message_qos(QoS p_qos) :=
+      {
+        msg :=
+        {
+          publish := mw_publish_packet_qos(p_qos)
+        }
+      }
 
     } // end group PUBLISH_MessageGroup
   } // group matchingTemplates

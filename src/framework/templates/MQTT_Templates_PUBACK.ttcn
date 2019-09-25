@@ -103,6 +103,18 @@ module MQTT_Templates_PUBACK
           }
         }
 
+        template MQTT_v3_1_1_Message mw_puback_header_flags(BIT4n p_flags := '0000'B) :=
+        {
+          msg :=
+          {
+            puback :=
+            {
+              header := mw_puback_header(p_flags),
+              packet_identifier := ?
+            }
+          }
+        }
+
         template MQTT_v3_1_1_Message mw_puback_packet_id(integer p_packetId) :=
         {
           msg :=

@@ -209,6 +209,19 @@ group connectGroup
   /*
   * @purpose TODO
   *
+  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-4.8.0-1]
+  */
+  testcase TC_MQTT_Client_CONNACK_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_CONNACK_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
   * @reference [MQTT-3.3.1-2]
   */
   testcase TC_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_MTC
@@ -309,5 +322,240 @@ group connectGroup
     }
     f_clear_broker();
   }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-1]
+  */
+  testcase TC_MQTT_Client_PUBLISH_09() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBLISH_09()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-2]
+  */
+  testcase TC_MQTT_Client_PUBLISH_10() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBLISH_10()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-5]
+  */
+  testcase TC_MQTT_Client_PUBLISH_11() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBLISH_11()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  testcase TC_MQTT_Client_PUBACK_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBACK_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-6]
+  */
+  testcase TC_MQTT_Client_PUBACK_02() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBACK_02()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  testcase TC_MQTT_Client_PUBREC_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBREC_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-6]
+  */
+  testcase TC_MQTT_Client_PUBREC_02() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBREC_02()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  testcase TC_MQTT_Client_PUBREL_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBREL_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-6]
+  */
+  testcase TC_MQTT_Client_PUBREL_02() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBREL_02()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  testcase TC_MQTT_Client_PUBCOMP_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_PUBCOMP_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  testcase TC_MQTT_Client_SUBSCRIBE_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_SUBSCRIBE_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-1]
+  */
+  testcase TC_MQTT_Client_SUBSCRIBE_02() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_SUBSCRIBE_02()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.3.1-2]
+  */
+  testcase TC_MQTT_Client_SUBSCRIBE_03() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_SUBSCRIBE_03()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  testcase TC_MQTT_Client_UNSUBSCRIBE_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_UNSUBSCRIBE_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.10.3-1]
+  */
+  testcase TC_MQTT_Client_UNSUBSCRIBE_02() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_UNSUBSCRIBE_02()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-2.2.2-1]
+  */
+  testcase TC_MQTT_Client_DISCONNECT_01() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_DISCONNECT_01()
+    }
+    f_clear_broker();
+  }
+
+  /*
+  * @purpose TODO
+  *
+  * @reference [MQTT-3.14.4-1]
+  */
+  testcase TC_MQTT_Client_DISCONNECT_02() runs on MQTT_Broker_MTC
+  {
+    if(f_init_broker()) {
+      f_MQTT_Client_DISCONNECT_02()
+    }
+    f_clear_broker();
+  }
+
+
+  /*
+   * @purpose TODO
+   *
+   * @reference [MQTT-3.1.2-23]
+   */
+   testcase TC_MQTT_Client_FEAT_KEEPALIVE_01() runs on MQTT_Broker_MTC
+   {
+     if(f_init_broker()) {
+       f_MQTT_Client_FEAT_KEEPALIVE_01()
+     }
+     f_clear_broker();
+   }
 
 } // module

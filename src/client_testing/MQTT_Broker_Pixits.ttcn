@@ -76,6 +76,12 @@ module MQTT_Broker_Pixits {
     * timers and timeout behaviors
     **********************************************************************/
 
+    /*
+     * @desc the keep alive is a maximum time interval that is permitted to elapse between
+     * two control packets 
+     */
+    modulepar integer PX_KEEP_ALIVE := 10
+
    /*
     * @desc max duration in seconds per test case
     */
