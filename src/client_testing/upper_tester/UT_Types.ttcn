@@ -40,11 +40,7 @@ module UT_Types
       AT_MOST_ONCE_DELIVERY(0),
       AT_LEAST_ONCE_DELIVERY(1),
       EXACTLY_ONE_DELIVERY(2)
-      //RESERVED(3) // this one is not needed for upper tester
-    } //with {
-      //variant "JSON: as number";
-      //encode "JSON"
-    //}
+    }
 
     type integer RETURN_CODE (0..255);
 

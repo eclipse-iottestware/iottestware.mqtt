@@ -78,7 +78,7 @@ module MQTT_Broker_Pixits {
 
     /*
      * @desc the keep alive is a maximum time interval that is permitted to elapse between
-     * two control packets 
+     * two control packets
      */
     modulepar integer PX_KEEP_ALIVE := 10
 
@@ -110,7 +110,12 @@ module MQTT_Broker_Pixits {
    /*
     * @desc max duration to wait for a "NO RESPONSE"
     */
-   modulepar float PX_AWAIT_NO_RESPONSE_TIMER := 5.0
+   modulepar float PX_AWAIT_NO_RESPONSE_TIMER := 5.0;
+
+   /*
+    * @desc max duration to wait for a response
+    */
+   modulepar float PX_WAIT_FOR_RESPONSE_TIMER := 5.0;
 
    /**********************************************************************
     * configuration of optional behaviors

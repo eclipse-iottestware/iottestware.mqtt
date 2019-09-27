@@ -415,11 +415,13 @@ group connectGroup
 
         if (not ispresent(v_received.msg.msg.connect_msg.payload.user_name))
         {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "uesr_name flag is '1'B but payload dosn't contain user_name")
         }
 
         if (not ispresent(v_received.msg.msg.connect_msg.payload.password))
         {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "password flag is '1'B but payload dosn't contain a password")
         }
 
@@ -562,6 +564,7 @@ group connectGroup
           else
           {
             f_send_connack(v_conn, 2) // [MQTT-3.1.3-9]
+            f_terminate_due_to_violation(v_received.conn)
             setverdict(fail, "Client ID is empty but Clean Session flag is not set")
           }
         }
@@ -609,6 +612,7 @@ group connectGroup
             }
             else
             {
+              f_terminate_due_to_violation(v_received.conn)
               setverdict(fail, "Will Topic is invalid UTF-8")
             }
           }
@@ -661,6 +665,7 @@ group connectGroup
             }
             else
             {
+              f_terminate_due_to_violation(v_received.conn)
               setverdict(fail, "Username is invalid UTF-8")
             }
           }
@@ -911,6 +916,7 @@ group publishGroup
         {
           setverdict(pass, "Publish topic name is valid UTF-8")
         } else {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "Publish topic name is invalid UTF-8")
         }
       }
@@ -945,6 +951,7 @@ group publishGroup
         {
           setverdict(pass, "Publish topic name is valid")
         } else {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "Publish topic name is invalid")
         }
       }
@@ -1104,6 +1111,7 @@ group publishGroup
         if(v_packet_id > 0) {
           setverdict(pass, "IUT sent PUBLISH with valid packet identifier")
         } else {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "PUBLISH with QoS > 0 must have a non-zero packet identifier")
         }
       }
@@ -1147,6 +1155,7 @@ group publishGroup
               f_send_pub_response(v_received.conn, v_received.msg.msg.publish.header.qos_level, v_next_packet_id)
               setverdict(pass, "IUT assigned an unused packet identifier")
             } else {
+              f_terminate_due_to_violation(v_received.conn)
               setverdict(fail, "IUT assigned an used packet identifier")
             }
             break
@@ -1183,6 +1192,7 @@ group publishGroup
         setverdict(pass, "IUT sent correctly publish with QoS 0 and no packet identifier")
       }
       [] MQTT_PCO.receive(mw_mqtt_message(mw_publish_message_qos(AT_MOST_ONCE_DELIVERY))) -> value v_received {
+        f_terminate_due_to_violation(v_received.conn)
         setverdict(fail, "Publish with QoS 0 must not have a packet identifier")
       }
       [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
@@ -1220,16 +1230,22 @@ group publishGroup
       var template MQTTasp_Message v_expect := mw_mqtt_message(mw_puback_header_flags('0000'B))
       var template MQTTasp_Message v_puback := mw_mqtt_message(mw_puback)
 
+      timer t_response := PX_WAIT_FOR_RESPONSE_TIMER;
+      t_response.start;
       f_send_mqtt(v_conn, v_message)
       alt {
         [] MQTT_PCO.receive(v_expect) -> value v_received {
           setverdict(pass, "Checked PUBACK reserved flags")
         }
         [] MQTT_PCO.receive(v_puback) -> value v_received {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "Received invalid PUBACK")
         }
         [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
           setverdict(fail, "IUT respond with unexpected message ", v_received)
+        }
+        [] t_response.timeout {
+          setverdict(fail, "IUT did not send a PUBACK response")
         }
       }
     } else {
@@ -1267,16 +1283,22 @@ group publishGroup
       var template MQTTasp_Message v_expect := mw_mqtt_message(mw_puback_packet_id(v_packet_id))
       var template MQTTasp_Message v_puback := mw_mqtt_message(mw_puback)
 
+      timer t_response := PX_WAIT_FOR_RESPONSE_TIMER;
+      t_response.start;
       f_send_mqtt(v_conn, v_message)
       alt {
         [] MQTT_PCO.receive(v_expect) -> value v_received {
           setverdict(pass, "Received PUBACK with correct packet identifier")
         }
         [] MQTT_PCO.receive(v_puback) -> value v_received {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "Received invalid PUBACK")
         }
         [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
           setverdict(fail, "IUT respond with unexpected message ", v_received)
+        }
+        [] t_response.timeout {
+          setverdict(fail, "IUT did not send a PUBACK response")
         }
       }
     } else {
@@ -1320,6 +1342,7 @@ group publishGroup
           setverdict(pass, "Checked PUBREC reserved flags")
         }
         [] MQTT_PCO.receive(v_pubrec) -> value v_received {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "Received invalid PUBREC")
         }
         [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
@@ -1367,6 +1390,7 @@ group publishGroup
           setverdict(pass, "Received PUBREC with correct packet identifier")
         }
         [] MQTT_PCO.receive(v_pubrec) -> value v_received {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "Received invalid PUBREC")
         }
         [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
@@ -1456,6 +1480,7 @@ group publishGroup
               f_send_mqtt(v_conn, v_pubcomp)
               setverdict(pass, "Received PUBREL with correct packet identifier")
             } else {
+              f_terminate_due_to_violation(v_received.conn)
               setverdict(fail, "Received PUBREL with incorrect packet identifier")
             }
           }
@@ -1514,11 +1539,13 @@ group publishGroup
               setverdict(pass, "Checked PUBCOMP header flags")
             }
             [] MQTT_PCO.receive(v_pubcomp) {
+              f_terminate_due_to_violation(v_received.conn)
               setverdict(fail, "Received invalid PUBCOMP")
             }
           }
         }
         [] MQTT_PCO.receive(v_pubrec) -> value v_received {
+          f_terminate_due_to_violation(v_received.conn)
           setverdict(fail, "Received invalid PUBREC")
         }
         [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
@@ -1553,6 +1580,7 @@ function f_MQTT_Client_SUBSCRIBE_01() runs on MQTT_Broker_MTC
   // expected behaviour
   alt {
     [] MQTT_PCO.receive(mw_mqtt_message(mw_subscribe_valid)) -> value v_received {
+      f_send_suback_1(v_received.conn, v_received.msg.msg.subscribe.packet_identifier, 0)
       setverdict(pass, "IUT send SUBSCRIBE with correct header flags")
       break
     }
@@ -1586,6 +1614,7 @@ function f_MQTT_Client_SUBSCRIBE_02() runs on MQTT_Broker_MTC
         f_send_suback_1(v_received.conn, v_received.msg.msg.subscribe.packet_identifier, 0)
         setverdict(pass, "IUT send SUBSCRIBE with valid packet identifier")
       } else {
+        f_terminate_due_to_violation(v_received.conn)
         setverdict(fail, "SUBSCRIBE must have a non-zero 16-Bit packet identifier")
       }
       break
@@ -1618,6 +1647,9 @@ function f_MQTT_Client_SUBSCRIBE_03() runs on MQTT_Broker_MTC
     [] MQTT_PCO.receive(mw_mqtt_message(mw_subscribe_valid)) -> value v_received {
       var integer v_packet_id_1 := v_received.msg.msg.subscribe.packet_identifier
 
+      timer t_response := PX_WAIT_FOR_RESPONSE_TIMER;
+      t_response.start;
+
       v_free_text := "Please send a SUBSCRIBE with second ID"
       v_trigger := m_ut_client_subscribe_03(v_free_text)
       f_ut_trigger(v_trigger)
@@ -1630,11 +1662,15 @@ function f_MQTT_Client_SUBSCRIBE_03() runs on MQTT_Broker_MTC
             f_send_suback_1(v_received.conn, v_packet_id_2, 0)
             setverdict(pass, "IUT assigned an unused packet identifier")
           } else {
+            f_terminate_due_to_violation(v_received.conn)
             setverdict(fail, "IUT assigned an used packet identifier")
           }
         }
         [] MQTT_PCO.receive(MQTTasp_Message:?) -> value v_received {
           setverdict(fail, "IUT respond with unexpected message ", v_received)
+        }
+        [] t_response.timeout {
+          setverdict(fail, "IUT did not send the second SUBSCRIBE in time")
         }
       }
     }
@@ -1664,6 +1700,7 @@ function f_MQTT_Client_UNSUBSCRIBE_01() runs on MQTT_Broker_MTC
   // expected behaviour
   alt {
     [] MQTT_PCO.receive(mw_mqtt_message(mw_unsubscribe_valid)) -> value v_received {
+      f_send_unsuback(v_received.conn, v_received.msg.msg.unsubscribe.packet_identifier)
       setverdict(pass, "IUT send UNSUBSCRIBE with correct header flags")
       break
     }
@@ -1695,8 +1732,10 @@ function f_MQTT_Client_UNSUBSCRIBE_02() runs on MQTT_Broker_MTC
     [] MQTT_PCO.receive(mw_mqtt_message(mw_unsubscribe_valid)) -> value v_received {
       var UCHAR0_65535 v_topic_filter := v_received.msg.msg.unsubscribe.payload[0].topic_filter
       if(f_is_valid_utf8(f_utf8_from_charstring(v_topic_filter))) {
+        f_send_unsuback(v_received.conn, v_received.msg.msg.unsubscribe.packet_identifier)
         setverdict(pass, "Topic filter is valid UTF-8 string")
       } else {
+        f_terminate_due_to_violation(v_received.conn)
         setverdict(fail, "Topic filter is invalid UTF-8 string")
       }
       break
