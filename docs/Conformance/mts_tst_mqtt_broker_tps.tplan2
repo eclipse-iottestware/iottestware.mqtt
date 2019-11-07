@@ -6,9 +6,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_001
 
     Test objective
-    "The IUT MUST close the network connection if fixed header flags in CONNECT Control Packet are invalid"
+    "Checks that the IUT closes the network connection if fixed header flags in CONNECT Control Packet are invalid."
+
     Reference
-      "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+    "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -26,9 +28,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_002
 
     Test objective
-    "If the Protocol Name is incorrect the IUT MAY disconnect the Client or it MAY continue processing the CONNECT packet."
+    "Checks that the IUT either disconnects the client or continues processing the CONNECT Control Packet if the protocol name does not correspond to 'MQTT'."
+
     Reference
-      "[MQTT-3.1.2-1], [MQTT-3.1.4-4]"
+    "[MQTT-3.1.2-1], [MQTT-3.1.4-4]"
+
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -52,9 +56,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_003
 
     Test objective
-    "The IUT MUST respond to Protocol Levels which it supports (in scope: MQTT-3.1.1) with return code 0x00"
+    "Checks that the IUT responds to supported protocol levels (in scope: MQTT-3.1.1) with the return code 0x00."
+
     Reference
-      "[MQTT-3.1.2-2], [MQTT-3.1.4-4]"
+    "[MQTT-3.1.2-2], [MQTT-3.1.4-4]"
+
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -75,9 +81,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_004
 
     Test objective
-    "The IUT MUST validate that the reserved flag in the CONNECT Control Packet is set to zero and disconnect the Client if it is not zero"
+    "Checks that the IUT validates the reserved flags in the CONNECT Control Packet."
+
     Reference
-      "[MQTT-3.1.2-3], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+    "[MQTT-3.1.2-3], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -100,9 +108,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_005
 
     Test objective
-    "If the Will Flag is set to 1, the Will QoS and Will Retain fields in the Connect Flags will be used by the IUT, and the Will Topic and Will Message fields MUST be present in the payload."
+    "Checks that the IUT validates the will_topic and will_message fields if the will_flag is set to 1."
+
     Reference
-      "[MQTT-3.1.2-9], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+    "[MQTT-3.1.2-9], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_LWT
 
     Expected behaviour
@@ -132,9 +142,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_006
 
     Test objective
-    "If the Will Flag is set to 0 the Will QoS and Will retain fields in the Connect Flags MUST be set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload."
+    "Checks that the IUT validates the the will_topic and will_message fields to be omitted if the will_flag is set to 0."
+
     Reference
-      "[MQTT-3.1.2-11], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+    "[MQTT-3.1.2-11], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_LWT and PICS_BROKER_RTND
 
     Expected behaviour
@@ -164,9 +176,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_007
 
     Test objective
-    "If the Will Flag is set to 0, then the Will QoS MUST be set to 0"
+    "Checks that the IUT validates the will_qos field to be set to 0 if the will_flag is set to 0."
+
     Reference
-      "[MQTT-3.1.2-13], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+    "[MQTT-3.1.2-13], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
@@ -192,9 +206,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_008
 
     Test objective
-    "If the Will Flag is set to 1, the value of Will QoS can be 0, 1 or 2. It MUST NOT be 3"
+    "Checks that the IUT validates the will_qos field and rejects connections with an invalid will_qos value."
+
     Reference
-      "[MQTT-3.1.2-14], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+    "[MQTT-3.1.2-14], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_LWT
 
     Expected behaviour
@@ -220,9 +236,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_009
 
     Test objective
-    "If the Will Flag is set to 1, the value of Will QoS can be 0, 1 or 2."
+    "Checks that the IUT validates the will_qos field if the will_flag is set to 1."
+
     Reference
-      "[MQTT-3.1.2-14], [MQTT-3.1.4-4]"
+    "[MQTT-3.1.2-14], [MQTT-3.1.4-4]"
+
     PICS Selection PICS_BROKER_BASIC and PICS_BROKER_LWT
 
     Expected behaviour
@@ -249,9 +267,11 @@ Package mts_tst_mqtt {
     TP Id TP_MQTT_Broker_CONNECT_010
 
     Test objective
-    "If the Will Flag is set to 0, then the Will Retain Flag MUST be set to 0"
+    "Checks that the IUT validates the will_flag and will_retain flags to be set correctly."
+
     Reference
-      "[MQTT-3.1.2-15], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+    "[MQTT-3.1.2-15], [MQTT-3.1.4-1], [MQTT-3.2.2-6]"
+
     PICS Selection PICS_BROKER_BASIC
 
     Expected behaviour
