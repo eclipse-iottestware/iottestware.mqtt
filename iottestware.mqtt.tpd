@@ -27,6 +27,7 @@
     <FolderResource projectRelativePath="src" relativeURI="src"/>
     <FolderResource projectRelativePath="src/broker_testing" relativeURI="src/broker_testing"/>
     <FolderResource projectRelativePath="src/client_testing" relativeURI="src/client_testing"/>
+    <FolderResource projectRelativePath="src/client_testing/upper_tester" relativeURI="src/client_testing/upper_tester"/>
     <FolderResource projectRelativePath="src/framework" relativeURI="src/framework"/>
     <FolderResource projectRelativePath="src/framework/defaults" relativeURI="src/framework/defaults"/>
     <FolderResource projectRelativePath="src/framework/functions" relativeURI="src/framework/functions"/>
@@ -81,6 +82,13 @@
     <FileResource projectRelativePath="src/client_testing/MQTT_Broker_TypesAndValues.ttcn" relativeURI="src/client_testing/MQTT_Broker_TypesAndValues.ttcn"/>
     <FileResource projectRelativePath="src/client_testing/MQTT_Oracle_Broker.ttcn" relativeURI="src/client_testing/MQTT_Oracle_Broker.ttcn"/>
     <FileResource projectRelativePath="src/client_testing/Playground.ttcn" relativeURI="src/client_testing/Playground.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/upper_tester/UTasp_PortType.ttcn" relativeURI="src/client_testing/upper_tester/UTasp_PortType.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/upper_tester/UTasp_Types.ttcn" relativeURI="src/client_testing/upper_tester/UTasp_Types.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/upper_tester/UT_Types.ttcn" relativeURI="src/client_testing/upper_tester/UT_Types.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/upper_tester/UT_Functions.ttcn" relativeURI="src/client_testing/upper_tester/UT_Functions.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/upper_tester/UTasp_CtrlFunct.ttcn" relativeURI="src/client_testing/upper_tester/UTasp_CtrlFunct.ttcn"/>
+    <FileResource projectRelativePath="src/client_testing/upper_tester/UTasp_CtrlFunctDef.cc" relativeURI="src/client_testing/upper_tester/UTasp_CtrlFunctDef.cc"/>
+    <FileResource projectRelativePath="src/client_testing/upper_tester/UT_Templates.ttcn" relativeURI="src/client_testing/upper_tester/UT_Templates.ttcn"/>
     <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_CONNACK.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_CONNACK.ttcn"/>
     <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_CONNECT.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_CONNECT.ttcn"/>
     <FileResource projectRelativePath="src/framework/defaults/MQTT_Defaults_Common.ttcn" relativeURI="src/framework/defaults/MQTT_Defaults_Common.ttcn"/>
