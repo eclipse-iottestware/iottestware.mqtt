@@ -55,9 +55,7 @@ group connectGroup
 {
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-2.2.2-1]
   */
   function f_MQTT_Client_CONNECT_01() runs on MQTT_Broker_MTC
   {
@@ -90,9 +88,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-1]
   */
   function f_MQTT_Client_CONNECT_02() runs on MQTT_Broker_MTC
   {
@@ -130,9 +126,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-2]
   */
   function f_MQTT_Client_CONNECT_03() runs on MQTT_Broker_MTC
   {
@@ -163,9 +157,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-3]
   */
   function f_MQTT_Client_CONNECT_04() runs on MQTT_Broker_MTC
   {
@@ -197,9 +189,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-9], [MQTT-3.1.2-14]
   */
   function f_MQTT_Client_CONNECT_05() runs on MQTT_Broker_MTC
   {
@@ -241,9 +231,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-11], [MQTT-3.1.2-13], [MQTT-3.1.2-15]
   */
   function f_MQTT_Client_CONNECT_06() runs on MQTT_Broker_MTC
   {
@@ -305,9 +293,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-18], [MQTT-3.1.2-20], [MQTT-3.1.2-22]
   */
   function f_MQTT_Client_CONNECT_07() runs on MQTT_Broker_MTC
   {
@@ -339,9 +325,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-19]
   */
   function f_MQTT_Client_CONNECT_08() runs on MQTT_Broker_MTC
   {
@@ -388,9 +372,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference [MQTT-3.1.2-21]
   */
   function f_MQTT_Client_CONNECT_09() runs on MQTT_Broker_MTC
   {
@@ -438,11 +420,9 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
+  *
   * @remark by comparing each field with the sent values, the order is checked implicitly.
   *         Wrong order would silently swap the fields during decoding
-  *
-  * @reference [MQTT-3.1.3-1]
   */
   function f_MQTT_Client_CONNECT_10() runs on MQTT_Broker_MTC
   {
@@ -480,9 +460,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_CONNECT_11() runs on MQTT_Broker_MTC
   {
@@ -527,9 +505,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_CONNECT_12() runs on MQTT_Broker_MTC
   {
@@ -581,9 +557,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_CONNECT_13() runs on MQTT_Broker_MTC
   {
@@ -634,9 +608,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_CONNECT_14() runs on MQTT_Broker_MTC
   {
@@ -687,9 +659,7 @@ group connectGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_CONNACK_01() runs on MQTT_Broker_MTC
   {
@@ -728,9 +698,7 @@ group connectGroup
 group publishGroup
 {
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_MTC
   {
@@ -774,9 +742,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_02() runs on MQTT_Broker_MTC
   {
@@ -833,9 +799,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_03() runs on MQTT_Broker_MTC
   {
@@ -891,9 +855,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_04() runs on MQTT_Broker_MTC
   {
@@ -926,9 +888,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_05() runs on MQTT_Broker_MTC
   {
@@ -961,9 +921,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_06() runs on MQTT_Broker_MTC
   {
@@ -1002,9 +960,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_07() runs on MQTT_Broker_MTC
   {
@@ -1045,9 +1001,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_08() runs on MQTT_Broker_MTC
   {
@@ -1088,9 +1042,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_09() runs on MQTT_Broker_MTC
   {
@@ -1123,9 +1075,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_10() runs on MQTT_Broker_MTC
   {
@@ -1170,9 +1120,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBLISH_11() runs on MQTT_Broker_MTC
   {
@@ -1203,9 +1151,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBACK_01() runs on MQTT_Broker_MTC
   {
@@ -1256,9 +1202,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBACK_02() runs on MQTT_Broker_MTC
   {
@@ -1309,9 +1253,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBREC_01() runs on MQTT_Broker_MTC
   {
@@ -1357,9 +1299,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBREC_02() runs on MQTT_Broker_MTC
   {
@@ -1405,9 +1345,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBREL_01() runs on MQTT_Broker_MTC
   {
@@ -1449,9 +1387,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBREL_02() runs on MQTT_Broker_MTC
   {
@@ -1498,9 +1434,7 @@ group publishGroup
   }
 
   /*
-  * @purpose TODO
   *
-  * @reference TODO
   */
   function f_MQTT_Client_PUBCOMP_01() runs on MQTT_Broker_MTC
   {

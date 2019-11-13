@@ -37,9 +37,7 @@ group connectGroup
 {
 
   /*
-  * @purpose Checks that the IUT closes the network connection if fixed header flags in CONNECT Control Packet are invalid.
   *
-  * @reference [MQTT-2.2.2-2], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
   testcase TC_MQTT_BROKER_CONNECT_001() runs on MQTT_Client
   {
@@ -51,9 +49,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT either disconnects the client or continues processing the CONNECT Control Packet if the protocol name does not correspond to 'MQTT'.
   *
-  * @reference [MQTT-3.1.2-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_002() runs on MQTT_Client
   {
@@ -65,9 +61,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT responds to supported protocol levels (in scope: MQTT-3.1.1) with the return code 0x00.
   *
-  * @reference [MQTT-3.1.2-2], [MQTT-3.1.4-4]
   */
   testcase TC_MQTT_BROKER_CONNECT_003() runs on MQTT_Client
   {
@@ -80,9 +74,7 @@ group connectGroup
 
 
   /*
-  * @purpose Checks that the IUT validates the reserved flags in the CONNECT Control Packet.
   *
-  * @reference [MQTT-3.1.2-3], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
   testcase TC_MQTT_BROKER_CONNECT_004() runs on MQTT_Client
   {
@@ -94,9 +86,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT validates the will_topic and will_message fields if the will_flag is set to 1.
   *
-  * @reference [MQTT-3.1.2-9], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
   testcase TC_MQTT_BROKER_CONNECT_005() runs on MQTT_Client
   {
@@ -108,9 +98,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT validates the the will_topic and will_message fields to be omitted if the will_flag is set to 0.
   *
-  * @reference [MQTT-3.1.2-11], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
   testcase TC_MQTT_BROKER_CONNECT_006() runs on MQTT_Client
   {
@@ -122,9 +110,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT validates the will_qos field to be set to 0 if the will_flag is set to 0.
   *
-  * @reference [MQTT-3.1.2-13], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
   testcase TC_MQTT_BROKER_CONNECT_007() runs on MQTT_Client
   {
@@ -136,9 +122,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT validates the will_qos field and rejects connections with an invalid will_qos value.
   *
-  * @reference [MQTT-3.1.2-14], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
   testcase TC_MQTT_BROKER_CONNECT_008() runs on MQTT_Client
   {
@@ -150,9 +134,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT validates the will_qos field if the will_flag is set to 1.
   *
-  * @references [MQTT-3.1.2-14], [MQTT-3.1.4-4]
   */
   testcase TC_MQTT_BROKER_CONNECT_009() runs on MQTT_Client
   {
@@ -164,9 +146,7 @@ group connectGroup
   }
 
   /*
-  * @purpose Checks that the IUT validates the will_flag and will_retain flags to be set correctly.
   *
-  * @reference [MQTT-3.1.2-15], [MQTT-3.1.4-1], [MQTT-3.2.2-6]
   */
   testcase TC_MQTT_BROKER_CONNECT_010() runs on MQTT_Client
   {
@@ -178,9 +158,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the will_flag is set to 0, then the will_retain flag MUST be set to 0
   *
-  * @reference [MQTT-3.1.2-15], [MQTT-3.1.4-4]
   */
   testcase TC_MQTT_BROKER_CONNECT_011() runs on MQTT_Client
   {
@@ -192,9 +170,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the Username flag is set to 0, the Password flag MUST be set to 0
   *
-  * @reference [MQTT-3.1.2-22]
   */
   testcase TC_MQTT_BROKER_CONNECT_012() runs on MQTT_Client
   {
@@ -206,9 +182,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the user name flag is set to 0, a user name MUST NOT be present in the payload
   *
-  * @reference [MQTT-3.1.2-18]
   */
   testcase TC_MQTT_BROKER_CONNECT_013() runs on MQTT_Client
   {
@@ -220,9 +194,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the user name flag is set to 1, a user name MUST be present in the payload
   *
-  * @reference [MQTT-3.1.2-19]
   */
   testcase TC_MQTT_BROKER_CONNECT_014() runs on MQTT_Client
   {
@@ -234,9 +206,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the password flag ist set to 0, a password MUST NOT be present in the payload
   *
-  * @reference [MQTT-3.1.2-20]
   */
   testcase TC_MQTT_BROKER_CONNECT_015() runs on MQTT_Client
   {
@@ -248,9 +218,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the password flag is set to 1, a user password MUST be present in the payload
   *
-  * @reference [MQTT-3.1.2-21]
   */
   testcase TC_MQTT_BROKER_CONNECT_016() runs on MQTT_Client
   {
@@ -262,9 +230,7 @@ group connectGroup
   }
 
   /*
-  * @purpose It IUT MUST allow ClientIDs wich are between 1 and 23 UTF-8 encoded bytes in length
   *
-  * @reference [MQTT-3.1.3-5]
   */
   testcase TC_MQTT_BROKER_CONNECT_017() runs on MQTT_Client
   {
@@ -276,9 +242,7 @@ group connectGroup
   }
 
   /*
-  * @purpose It IUT MUST allow ClientIDs wich are between 1 and 23 UTF-8 encoded bytes in length
   *
-  * @reference [MQTT-3.1.3-5]
   */
   testcase TC_MQTT_BROKER_CONNECT_018() runs on MQTT_Client
   {
@@ -290,11 +254,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The IUT MAY allow a client to supply a client identifier that has a length of zero bytes,
-  * however if it does so the IUT MUST treat this as a special case and assign a unique client identifier
-  * to that client
   *
-  * @reference [MQTT-3.1.3-6], [MQTT-3.1.3-7], [MQTT-3.1.4-4]
   */
   testcase TC_MQTT_BROKER_CONNECT_019() runs on MQTT_Client
   {
@@ -306,9 +266,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The ClientId MUST be a well-formed UTF-8 encoded string
   *
-  * @reference [MQTT-1.5.3-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_020() runs on MQTT_Client
   {
@@ -320,9 +278,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The ClientId MUST be a well-formed UTF-8 encoded string
   *
-  * @reference [MQTT-1.5.3-2]
   */
   testcase TC_MQTT_BROKER_CONNECT_021() runs on MQTT_Client
   {
@@ -334,9 +290,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The Will Topic MUST be a well-formed UTF-8 encoded string
   *
-  * @reference [MQTT-1.5.3-1], [MQTT-3.1.3-10]
   */
   testcase TC_MQTT_BROKER_CONNECT_022() runs on MQTT_Client
   {
@@ -348,9 +302,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The Will Topic MUST be a well-formed UTF-8 encoded string
   *
-  * @reference [MQTT-1.5.3-2], [MQTT-3.1.3-10]
   */
   testcase TC_MQTT_BROKER_CONNECT_023() runs on MQTT_Client
   {
@@ -362,9 +314,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The wildcard characters can be used in Topic Filters, but MUST NOT be used within a Topic Name
   *
-  * @reference [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_024() runs on MQTT_Client
   {
@@ -376,9 +326,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The wildcard characters can be used in Topic Filters, but MUST NOT be used within a Topic Name
   *
-  * @reference [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_025() runs on MQTT_Client
   {
@@ -390,9 +338,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The user name MUST be a well-formed UTF-8 encoded string
   *
-  * @reference [MQTT-1.5.3-1], [MQTT-3.1.3-11]
   */
   testcase TC_MQTT_BROKER_CONNECT_026() runs on MQTT_Client
   {
@@ -404,9 +350,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The user name MUST be a well-formed UTF-8 encoded string
   *
-  * @reference [MQTT-1.5.3-2], [MQTT-3.1.3-11]
   */
   testcase TC_MQTT_BROKER_CONNECT_027() runs on MQTT_Client
   {
@@ -418,9 +362,7 @@ group connectGroup
   }
 
   /*
-  * @purpose After a Network Connection is established by a Client to a Server, the first Packet sent from the Client to the Server MUST be a CONNECT Packet"
   *
-  * @reference [MQTT-3.1.0-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_028() runs on MQTT_Client
   {
@@ -432,9 +374,7 @@ group connectGroup
   }
 
   /*
-  * @purpose The Server MUST process a second CONNECT Packet sent from a Client as a protocol violation and disconnect the Client"
   *
-  * @reference [MQTT-3.1.0-2]
   */
   testcase TC_MQTT_BROKER_CONNECT_029() runs on MQTT_Client
   {
@@ -446,9 +386,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the ClientId represents a Client already connected to the Server then the Server MUST disconnect the existing Client"
   *
-  * @reference [MQTT-3.1.4-2]
   */
   testcase TC_MQTT_BROKER_CONNECT_030() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -478,9 +416,7 @@ group connectGroup
   }
 
   /*
-  * @purpose All Topic Names MUST be at least one character long
   *
-  * @reference [MQTT-4.7.3-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_031() runs on MQTT_Client_MTC
   {
@@ -497,9 +433,7 @@ group connectGroup
   }
 
   /*
-  * @purpose If the IUT rejects the CONNECT, the IUT MUST NOT process any data sent by the client after the CONNECT packet
   *
-  * @reference [MQTT-3.2.0-1]
   */
   testcase TC_MQTT_BROKER_CONNECT_032() runs on MQTT_Client_MTC
   {
@@ -519,10 +453,7 @@ group connectGroup
 group connackGroup
 {
   /*
-  * @purpose The IUT accepts only valid fixed header flags for CONNECT Control Packet and
-  * responds with CONNACK
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-3.1.4-4]
   */
   testcase TC_MQTT_BROKER_CONNACK_001() runs on MQTT_Client
   {
@@ -534,10 +465,7 @@ group connackGroup
   }
 
   /*
-  * @purpose If the IUT accepts a connection with clean session set to 1, the IUT MUST set session present to 0
-  * in the CONNACK packet in addition to setting a zero-return code
   *
-  * @reference [MQTT-3.2.2-1]
   */
   testcase TC_MQTT_BROKER_CONNACK_002() runs on MQTT_Client
   {
@@ -549,9 +477,7 @@ group connackGroup
   }
 
   /*
-  * @purpose If the IUT has stored session state, it MUST set session present flag to 1 in the CONNACK Control Packet
   *
-  * @reference [MQTT-3.2.2-2]
   */
   testcase TC_MQTT_BROKER_CONNACK_003() runs on MQTT_Client
   {
@@ -563,10 +489,7 @@ group connackGroup
   }
 
   /*
-  * @purpose If the IUT does not have a stored session state, it MUST set session present flag to 0
-  * in the CONNACK control packet
   *
-  * @reference [MQTT-3.2.2-3]
   */
   testcase TC_MQTT_BROKER_CONNACK_004() runs on MQTT_Client
   {
@@ -578,9 +501,7 @@ group connackGroup
   }
 
   /*
-  * @purpose The IUT MUST respond to protocol levels which it does not support with return code 0x01
   *
-  * @reference [MQTT-3.1.2-2], [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
   testcase TC_MQTT_BROKER_CONNACK_005() runs on MQTT_Client
   {
@@ -592,11 +513,7 @@ group connackGroup
   }
 
   /*
-  * @purpose If the client supplies a zero-byte client identifier with clean session set to 0,
-  * the IUT MUST respond to the CONNECT with a CONNACK and return code 0x02 and then close the
-  * network connection.
   *
-  * @reference [MQTT-3.1.3-8], [MQTT-3.1.3-9], [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
   testcase TC_MQTT_BROKER_CONNACK_006() runs on MQTT_Client
   {
@@ -608,9 +525,7 @@ group connackGroup
   }
 
   /*
-  * @purpose The data in the username or password is malfromed
   *
-  * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
   testcase TC_MQTT_BROKER_CONNACK_007() runs on MQTT_Client
   {
@@ -622,9 +537,7 @@ group connackGroup
   }
 
   /*
-  * @purpose The client is not authorized to connect. Username is invalid
   *
-  * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
   testcase TC_MQTT_BROKER_CONNACK_008() runs on MQTT_Client
   {
@@ -636,9 +549,7 @@ group connackGroup
   }
 
   /*
-  * @purpose The client is not authorized to connect. Password is invalid
   *
-  * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
   */
   testcase TC_MQTT_BROKER_CONNACK_009() runs on MQTT_Client
   {
@@ -650,10 +561,8 @@ group connackGroup
   }
 
   /*
-   * @purpose The Network Connection has been made but the MQTT service is unavailable
-   *
-   * @reference [MQTT-3.2.2-4], [MQTT-3.2.2-5]
-   */
+  *
+  */
   testcase TC_MQTT_BROKER_CONNACK_010() runs on MQTT_Client
   {
     if(f_init())
@@ -667,9 +576,7 @@ group connackGroup
 group publishGroup
 {
   /*
-  * @purpose The DUP flag MUST be set to 0 for all QoS 0 messages
   *
-  * @reference [MQTT-3.3.1-2]
   */
   testcase TC_MQTT_BROKER_PUBLISH_001() runs on MQTT_Client
   {
@@ -681,9 +588,7 @@ group publishGroup
   }
 
   /*
-  * @purpose A PUBLISH packet MUST NOT have both QoS bits set to 1. QoS level corresponding to '11'B is considered invalid
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-3.3.1-4]
   */
   testcase TC_MQTT_BROKER_PUBLISH_002() runs on MQTT_Client
   {
@@ -695,9 +600,7 @@ group publishGroup
   }
 
   /*
-  * @purpose The Topic Name MUST be a UTF-8 encoded string and be present as the first field in the variable header
   *
-  * @reference [MQTT-3.3.2-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_003() runs on MQTT_Client
   {
@@ -709,9 +612,7 @@ group publishGroup
   }
 
   /*
-  * @purpose The Topic Name in the PUBLISH Packet MUST NOT contain multi-level wildcard characters
   *
-  * @reference [MQTT-3.3.2-2], [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_004() runs on MQTT_Client
   {
@@ -723,9 +624,7 @@ group publishGroup
   }
 
   /*
-  * @purpose The Topic Name in the PUBLISH Packet MUST NOT contain single-level wildcard characters
   *
-  * @reference [MQTT-3.3.2-2], [MQTT-4.7.1-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_005() runs on MQTT_Client
   {
@@ -737,9 +636,7 @@ group publishGroup
   }
 
   /*
-  * @purpose All Topic Names MUST be at least on character long
   *
-  * @reference [MQTT-4.7.3-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_006() runs on MQTT_Client
   {
@@ -751,9 +648,7 @@ group publishGroup
   }
 
   /*
-  * @purpose Topic Names MUST NOT include the null character (Unicode U+0000)
   *
-  * @reference [MQTT-4.7.3-2]
   */
   testcase TC_MQTT_BROKER_PUBLISH_007() runs on MQTT_Client
   {
@@ -765,9 +660,7 @@ group publishGroup
   }
 
   /*
-  * @purpose In the QoS 0 delivery protocol, the Sender MUST send a PUBLISH packet with QoS=0, DUP=0.
   *
-  * @reference [MQTT-4.3.1-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_008() runs on MQTT_Client_MTC
   {
@@ -784,10 +677,8 @@ group publishGroup
   }
 
   /*
-  * @purpose In the QoS 0 delivery protocol, a PUBLISH Packet MUST NOT contain a Packet Identifier"
-  * @remark It should be impossible for Brokers to pass this test!
-  *         As the Packet Identifier is optional, it will be interpreted as part of payload coming after the topic_name.
-  * @reference [MQTT-2.3.1-5]
+ @remark It should be impossible for Brokers to pass this test!
+  *         As the Packet Identifier is optional, it will be interpreted as part of payload coming after the topic_name.  *
   */
   testcase TC_MQTT_BROKER_PUBLISH_009() runs on MQTT_Client_MTC
   {
@@ -804,9 +695,7 @@ group publishGroup
   }
 
   /*
-  * @purpose In case of QoS = 1 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
   *
-  * @reference [MQTT-2.3.1-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_010() runs on MQTT_Client
   {
@@ -818,9 +707,7 @@ group publishGroup
   }
 
   /*
-  * @purpose In case of QoS = 2 any PUBLISH Packet MUST contain a non-zero 16-bit Packet Identifier
   *
-  * @reference [MQTT-2.3.1-1]
   */
   testcase TC_MQTT_BROKER_PUBLISH_011() runs on MQTT_Client
   {
@@ -832,9 +719,7 @@ group publishGroup
   }
 
   /*
-  * @purpose If the IUT does not authorize a PUBLISH to be performed by a Client; it has no way of informing that Client. The IUT MUST either make a positive acknowledgement, according to the normal QoS rules, or close the Network Connection
   *
-  * @reference [MQTT-3.3.5-2]
   */
   testcase TC_MQTT_BROKER_PUBLISH_012() runs on MQTT_Client_MTC
   {
@@ -854,9 +739,7 @@ group publishGroup
 group publishResponseGroup
 {
   /*
-  * @purpose The IUT closes the network connection if fixed header flags in PUBACK Control Packet are invalid
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
   testcase TC_MQTT_BROKER_PUBACK_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -872,8 +755,7 @@ group publishResponseGroup
   }
 
   /*
-  * @purpose The IUT MUST send PUBACK packet in the order in which the corresponding PUBLISH packets where received (QoS 1 messages)
-  * @reference [MQTT-4.6.0-2]
+ @reference [MQTT-4.6.0-2]
   */
   testcase TC_MQTT_BROKER_PUBACK_002() runs on MQTT_Client_MTC
   {
@@ -890,9 +772,7 @@ group publishResponseGroup
   }
 
   /*
-  * @purpose The IUT closes the network connection if fixed header flags in PUBREC Control Packet are invalid
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
   testcase TC_MQTT_BROKER_PUBREC_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -908,8 +788,7 @@ group publishResponseGroup
   }
 
   /*
-  * @purpose
-  * @reference [MQTT-4.6.0-3]
+  * @purpose  *
   */
   testcase TC_MQTT_BROKER_PUBREC_002() runs on MQTT_Client_MTC
   {
@@ -926,9 +805,7 @@ group publishResponseGroup
   }
 
   /*
-  * @purpose The IUT closes the network connection if fixed header flags in PUBREL Control Packet are invalid
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
   testcase TC_MQTT_BROKER_PUBREL_001() runs on MQTT_Client_MTC
   {
@@ -945,9 +822,7 @@ group publishResponseGroup
   }
 
   /*
-  * @purpose The IUT MUST send PUBREL packets in the order in which the corresponding PUBREC packets were received (QoS 2 messages)
   *
-  * @reference [MQTT-4.6.0-4]
   */
   testcase TC_MQTT_BROKER_PUBREL_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -963,9 +838,7 @@ group publishResponseGroup
   }
 
   /*
-  * @purpose The IUT closes the network connection if fixed header flags in PUBCOMP Control Packet are invalid
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
   testcase TC_MQTT_BROKER_PUBCOMP_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -984,10 +857,8 @@ group publishResponseGroup
 group subscribeGroup
 {
   /*
-  * @purpose The IUT MUST close the network connection if the fixed header flags in the SUBSCRIBE control
-  * packet are invalid
-  *
-  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.8.1-1]
+ packet are invalid
+  *  *
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_001() runs on MQTT_Client
   {
@@ -999,9 +870,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose SUBSCRIBE Control Packet MUST contain a non-zero 16-bit Packet Identifier
   *
-  * @reference [MQTT-2.3.1-1]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_002() runs on MQTT_Client
   {
@@ -1013,9 +882,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose The Topic Filters in a Subscribe packet payload MUST be UTF-8 encoded strings. This data MUST NOT include encodings of code points between U+D800 and U+DFFF
   *
-  * @reference [MQTT-1.5.3-1], [MQTT-3.8.3-1]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_003() runs on MQTT_Client
   {
@@ -1027,9 +894,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose The Topic Filters in a Subscribe packet payload MUST be UTF-8 encoded strings. A UTF-8 encoded string MUST NOT include an encoding of the null character U+0000.
   *
-  * @reference [MQTT-1.5.3-2], [MQTT-3.8.3-1]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_004() runs on MQTT_Client
   {
@@ -1041,9 +906,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose All Topic Filters MUST be at least one character long
   *
-  * @reference [MQTT-4.7.3-1], [MQTT-4.8.0-1]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_005() runs on MQTT_Client
   {
@@ -1055,9 +918,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose The payload of a SUBSCRIBE control packet MUST contain at least one Topic Filter / QoS pair
   *
-  * @reference [MQTT-3.8.3-3], [MQTT-4.8.0-1]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_006() runs on MQTT_Client
   {
@@ -1069,10 +930,8 @@ group subscribeGroup
   }
 
   /*
-  * @purpose The upper 6 bits of the Requested QoS byte are reserved. Reserved bits for Requested
-  * QoS in the payload MUST be set to 0.
-  *
-  * @reference [MQTT-3.8.3-4]
+ QoS in the payload MUST be set to 0.
+  *  *
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_007() runs on MQTT_Client
   {
@@ -1084,9 +943,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose The requested QoS in the payload MUST be 0, 1 or 2, it MUST NOT be 3
   *
-  * @reference [MQTT-3.8.3-4]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_008() runs on MQTT_Client
   {
@@ -1098,9 +955,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose The multi-level wildcard character MUST be specified either on its own or following a topic level separator. In either case it MUST be the last character specified in the Topic Filter.
   *
-  * @reference [MQTT-4.7.1-2]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_009() runs on MQTT_Client_MTC
   {
@@ -1117,9 +972,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose The single-level wildcard can be used at any level in the Topic Filter, including first and last levels. Where it is used it MUST occupy an entire level of the filter.
   *
-  * @reference [MQTT-4.7.1-3]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_010() runs on MQTT_Client_MTC
   {
@@ -1136,9 +989,7 @@ group subscribeGroup
   }
 
   /*
-  * @purpose Topic Names and Topic Filters can include the space (zero width no-break space) character.
   *
-  * @reference [MQTT-1.5.3-3]
   */
   testcase TC_MQTT_BROKER_SUBSCRIBE_011() runs on MQTT_Client_MTC
   {
@@ -1158,8 +1009,7 @@ group subscribeGroup
 group subackGroup
 {
   /*
-  * @purpose The IUT accepts only valid fixed header flags for SUBSCRIBE control packet and
-  * responds with SUBACK
+ responds with SUBACK
   *
   */
   testcase TC_MQTT_BROKER_SUBACK_001() runs on MQTT_Client
@@ -1172,10 +1022,8 @@ group subackGroup
   }
 
   /*
-  * @purpose SUBSCRIBE control packet (in case where QoS > 0) MUST contain a non-zero 16-bit
-  * packet identifier
-  *
-  * @reference [MQTT-2.3.1-1], [MQTT-2.3.1-7], [MQTT-3.8.4-1], [MQTT-3.8.4-2]
+ packet identifier
+  *  *
   */
   testcase TC_MQTT_BROKER_SUBACK_002() runs on MQTT_Client
   {
@@ -1188,9 +1036,7 @@ group subackGroup
 
 
   /*
-  * @purpose SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used
   *
-  * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
   testcase TC_MQTT_BROKER_SUBACK_003() runs on MQTT_Client
   {
@@ -1202,9 +1048,7 @@ group subackGroup
   }
 
   /*
-  * @purpose SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used
   *
-  * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
   testcase TC_MQTT_BROKER_SUBACK_004() runs on MQTT_Client
   {
@@ -1217,9 +1061,7 @@ group subackGroup
 
 
   /*
-  * @purpose SUBACK return codes other than 0x00, 0x01, 0x02 and 0x80 are reserved and MUST NOT be used
   *
-  * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
   testcase TC_MQTT_BROKER_SUBACK_005() runs on MQTT_Client
   {
@@ -1232,9 +1074,7 @@ group subackGroup
 
 
   /*
-  * @purpose The IUT responds with return code 0x80 to indicate a denial of access to this topic filter
   *
-  * @reference [MQTT-3.9.3-1], [MQTT-3.9.3-2]
   */
   testcase TC_MQTT_BROKER_SUBACK_006() runs on MQTT_Client
   {
@@ -1249,9 +1089,7 @@ group subackGroup
 group unsubscribeGroup
 {
   /*
-  * @purpose The IUT closes the network connection if fixed header flags in UNSUBSCRIBE Control Packet are invalid
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-3.10.1-1]
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_001() runs on MQTT_Client
   {
@@ -1263,9 +1101,7 @@ group unsubscribeGroup
   }
 
   /*
-  * @purpose UNSUBSCRIBE Control Packet MUST contain a non-zero 16-bit Packet Identifier
   *
-  * @reference [MQTT-2.3.1-1]
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_002() runs on MQTT_Client
   {
@@ -1277,9 +1113,7 @@ group unsubscribeGroup
   }
 
   /*
-  * @purpose The Topic Filters in an Unsubscribe packet payload MUST be UTF-8 encoded strings. This data MUST NOT include encodings of code points between U+D800 and U+DFFF
   *
-  * @reference [MQTT-1.5.3-1], [MQTT-3.10.3-1]
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_003() runs on MQTT_Client
   {
@@ -1291,9 +1125,7 @@ group unsubscribeGroup
   }
 
   /*
-  * @purpose All Topic Filters MUST be at least one character long
   *
-  * @reference [MQTT-4.7.3-1]
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_004() runs on MQTT_Client
   {
@@ -1305,9 +1137,7 @@ group unsubscribeGroup
   }
 
   /*
-  * @purpose Topic Filters MUST NOT include the null character (Unicode U+0000)
   *
-  * @reference [MQTT-3.10.3-2]
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_005() runs on MQTT_Client
   {
@@ -1319,9 +1149,7 @@ group unsubscribeGroup
   }
 
   /*
-  * @purpose The payload of an UNSUBSCRIBE Control Packet MUST contain at least one Topic Filter
   *
-  * @reference [MQTT-3.10.3-2]
   */
   testcase TC_MQTT_BROKER_UNSUBSCRIBE_006() runs on MQTT_Client
   {
@@ -1336,9 +1164,7 @@ group unsubscribeGroup
 group unsubackGroup
 {
   /*
-  * @purpose The IUT accepts only valid fixed header flags for UNSUBSCRIBE Control Packet and responds with UNSUBACK
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-3.10.1-1]
   */
   testcase TC_MQTT_BROKER_UNSUBACK_001() runs on MQTT_Client
   {
@@ -1350,10 +1176,8 @@ group unsubackGroup
   }
 
   /*
-  * @purpose The IUT MUST respond to an UNSUBSCRIBE request by sending an UNSUBACK Control Packet.
-  * The UNSUBACK Control Packet MUST have the same Packet Identifier as the UNSUBSCRIBE Control Packet
-  *
-  * @reference [MQTT-3.10.4-4]
+ The UNSUBACK Control Packet MUST have the same Packet Identifier as the UNSUBSCRIBE Control Packet
+  *  *
   */
   testcase TC_MQTT_BROKER_UNSUBACK_002() runs on MQTT_Client
   {
@@ -1365,9 +1189,7 @@ group unsubackGroup
   }
 
   /*
-  * @purpose Even where no Topic Subscriptions are deleted, the Server MUST respond with an UNSUBACK
   *
-  * @reference [MQTT-3.10.4-5]
   */
   testcase TC_MQTT_BROKER_UNSUBACK_003() runs on MQTT_Client
   {
@@ -1379,9 +1201,7 @@ group unsubackGroup
   }
 
   /*
-  * @purpose If a Server receives an UNSUBSCRIBE packet that contains multiple Topic Filters it MUST handle that packet as if it had received a sequence of multiple UNSUBSCRIBE packets, except that it sends just one UNSUBACK response
   *
-  * @reference [MQTT-3.10.4-6]
   */
   testcase TC_MQTT_BROKER_UNSUBACK_004() runs on MQTT_Client_MTC
   {
@@ -1400,9 +1220,7 @@ group unsubackGroup
 
 group pingreqGroup {
   /*
-  * @purpose The IUT closes the network connection if fixed header flags in PINGREQ Control Packet are invalid
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-2.2.2-2]
   */
   testcase TC_MQTT_BROKER_PINGREQ_001() runs on MQTT_Client
   {
@@ -1417,9 +1235,7 @@ group pingreqGroup {
 group pingrespGroup {
 
   /*
-  * @purpose The IUT accepts only valid fixed header flags for PINGREQ Control Packet and responds with a PINGRESP
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-3.12.4-1]
   */
   testcase TC_MQTT_BROKER_PINGRESP_001() runs on MQTT_Client
   {
@@ -1433,9 +1249,7 @@ group pingrespGroup {
 
 group disconnectGroup {
   /*
-  * @purpose The IUT MUST validate that reserved bits are set to zero and disconnect the Client if they are not zero.
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-3.14.1-1]
   */
   testcase TC_MQTT_BROKER_DISCONNECT_001() runs on MQTT_Client
   {
@@ -1447,9 +1261,7 @@ group disconnectGroup {
   }
 
   /*
-  * @purpose The IUT MUST validate that reserved bits are set to zero and disconnect the Client if they are not zero.
   *
-  * @reference [MQTT-2.2.2-1], [MQTT-3.14.1-1]
   */
   testcase TC_MQTT_BROKER_DISCONNECT_002() runs on MQTT_Client
   {
@@ -1464,9 +1276,7 @@ group disconnectGroup {
 group protocolFeaturesGroup {
 
   /*
-  * @purpose The IUT MUST forward PUBLISH messages to according subscribers"
   *
-  * @reference MQTT 2.2.3
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1485,9 +1295,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 2 bytes to encode remaining length"
   *
-  * @reference MQTT 2.2.3
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1506,9 +1314,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 3 bytes to encode remaining length"
   *
-  * @reference MQTT 2.2.3
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1527,9 +1333,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The IUT MUST forward PUBLISH messages to according subscribers. The payload is bigger and will require 4 bytes to encode remaining length"
   *
-  * @reference MQTT 2.2.3
   */
   testcase TC_MQTT_BROKER_FEAT_REMLEN_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1548,9 +1352,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose If the Keep Alive value is non-zero and the Server does not receive a Control Packet from the Client within one and a half times the Keep Alive time period, it MUST disconnect the Network Connection to the Client as if the network had failed
   *
-  * @reference [MQTT-3.1.2-24]
   */
   testcase TC_MQTT_BROKER_FEAT_KEEPALIVE_001() runs on MQTT_Client_MTC
   {
@@ -1567,9 +1369,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose Retained messages do not form part of the Session state in the IUT, they MUST NOT be deleted when the Session ends
   *
-  * @reference [MQTT-3.1.2-7]
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_001() runs on MQTT_Client
   {
@@ -1581,9 +1381,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose If the Retain Flag is set to 1, in a PUBLISH Control Packet sent by a Client to the IUT, the IUT MUST store the Application Message and its QoS, so that It can be delivered to future subscribers."
   *
-  * @reference [MQTT-3.3.1-5], [MQTT-3.3.1-6], [MQTT-3.3.1-8]
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1599,9 +1397,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The IUT MUST set the Retain Flag to 0 when a PUBLISH Control Packet is sent to a Client because it matches an established subscription regardless of how the flag was set in the message it received."
   *
-  * @reference [MQTT-3.3.1-9]
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1617,11 +1413,9 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as normal by the Server and sent to Clients
-  *          with a subscription matching the topic name. (Additionally any existing retained message with the same topic name MUST be removed and any
+          with a subscription matching the topic name. (Additionally any existing retained message with the same topic name MUST be removed and any
   *          future subscribers for the topic will not receive a retained message)"
-  *
-  * @reference [MQTT-3.3.1-10]
+  *  *
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1637,11 +1431,9 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose (A PUBLISH Packet with a RETAIN flag set to 1 and a payload containing zero bytes will be processed as normal by the Server and sent to Clients
-  *          with a subscription matching the topic name). Additionally any existing retained message with the same topic name MUST be removed and any
+          with a subscription matching the topic name). Additionally any existing retained message with the same topic name MUST be removed and any
   *          future subscribers for the topic will not receive a retained message. A zero byte retained message MUST NOT be stored as a retained message on the Server."
-  *
-  * @reference [MQTT-3.3.1-10], [MQTT-3.3.1-11]
+  *  *
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1657,10 +1449,8 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose If the RETAIN flag is 0, in a PUBLISH Packet sent by a Client to a Server, the Server MUST NOT store the message and
-  *          MUST NOT remove or replace any existing retained message."
-  *
-  * @reference [MQTT-3.3.1-12]
+          MUST NOT remove or replace any existing retained message."
+  *  *
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_006() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1676,9 +1466,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose If the Server receives a QoS 0 message with the RETAIN flag set to 1 it MUST discard any message previously retained for that topic. It SHOULD store the new QoS 0 message as the new retained message for that topic, but MAY choose to discard it at any time - if this happens there will be no retained message for that topic.
   *
-  * @reference [MQTT-3.3.1-7]
   */
   testcase TC_MQTT_BROKER_FEAT_RTND_007() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1694,9 +1482,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet
   *
-  * @reference [MQTT-3.1.2-8]
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1712,9 +1498,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet
   *
-  * @reference [MQTT-3.1.2-8]
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1730,9 +1514,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The Will Message MUST be published when the Network Connection is subsequently closed unless the Will Message has been deleted by the Server on receipt of a DISCONNECT Packet
   *
-  * @reference [MQTT-3.1.2-12]
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1748,9 +1530,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose If Will Retain is set to 1, the Server MUST publish the Will Message as a retained message
   *
-  * @reference [MQTT-3.1.2-17]
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1766,9 +1546,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose If Will Retain is set to 0, the Server MUST publish the Will Message as a non-retained message
   *
-  * @reference [MQTT-3.1.2-16]
   */
   testcase TC_MQTT_BROKER_FEAT_LWT_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1784,9 +1562,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver.
   *
-  * @reference [MQTT-1.5.3-3], [MQTT-4.7.3-4]
   */
   testcase TC_MQTT_BROKER_FEAT_PUBSUB_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1802,9 +1578,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose A UTF-8 encoded sequence 0xEF 0xBB 0xBF is always to be interpreted to mean U+FEFF ("ZERO WIDTH NO-BREAK SPACE") wherever it appears in a string and MUST NOT be skipped over or stripped off by a packet receiver.
   *
-  * @reference [MQTT-1.5.3-3], [MQTT-4.7.3-4]
   */
   testcase TC_MQTT_BROKER_FEAT_PUBSUB_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1820,9 +1594,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character
   *
-  * @reference [MQTT-4.7.2-1]
   */
   testcase TC_MQTT_BROKER_FEAT_PUBSUB_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1838,9 +1610,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character
   *
-  * @reference [MQTT-4.7.2-1]
   */
   testcase TC_MQTT_BROKER_FEAT_PUBSUB_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1856,9 +1626,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose The Server MUST NOT match Topic Filters starting with a wildcard character (# or +) with Topic Names beginning with a $ character
   *
-  * @reference [MQTT-4.7.2-1]
   */
   testcase TC_MQTT_BROKER_FEAT_PUBSUB_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1874,9 +1642,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose When it re-sends any PUBLISH packets, it MUST re-send them in the order in which the original PUBLISH packets were sent (this applies to QoS 1 and QoS 2 messages)
   *
-  * @reference [MQTT-4.6.0-1], [MQTT-4.6.0-6], [MQTT-4.4.0-1]
   */
   testcase TC_MQTT_BROKER_FEAT_PUBSUB_006() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1892,9 +1658,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose When it re-sends any PUBLISH packets, it MUST re-send them in the order in which the original PUBLISH packets were sent (this applies to QoS 1 and QoS 2 messages)
   *
-  * @reference [MQTT-4.6.0-1], [MQTT-4.6.0-6], [MQTT-4.4.0-1]
   */
   testcase TC_MQTT_BROKER_FEAT_PUBSUB_007() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1910,9 +1674,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
   *
-  * @reference [MQTT-3.3.5-1]
   */
   testcase TC_MQTT_BROKER_FEAT_QOS_001() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1928,9 +1690,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
   *
-  * @reference [MQTT-3.3.5-1]
   */
   testcase TC_MQTT_BROKER_FEAT_QOS_002() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1946,9 +1706,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
   *
-  * @reference [MQTT-3.3.5-1]
   */
   testcase TC_MQTT_BROKER_FEAT_QOS_003() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1964,9 +1722,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
   *
-  * @reference [MQTT-3.3.5-1]
   */
   testcase TC_MQTT_BROKER_FEAT_QOS_004() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
@@ -1982,9 +1738,7 @@ group protocolFeaturesGroup {
   }
 
   /*
-  * @purpose In case of overlapping topic filter subscriptions the IUT MUST deliver messages respecting the maximum QoS of all matching subscriptions
   *
-  * @reference [MQTT-3.3.5-1]
   */
   testcase TC_MQTT_BROKER_FEAT_QOS_005() runs on MQTT_Client_MTC system MQTT_Client_TestSystem
   {
