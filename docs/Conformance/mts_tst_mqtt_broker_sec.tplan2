@@ -20,15 +20,15 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id
-      TP_MQTT_Broker_SEC_CVE_001
+    TP Id TP_MQTT_Broker_SEC_CVE_001
+
     Test objective
-    "A specifically malformed MQTT Subscribe packet crashes MQTT Brokers using the mqtt-packet.js module for decoding.
-    This crash is caused by a buffer over-read."
+    "Verify that the IUT does not crash on reception of a malformed SUBSCRIBE Control Packet."
+
     Reference
-      "CVE ID TODO"
-    PICS Selection
-      PICS_BROKER_BASIC
+    "CVE-2019-5432"
+
+    PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
     with {
@@ -51,18 +51,19 @@ Package mts_tst_mqtt {
   }
 
   /*
-  * Note: CVE does not mention the kind of control packet, this TP focuses on PUBLISH.
+  * Note: CVE does not mention the kind of Control Packet, this TP focuses on PUBLISH.
   *       However, CONNECT also contains a topic (will_topic). This one might be also checked
   */
   Test Purpose {
-    TP Id
-      TP_MQTT_Broker_SEC_CVE_002
+    TP Id TP_MQTT_Broker_SEC_CVE_002
+
     Test objective
-    "If a message received by the IUT has a topic that begins with $, but that does not begin with $SYS, an assert is triggered that should otherwise not be accessible, causing the IUT to exit."
+    "Verify that the IUT does not crash on reception of a malformed PUBLISH Control Packet having topic names prefixed with '$SYS'."
+
     Reference
     "CVE-2018-12543"
-    PICS Selection
-      PICS_BROKER_BASIC
+
+    PICS Selection PICS_BROKER_BASIC
 
     Initial conditions
     with {
@@ -86,10 +87,15 @@ Package mts_tst_mqtt {
 
   Test Purpose {
     TP Id TP_MQTT_Broker_SEC_CVE_003
+
     Test objective
-    "If a malicious client sends a Subscribe packet containing a topic that consists of approximately 65400 topic hierarchy separators ('/' character), than a stack overflow can occur"
+    "Verify that the IUT does not crash on reception of a SUBSCRIBE Control Packet
+    containing a topic that consists of approximately 65400 topic hierarchy separators
+    ('/' character)."
+
     Reference
     "CVE-2019-11779"
+
     PICS Selection PICS_BROKER_BASIC
 
     Initial conditions

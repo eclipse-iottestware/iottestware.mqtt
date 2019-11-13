@@ -6,7 +6,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_01
 
         Test objective
-        "Header flags in CONNECT Control Packet are reserved for future use"
+        "Verify that the IUT is able to send CONNECT Control Packets with valid Header Flags."
+
         Reference
         "[MQTT-2.2.2-1]"
 
@@ -28,6 +29,9 @@ Package mts_tst {
 
         Test objective
         "The protocol name representing the protocol is a UTF-8 encoded 'MQTT' string"
+        "Verify that the IUT is able to send CONNECT Control Packets with valid protocol name
+        represented by a UTF-8 encoded 'MQTT' string."
+
         Reference
         "[MQTT-3.1.2-1]"
 
@@ -48,8 +52,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_03
 
         Test objective
-        "The 8 bit unsigned value that represents the revision level of the protocol used by the Client. The value of the the Protocol
-        Level field for the version 3.1.1 of the protocol is 4 (0x04)"
+        "Verify that the IUT is able to send CONNECT Control Packets with Protocol Level 0x04 for MQTT 3.1.1"
+
         Reference
         "[MQTT-3.1.2-2]"
 
@@ -70,8 +74,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_04
 
         Test objective
-        "The Connect Flags byte contains a number of parameters specifying the behavior of the MQTT connection. It also indicates the
-        presence of absence of fields in the payload. The reserved flag MUST be set to 0"
+        "Verify that the IUT is able to send CONNECT Control Packets with valid reserved flag."
+
         Reference
         "[MQTT-3.1.2-3]"
 
@@ -94,8 +98,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_05
 
         Test objective
-        "If the Will Flag is set to 1, the Will QoS and Will Retain fields in the Connect Flags will be used by the Server,
-        and the Will Topic and Will Message fields MUST be present in the payload"
+        "Verify that the IUT is able to send CONNECT Control Packets with valid Last Will Testament settings."
+
+
         Reference
         "[MQTT-3.1.2-9], [MQTT-3.1.2-14]"
 
@@ -126,8 +131,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_06
 
         Test objective
-        "If the Will Flag is set to 0 the Will QoS and Will Retain fields in the Connect Flags MUST be
-        set to zero and the Will Topic and Will Message fields MUST NOT be present in the payload"
+        "Verify that the IUT is able to send CONNECT Control Packets without Last Will Testament."
+
         Reference
         "[MQTT-3.1.2-11], [MQTT-3.1.2-13], [MQTT-3.1.2-15]"
 
@@ -159,7 +164,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_07
 
         Test objective
-        "The User Name Flag and Password Flag control the payload containing the user name and password"
+        "Verify that the IUT is able to send CONNECT Control Packets with valid settings
+        for a connection without authentication."
+
         Reference
         "[MQTT-3.1.2-18], [MQTT-3.1.2-20], [MQTT-3.1.2-22]"
 
@@ -190,7 +197,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_08
 
         Test objective
-        "If the User Name Flag is set to 1, a user name MUST be present in the payload"
+        "Verify that the IUT is able to send CONNECT Control Packets with only a User Name."
+
         Reference
         "[MQTT-3.1.2-19]"
 
@@ -222,7 +230,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_09
 
         Test objective
-        "If the Password Flag is set to 1, a password MUST be present in the payload"
+        "Verify that the IUT is able to send CONNECT Control Packets with a User Name and Password."
+
         Reference
         "[MQTT-3.1.2-21], [MQTT-3.1.2-21]"
 
@@ -254,7 +263,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_10
 
         Test objective
-        "These fields, if present, MUST appear in the order Client Identifier, Will Topic, Will Message, User Name, Password"
+        "Verify that the IUT sends CONNECT Control Packets with Payload fields
+        appearing in a correct order."
+
         Reference
         "[MQTT-3.1.3-1]"
 
@@ -301,7 +312,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_11
 
         Test objective
-        "The ClientId MUST be a UTF-8 encoded string"
+        "Verify that the IUT is able to send CONNECT Control Packets with a
+        well-formed UTF-8 encoded client identifier.
+
         Reference
         "[MQTT-3.1.3-4], [MQTT-1.5.3-1]" //, [MQTT-1.5.3-2], [MQTT-1.5.3-3] // TODO: how to test 3-2 and 3-3?
 
@@ -328,7 +341,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_12
 
         Test objective
-        "If the Client supplies a zero-byte ClientId, the Client MUST also set CleanSession to 1"
+        "Verify that the IUT sets the clean_session flag to 1 if it connects
+        with a zero-byte client identifier."
+
         Reference
         "[MQTT-3.1.3-7]"
 
@@ -357,7 +372,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_13
 
         Test objective
-        "The Will Topic MUST be a UTF-8 encoded string"
+        "Verify that IUT encodes the Will Topic to well-formed UTF-8 encoded string."
+
         Reference
         "[MQTT-3.1.3-10]" //, [MQTT-1.5.3-2], [MQTT-1.5.3-3] // TODO: how to test 3-2 and 3-3?
 
@@ -390,7 +406,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_CONNECT_14
 
         Test objective
-        "The User name MUST be a UTF-8 encoded string"
+        "Verify that IUT encodes the User Name to well-formed UTF-8 encoded string."
+
         Reference
         "[MQTT-3.1.3-11]" //, [MQTT-1.5.3-2], [MQTT-1.5.3-3] // TODO: how to test 3-2 and 3-3?
 
@@ -423,7 +440,9 @@ Package mts_tst {
       TP Id TP_MQTT_Client_CONNACK_01
 
       Test objective
-      "The IUT MUST close the network connection if fixed header flags in CONNACK Control Packet are invalid"
+      "Verify that the IUT closes the network connection on receiption
+      of a CONNACK Control Packet with invalid fixed header."
+
       Reference
       "[MQTT-2.2.2-1], [MQTT-2.2.2-2], [MQTT-4.8.0-1]"
 
@@ -447,7 +466,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_01
 
         Test objective
-        "The DUP flag MUST be set to 0 for all QoS 0 messages"
+        "Verify that the IUT sets the DUP flag to 0 for all QoS 0 PUBLISH Control Packets."
+
         Reference
         "[MQTT-3.3.1-2]"
 
@@ -479,7 +499,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_02
 
         Test objective
-        "The DUP flag MUST be set to 0 for all QoS 1 messages"
+        "Verify that the IUT sets the DUP flag to 0 for all QoS 1 PUBLISH Control Packets."
+
         Reference
         "[MQTT-3.3.1-1]"
 
@@ -511,7 +532,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_03
 
         Test objective
-        "The DUP flag MUST be set to 0 for all QoS 2 messages"
+        "Verify that the IUT sets the DUP flag to 0 for all QoS 2 PUBLISH Control Packets."
+
         Reference
         "[MQTT-3.3.1-1]"
 
@@ -540,7 +562,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_04
 
         Test objective
-        "The Topic Name MUST be a UTF-8 encoded string and be present as the first field in the variable header"
+        "Verify that IUT encodes the topic name to a well-formed UTF-8 encoded string."
+
         Reference
         "[MQTT-3.3.2-1]"
 
@@ -566,7 +589,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_05
 
         Test objective
-        "The Topic Name in the PUBLISH Packet MUST NOT contain wildcard characters"
+        "Verify that the IUT does not send PUBLISH Control Packets which contain
+        only valid topic names without wildcard characters."
+
         Reference
         "[MQTT-3.3.2-2]"
 
@@ -592,7 +617,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_06
 
         Test objective
-        "The receiver of a PUBLISH with QoS 0 MUST NOT send any response"
+        "Verify that the IUT does not send any response on reception of a QoS level 0 PUBLISH Control Packet."
+
         Reference
         "[MQTT-3.3.4-1]"
 
@@ -622,7 +648,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_07
 
         Test objective
-        "The receiver of a PUBLISH packet with QoS 1 MUST response with a PUBACK packet"
+        "Verify that the IUT responds to a QoS level 1 PUBLISH Control Packet with a PUBACK Control Packet."
+
         Reference
         "[MQTT-3.3.4-1]"
 
@@ -654,7 +681,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_PUBLISH_08
 
         Test objective
-        "The receiver of a PUBLISH packet with QoS 2 MUST response with a PUBREC packet"
+        "Verify that the IUT responds to a QoS level 2 PUBLISH Control Packet
+        with a PUBREC Control Packet."
+
         Reference
         "[MQTT-3.3.4-1]"
 
@@ -686,7 +715,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBLISH_09
 
       Test objective
-      "Each time the IUT sends a new PUBLISH control packet with QoS > 0 it MUST assign a non-zero packet identifier"
+      "Verify that the IUT assigns a non-zero packet identifier on each new PUBLISH Control Packet
+      with QoS level > 0"
 
       Reference
       "[MQTT-2.3.1-1]"
@@ -715,7 +745,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBLISH_10
 
       Test objective
-      "Each time the IUT sends a new PUBLISH control packet with QoS > 0 it MUST assign a currently unused and non-zero packet identifier"
+      "Verify that the IUT assigns a currently unused packet identifier on each new PUBLISH Control Packet
+      with QoS level > 0"
 
       Reference
       "[MQTT-2.3.1-2]"
@@ -751,7 +782,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBLISH_11
 
       Test objective
-      "A PUBLISH Packet MUST NOT contain a packet identifier if its QoS value is set to 0"
+      "Verify that the IUT does not assign a packet identifier on PUBLISH Control Packet
+      with QoS level equals 0"
 
       Reference
       "[MQTT-2.3.1-5]"
@@ -780,7 +812,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBACK_01
 
       Test objective
-      "Header flags in PUBACK Control Packet are reserved for future use"
+      "Verify that the IUT is able to send PUBACK Control Packets with valid Header Flags."
+
       Reference
       "[MQTT-2.2.2-1]"
 
@@ -811,7 +844,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBACK_02
 
       Test objective
-      "A PUBACK packet MUST contain the same packet identifier as the PUBLISH packet that was originally sent"
+      "Verify that the IUT acknowledges a PUBLISH Control Packet with the correct packet identifier."
+
       Reference
       "[MQTT-2.3.1-6]"
 
@@ -843,7 +877,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBREC_01
 
       Test objective
-      "Header flags in PUBREC Control Packet are reserved for future use"
+      "Verify that the IUT is able to send PUBREC Control Packets with valid Header Flags."
+
       Reference
       "[MQTT-2.2.2-1]"
 
@@ -874,7 +909,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBREC_02
 
       Test objective
-      "A PUBREC packet MUST contain the same packet identifier as the PUBLISH packet that was originally sent"
+      "Verify that the IUT acknowledges a PUBLISH Control Packet with the correct packet identifier."
+
       Reference
       "[MQTT-2.3.1-6]"
 
@@ -906,7 +942,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBREL_01
 
       Test objective
-      "Header flags in PUBREL Control Packet are reserved for future use"
+      "Verify that the IUT is able to send PUBREL Control Packets with valid Header Flags."
+
       Reference
       "[MQTT-2.2.2-1]"
 
@@ -932,7 +969,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBREL_02
 
       Test objective
-      "A PUBREL packet MUST contain the same packet identifier as the PUBLISH packet that was originally sent"
+      "Verify that the IUT acknowledges a PUBREC Control Packet with the correct packet identifier with a PUBREL Control Packet."
+
       Reference
       "[MQTT-2.3.1-6]"
 
@@ -959,7 +997,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_PUBCOMP_01
 
       Test objective
-      "Header flags in PUBCOMP Control Packet are reserved for future use"
+      "Verify that the IUT is able to send PUBCOMP Control Packets with valid Header Flags."
+
       Reference
       "[MQTT-2.2.2-1]"
 
@@ -987,7 +1026,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_SUBSCRIBE_01
 
         Test objective
-        "Header flags in SUBSCRIBE Control Packet are reserved for future use"
+        "Verify that the IUT is able to send SUBSCRIBE Control Packets with valid Header Flags."
+
         Reference
         "[MQTT-2.2.2-1], [MQTT-3.8.1-1]"
 
@@ -1013,7 +1053,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_SUBSCRIBE_02
 
       Test objective
-      "Each time the IUT sends a SUBSCRIBE control packet it must contain a non-zero 16-bit packet identifier"
+      "Verify that the IUT assigns a non-zero packet identifier on each new
+      SUBSCRIBE Control Packet"
 
       Reference
       "[MQTT-2.3.1-2]"
@@ -1040,7 +1081,8 @@ Package mts_tst {
       TP Id TP_MQTT_Client_SUBSCRIBE_03
 
       Test objective
-      "Each time the IUT sends a new SUBSCRIBE control packet it MUST assign a currently unused and non-zero packet identifier"
+      "Verify that the IUT assigns a currently unsued packet identifier on each new
+      SUBSCRIBE Control Packet"
 
       Reference
       "[MQTT-2.3.1-2]"
@@ -1072,7 +1114,7 @@ Package mts_tst {
         TP Id TP_MQTT_Client_UNSUBSCRIBE_01
 
         Test objective
-        "Header flags in UNSUBSCRIBE Control Packet are reserved for future use"
+        "Verify that the IUT is able to send UNSUBSCRIBE Control Packets with valid Header Flags."
 
         Reference
         "[MQTT-2.2.2-1], [MQTT-3.10.1-1]"
@@ -1099,7 +1141,7 @@ Package mts_tst {
       TP Id TP_MQTT_Client_UNSUBSCRIBE_02
 
       Test objective
-      "The Topic Filters in an UNSUBSCRIBE packet MUST be UTF-8 encoded strings"
+      "Verify that IUT encodes the topic filter to a well-formed UTF-8 encoded string."
 
       Reference
       "[MQTT-3.10.3-1]"
@@ -1127,7 +1169,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_DISCONNECT_01
 
         Test objective
-        "Header flags in DISCONNECT Control Packet are reserved for future use"
+        "Verify that the IUT is able to send DISCONNECT Control Packets with valid Header Flags."
+
         Reference
         "[MQTT-2.2.2-1]"
 
@@ -1153,7 +1196,8 @@ Package mts_tst {
         TP Id TP_MQTT_Client_DISCONNECT_02
 
         Test objective
-        "After sending a DISCONNECT Packet the Client MUST close the Network Connection"
+        "Verify that the IUT closes the network connection after sending a DISCONNECT Control Packet."
+
         Reference
         "[MQTT-3.14.4-1]"
 
@@ -1180,7 +1224,9 @@ Package mts_tst {
         TP Id TP_MQTT_Client_FEAT_KEEPALIVE_01
 
         Test objective
-        "It is the responsibility of the Client to ensure that the interval between Control Packets being sent does not exceed the Keep Alive value."
+        "Verify that the IUT ensures that the interval
+        between Control Packets being sent does not exceed the Keep Alive value."
+
         Reference
         "[MQTT-3.1.2-23]"
 
