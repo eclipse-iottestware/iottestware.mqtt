@@ -24,7 +24,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_01()
@@ -35,7 +35,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_02()
@@ -49,7 +49,7 @@ group connectGroup
    *
    * @reference [MQTT-3.1.2-2]
    */
-  testcase TC_MQTT_Client_CONNECT_03() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_03() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_03()
@@ -62,7 +62,7 @@ group connectGroup
   *
   *           presence of absence of fields in the payload. The reserved flag MUST be set to 0"
   */
-  testcase TC_MQTT_Client_CONNECT_04() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_04() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_04()
@@ -73,7 +73,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_05() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_05() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_05()
@@ -84,7 +84,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_06() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_06() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_06()
@@ -95,7 +95,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_07() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_07() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_07()
@@ -106,7 +106,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_08() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_08() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_08()
@@ -117,7 +117,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_09() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_09() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_09()
@@ -128,7 +128,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_10() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_10() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_10()
@@ -139,7 +139,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_11() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_11() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_11()
@@ -150,7 +150,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_12() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_12() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_12()
@@ -161,7 +161,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_13() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_13() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_13()
@@ -172,7 +172,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNECT_14() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNECT_14() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNECT_14()
@@ -183,7 +183,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_CONNACK_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_CONNACK_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_CONNACK_01()
@@ -194,7 +194,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_01()
@@ -205,7 +205,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_02()
@@ -216,7 +216,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_03() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_03() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_03()
@@ -227,7 +227,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_04() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_04() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_04()
@@ -238,7 +238,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_05() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_05() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_05()
@@ -249,7 +249,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_06() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_06() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_06()
@@ -260,7 +260,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_07() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_07() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_07()
@@ -271,7 +271,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_08() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_08() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_08()
@@ -282,7 +282,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_09() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_09() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_09()
@@ -293,7 +293,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_10() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_10() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_10()
@@ -304,7 +304,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBLISH_11() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBLISH_11() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBLISH_11()
@@ -315,7 +315,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBACK_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBACK_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBACK_01()
@@ -326,7 +326,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBACK_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBACK_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBACK_02()
@@ -337,7 +337,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBREC_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBREC_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBREC_01()
@@ -348,7 +348,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBREC_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBREC_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBREC_02()
@@ -359,7 +359,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBREL_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBREL_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBREL_01()
@@ -370,7 +370,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBREL_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBREL_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBREL_02()
@@ -381,7 +381,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_PUBCOMP_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_PUBCOMP_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_PUBCOMP_01()
@@ -392,7 +392,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_SUBSCRIBE_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_SUBSCRIBE_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_SUBSCRIBE_01()
@@ -403,7 +403,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_SUBSCRIBE_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_SUBSCRIBE_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_SUBSCRIBE_02()
@@ -414,7 +414,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_SUBSCRIBE_03() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_SUBSCRIBE_03() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_SUBSCRIBE_03()
@@ -425,7 +425,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_UNSUBSCRIBE_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_UNSUBSCRIBE_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_UNSUBSCRIBE_01()
@@ -436,7 +436,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_UNSUBSCRIBE_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_UNSUBSCRIBE_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_UNSUBSCRIBE_02()
@@ -447,7 +447,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_DISCONNECT_01() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_DISCONNECT_01() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_DISCONNECT_01()
@@ -458,7 +458,7 @@ group connectGroup
   /*
   *
   */
-  testcase TC_MQTT_Client_DISCONNECT_02() runs on MQTT_Broker_MTC
+  testcase TC_MQTT_CLIENT_DISCONNECT_02() runs on MQTT_Broker_MTC
   {
     if(f_init_broker()) {
       f_MQTT_Client_DISCONNECT_02()
@@ -472,7 +472,7 @@ group connectGroup
    *
    * @reference [MQTT-3.1.2-23]
    */
-   testcase TC_MQTT_Client_FEAT_KEEPALIVE_01() runs on MQTT_Broker_MTC
+   testcase TC_MQTT_CLIENT_FEAT_KEEPALIVE_01() runs on MQTT_Broker_MTC
    {
      if(f_init_broker()) {
        f_MQTT_Client_FEAT_KEEPALIVE_01()

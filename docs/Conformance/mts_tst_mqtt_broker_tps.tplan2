@@ -3,7 +3,7 @@ Package mts_tst_mqtt {
   import all from mts_mqtt_commons;
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_001
+    TP Id TP_MQTT_BROKER_CONNECT_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in CONNECT Control Packet are invalid."
@@ -25,7 +25,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_002
+    TP Id TP_MQTT_BROKER_CONNECT_002
 
     Test objective
     "Verify that the IUT either disconnects the client or continues processing the CONNECT Control Packet if the protocol name does not correspond to 'MQTT'."
@@ -53,7 +53,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_003
+    TP Id TP_MQTT_BROKER_CONNECT_003
 
     Test objective
     "Verify that the IUT responds to supported protocol levels (in scope: MQTT-3.1.1) with the return code 0x00."
@@ -78,7 +78,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_004
+    TP Id TP_MQTT_BROKER_CONNECT_004
 
     Test objective
     "Verify that the IUT validates the reserved flags in the CONNECT Control Packet."
@@ -105,7 +105,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_005
+    TP Id TP_MQTT_BROKER_CONNECT_005
 
     Test objective
     "Verify that the IUT validates the will_topic and will_message fields if the will_flag is set to 1."
@@ -139,7 +139,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_006
+    TP Id TP_MQTT_BROKER_CONNECT_006
 
     Test objective
     "Verify that the IUT validates the the will_topic and will_message fields to be omitted if the will_flag is set to 0."
@@ -173,7 +173,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_007
+    TP Id TP_MQTT_BROKER_CONNECT_007
 
     Test objective
     "Verify that the IUT validates the will_qos field to be set to 0 if the will_flag is set to 0."
@@ -203,7 +203,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_008
+    TP Id TP_MQTT_BROKER_CONNECT_008
 
     Test objective
     "Verify that the IUT validates the will_qos field and rejects connections with an invalid will_qos value."
@@ -233,7 +233,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_009
+    TP Id TP_MQTT_BROKER_CONNECT_009
 
     Test objective
     "Verify that the IUT validates the will_qos field if the will_flag is set to 1."
@@ -264,7 +264,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_010
+    TP Id TP_MQTT_BROKER_CONNECT_010
 
     Test objective
     "Verify that the IUT validates the will_flag and will_retain flags to be set correctly."
@@ -298,7 +298,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_011
+    TP Id TP_MQTT_BROKER_CONNECT_011
 
     Test objective
     "Verify that the IUT validates the will_retain flag to be set to 0 if the will_flag is set to 0."
@@ -333,7 +333,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_012
+    TP Id TP_MQTT_BROKER_CONNECT_012
 
     Test objective
     "Verify that the IUT validates the password flag to be set to 0 if the user_name_flag is set to 0."
@@ -365,7 +365,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_013
+    TP Id TP_MQTT_BROKER_CONNECT_013
 
     Test objective
     "Verify that the IUT validates the username field to be omitted if the user_name_flag is set to 0."
@@ -401,7 +401,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_014
+    TP Id TP_MQTT_BROKER_CONNECT_014
 
     Test objective
     "Verify that the IUT validates a payload is present if the user_name_flag is set to 1."
@@ -437,7 +437,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_015
+    TP Id TP_MQTT_BROKER_CONNECT_015
 
     Test objective
     "Verify that the IUT validates the password field to be omitted if the password_flag is set to 0."
@@ -473,7 +473,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_016
+    TP Id TP_MQTT_BROKER_CONNECT_016
 
     Test objective
     "Verify that the IUT validates the password field to be present if the password_flag is set to 1."
@@ -509,7 +509,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_017
+    TP Id TP_MQTT_BROKER_CONNECT_017
 
     Test objective
     "Verify that the IUT validates the client_identifier to be between 1 and 23 UTF-8 encoded bytes in length."
@@ -545,7 +545,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_018
+    TP Id TP_MQTT_BROKER_CONNECT_018
 
     Test objective
     "Verify that the IUT validates the client_identifier to contain only alphanumeric characters [0-9a-zA-Z]."
@@ -581,7 +581,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_019
+    TP Id TP_MQTT_BROKER_CONNECT_019
 
     Test objective
     "Verify that the IUT accepts client_identifiers of zero byte length."
@@ -619,7 +619,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_020
+    TP Id TP_MQTT_BROKER_CONNECT_020
 
     Test objective
     "Verify that the IUT validates the client_identifier to be a well-formed UTF-8 encoded string."
@@ -655,7 +655,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_021
+    TP Id TP_MQTT_BROKER_CONNECT_021
 
     Test objective
     "Verify that the IUT validates the client_identifier to be a well-formed UTF-8 encoded string."
@@ -691,7 +691,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_022
+    TP Id TP_MQTT_BROKER_CONNECT_022
 
     Test objective
     "Verify that the IUT validates the will_topic to be a well-formed UTF-8 encoded string."
@@ -728,7 +728,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_023
+    TP Id TP_MQTT_BROKER_CONNECT_023
 
     Test objective
     "Verify that the IUT validates the will_topic to be a well-formed UTF-8 encoded string."
@@ -765,7 +765,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_024
+    TP Id TP_MQTT_BROKER_CONNECT_024
 
     Test objective
     "Verify that the IUT validates the will_topic to not contain single-level topic filters."
@@ -796,7 +796,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_025
+    TP Id TP_MQTT_BROKER_CONNECT_025
 
     Test objective
     "Verify that the IUT validates the will_topic to not contain multi-level topic filters."
@@ -827,7 +827,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_026
+    TP Id TP_MQTT_BROKER_CONNECT_026
 
     Test objective
     "Verify that the IUT validates the user_name to be a well-formed UTF-8 encoded string."
@@ -865,7 +865,7 @@ Package mts_tst_mqtt {
 
   // TODO: differentiate MQTT_USER_NAME_INVALID_UTF8 to distinguish from CONNECT_025
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_027
+    TP Id TP_MQTT_BROKER_CONNECT_027
 
     Test objective
     "Verify that the IUT validates the user_name to be a well-formed UTF-8 encoded string."
@@ -902,7 +902,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_028
+    TP Id TP_MQTT_BROKER_CONNECT_028
 
     Test objective
     "Verify that the IUT validates the first MQTT Control Packet sent from the client to the server after a TCP connection is a MQTT CONNECT."
@@ -928,7 +928,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_029
+    TP Id TP_MQTT_BROKER_CONNECT_029
 
     Test objective
     "Verify that the IUT detects multiple MQTT CONNECT Control Packets sent from a client within a single session as a protocol violation."
@@ -954,7 +954,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_030
+    TP Id TP_MQTT_BROKER_CONNECT_030
 
     Test objective
     "Verify that the IUT detects multiple clients with the same client_identifier and disconnects the existing client."
@@ -992,7 +992,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_031
+    TP Id TP_MQTT_BROKER_CONNECT_031
 
     Test objective
     "Verify that the IUT validates all topic names to be at least one character long."
@@ -1026,7 +1026,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNECT_032
+    TP Id TP_MQTT_BROKER_CONNECT_032
 
     Test objective
     "Verify that the IUT does not process any data sent by the client after a rejected CONNECT Control Packet."
@@ -1063,7 +1063,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_001
+    TP Id TP_MQTT_BROKER_CONNACK_001
 
     Test objective
     "Verify that the IUT replies with a CONNACK Control Packet with valid header flags."
@@ -1098,7 +1098,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_002
+    TP Id TP_MQTT_BROKER_CONNACK_002
 
     Test objective
     "Verify that the IUT responds to a CONNECT Control Packet with clean_session set to 1 with a CONNACK Control Packet with session_present_flag set to 0."
@@ -1137,7 +1137,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_003
+    TP Id TP_MQTT_BROKER_CONNACK_003
 
     Test objective
     "Verify that the IUT responds to a CONNECT Control Packet for a present session with a CONNACK Control Packet with session_present_flag set to 1."
@@ -1182,7 +1182,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_004
+    TP Id TP_MQTT_BROKER_CONNACK_004
 
     Test objective
     "Verify that the IUT responds to a CONNECT Control Packet with clean_session set to 1
@@ -1228,7 +1228,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_005
+    TP Id TP_MQTT_BROKER_CONNACK_005
 
     Test objective
     "Verify that the IUT responds to protocol levels which it does not support with return code 0x01."
@@ -1268,7 +1268,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_006
+    TP Id TP_MQTT_BROKER_CONNACK_006
 
     Test objective
     "Verify that the IUT responds to CONNECT Control Packets with a zero-byte client_identifier and clean_session set to 0
@@ -1310,7 +1310,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_007
+    TP Id TP_MQTT_BROKER_CONNACK_007
 
     Test objective
     "Verify that the IUT responds to a CONNECT Control Packet with a malformed user_name with CONNACK with connect_return_code set to 0x04."
@@ -1353,7 +1353,7 @@ Package mts_tst_mqtt {
   }
 
     Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_008
+    TP Id TP_MQTT_BROKER_CONNACK_008
 
     Test objective
     "Verify that the IUT responds to a CONNECT Control Packet with a invalid user_name with CONNACK with connect_return_code set to 0x05."
@@ -1396,7 +1396,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_009
+    TP Id TP_MQTT_BROKER_CONNACK_009
 
     Test objective
     "Verify that the IUT responds to a CONNECT Control Packet with a invalid password with CONNACK with connect_return_code set to 0x05."
@@ -1441,7 +1441,7 @@ Package mts_tst_mqtt {
   // TODO: possible to implement? TTCN-3 implementation returns always inconclusive here!
   // What is meant by unavailable and how should an unavailable MQTT service return a CONNACK?
   Test Purpose {
-    TP Id TP_MQTT_Broker_CONNACK_010
+    TP Id TP_MQTT_BROKER_CONNACK_010
 
     Test objective
     "Verify that the IUT responds with CONNECT with connect_return_code set to 0x03 if the MQTT service is unavailable."
@@ -1487,7 +1487,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_001
+    TP Id TP_MQTT_BROKER_PUBLISH_001
 
     Test objective
     "Verify that the IUT accepts only QoS 0 PUBLISH Control Packets with the dup_flag set to 0."
@@ -1517,7 +1517,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_002
+    TP Id TP_MQTT_BROKER_PUBLISH_002
 
     Test objective
     "Verify that the IUT accepts only PUBLISH Control Packets with a valid QoS level."
@@ -1546,7 +1546,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_003
+    TP Id TP_MQTT_BROKER_PUBLISH_003
 
     Test objective
     "Verify that the IUT validates the topic_name in a PUBLISH Control Packet to be a well-formed UTF-8 encoded string."
@@ -1573,7 +1573,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_004
+    TP Id TP_MQTT_BROKER_PUBLISH_004
 
     Test objective
     "Verify that the IUT validates the topic_name in a PUBLISH Control Packet to not contain multi-level wildcard characters."
@@ -1600,7 +1600,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_005
+    TP Id TP_MQTT_BROKER_PUBLISH_005
 
     Test objective
     "Verify that the IUT validates the topic_name in a PUBLISH Control Packet to not contain single-level wildcard characters."
@@ -1627,7 +1627,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_006
+    TP Id TP_MQTT_BROKER_PUBLISH_006
 
     Test objective
     "Verify that the IUT validates the topic_name in a PUBLISH Control Packet to be at least on character long."
@@ -1654,7 +1654,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_007
+    TP Id TP_MQTT_BROKER_PUBLISH_007
 
     Test objective
     "Verify that the IUT validates the topic_name in a PUBLISH Control Packet to not contain the null character (Unicode U+0000)."
@@ -1681,7 +1681,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_008
+    TP Id TP_MQTT_BROKER_PUBLISH_008
 
     Test objective
     "Verify that the IUT rejects QoS 0 PUBLISH Control Packets with the dup_flag set to 1."
@@ -1712,7 +1712,7 @@ Package mts_tst_mqtt {
 
   // TODO: does it make sense to test this conformance statement here?
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_009
+    TP Id TP_MQTT_BROKER_PUBLISH_009
 
     Test objective
     "Verify that the IUT validates a QoS 0 PUBLISH Control Packet to not contain a packet_identifier."
@@ -1742,7 +1742,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_010
+    TP Id TP_MQTT_BROKER_PUBLISH_010
 
     Test objective
     "Verify that the IUT validates a QoS 1 PUBLISH Control Packet to contain a non-zero 16-bit Packet Identifier."
@@ -1772,7 +1772,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_011
+    TP Id TP_MQTT_BROKER_PUBLISH_011
 
     Test objective
     "Verify that the IUT validates a QoS 2 PUBLISH Control Packet to contain a non-zero 16-bit Packet Identifier."
@@ -1802,7 +1802,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBLISH_012
+    TP Id TP_MQTT_BROKER_PUBLISH_012
 
     Test objective
     "Verify that the IUT handles not authorized PUBLISH Control Packets with either a positive PUBACK Control Packet or by closing the network connection."
@@ -1834,7 +1834,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBACK_001
+    TP Id TP_MQTT_BROKER_PUBACK_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in PUBACK Control Packet are invalid."
@@ -1879,7 +1879,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBACK_002
+    TP Id TP_MQTT_BROKER_PUBACK_002
 
     Test objective
     "Verify that the IUT sends PUBACK Control Packets in the order in which the corresponding QoS 1 PUBLISH Control Packets were received."
@@ -1921,7 +1921,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBREC_001
+    TP Id TP_MQTT_BROKER_PUBREC_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in PUBREC Control Packet are invalid."
@@ -1966,7 +1966,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBREC_002
+    TP Id TP_MQTT_BROKER_PUBREC_002
 
     Test objective
     "Verify that the IUT sends PUBREC Control Packets in the order in which the corresponding QoS 2 PUBLISH Control Packets were received."
@@ -2008,7 +2008,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBREL_001
+    TP Id TP_MQTT_BROKER_PUBREL_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in PUBREL Control Packet are invalid."
@@ -2045,7 +2045,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBREL_002
+    TP Id TP_MQTT_BROKER_PUBREL_002
 
     Test objective
     "Verify that the IUT sends PUBREL Control Packets in the order in which the corresponding PUBREC Control Packets were received."
@@ -2112,7 +2112,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PUBCOMP_001
+    TP Id TP_MQTT_BROKER_PUBCOMP_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in PUBCOMP Control Packet are invalid."
@@ -2162,7 +2162,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_001
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in SUBSCRIBE Control Packet are invalid."
@@ -2190,7 +2190,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_002
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_002
 
     Test objective
     "Verify that the IUT validates a SUBSCRIBE Control Packet to contain a non-zero 16-bit Packet Identifier."
@@ -2223,7 +2223,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_003
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_003
 
     Test objective
     "Verify that the IUT validates the topic_filter in a SUBSCRIBE Control Packet to be a well-formed UTF-8 encoded string and do not contain code points between U+D800 and U+DFFF."
@@ -2256,7 +2256,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_004
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_004
 
     Test objective
     "Verify that the IUT validates the topic_filter in a SUBSCRIBE Control Packet to be a well-formed UTF-8 encoded string and do not contain the null character (Unicode U+0000)."
@@ -2289,7 +2289,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_005
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_005
 
     Test objective
     "Verify that the IUT validates the topic_filter in a SUBSCRIBE Control Packet to be at least on character long."
@@ -2322,7 +2322,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_006
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_006
 
     Test objective
     "Verify that the IUT validates a SUBSCRIBE Control Packet to contain at least one topic filter/QoS pair."
@@ -2354,7 +2354,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_007
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_007
 
     Test objective
     "Verify that the IUT validates in a SUBSCRIBE Control Packet the upper 6 bits of a requested QoS byte (reserved bits) to be set to 0."
@@ -2388,7 +2388,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_008
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_008
 
     Test objective
     "Verify that the IUT validates the requested_qos field to be a valid QoS level."
@@ -2420,7 +2420,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_009
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_009
 
     Test objective
     "Verify that the IUT validates topic_filter field to be a valid multi-level Topic Fiilter."
@@ -2452,7 +2452,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_010
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_010
 
     Test objective
     "Verify that the IUT validates topic_filter field to be a valid single-level Topic Fiilter."
@@ -2484,7 +2484,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBSCRIBE_011
+    TP Id TP_MQTT_BROKER_SUBSCRIBE_011
 
     Test objective
     "Verify that the IUT allows topic_filter field to include the 'zero width no-break space character'"
@@ -2517,7 +2517,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBACK_001
+    TP Id TP_MQTT_BROKER_SUBACK_001
 
     Test objective
     "Verify that the IUT replies with a SUBACK Control Packet with valid header flags."
@@ -2546,7 +2546,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBACK_002
+    TP Id TP_MQTT_BROKER_SUBACK_002
 
     Test objective
     "Verify that the IUT replies with a SUBACK Control Packet containing a
@@ -2582,7 +2582,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBACK_003
+    TP Id TP_MQTT_BROKER_SUBACK_003
 
     Test objective
     "Verify that the IUT replies with a SUBACK Control Packet with a valid maximum QoS level."
@@ -2618,7 +2618,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBACK_004
+    TP Id TP_MQTT_BROKER_SUBACK_004
 
     Test objective
     "Verify that the IUT replies with a SUBACK Control Packet with a valid maximum QoS level."
@@ -2659,7 +2659,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBACK_005
+    TP Id TP_MQTT_BROKER_SUBACK_005
 
     Test objective
     "Verify that the IUT replies with a SUBACK Control Packet with a valid maximum QoS level."
@@ -2709,7 +2709,7 @@ Package mts_tst_mqtt {
   // see: https://github.com/erlio/vernemq/issues/72
   // see: https://groups.google.com/forum/#!topic/mqtt/ppdmL4-v2Yk
   Test Purpose {
-    TP Id TP_MQTT_Broker_SUBACK_006
+    TP Id TP_MQTT_BROKER_SUBACK_006
 
     Test objective
     "Verify that the IUT replies to a failed subscription with a SUBACK Control Packet with the return code 0x80."
@@ -2745,7 +2745,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBSCRIBE_001
+    TP Id TP_MQTT_BROKER_UNSUBSCRIBE_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in UNSUBSCRIBE Control Packet are invalid."
@@ -2774,7 +2774,7 @@ Package mts_tst_mqtt {
 
   // TODO: response/behavior not explicitly described in the specification
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBSCRIBE_002
+    TP Id TP_MQTT_BROKER_UNSUBSCRIBE_002
 
     Test objective
     "Verify that the IUT validates a UNSUBSCRIBE Control Packet to contain a non-zero 16-bit Packet Identifier."
@@ -2806,7 +2806,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBSCRIBE_003
+    TP Id TP_MQTT_BROKER_UNSUBSCRIBE_003
 
     Test objective
     "Verify that the IUT validates the topic_filter in a UNSUBSCRIBE Control Packet
@@ -2838,7 +2838,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBSCRIBE_004
+    TP Id TP_MQTT_BROKER_UNSUBSCRIBE_004
 
     Test objective
     "Verify that the IUT validates all topic filters to be at least one character long."
@@ -2869,7 +2869,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBSCRIBE_005
+    TP Id TP_MQTT_BROKER_UNSUBSCRIBE_005
 
     Test objective
     "Verify that the IUT validates the topic filter in a UNSUBSCRIBE Control Packet not to contain the null character (Unicode U+0000)."
@@ -2901,7 +2901,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBSCRIBE_006
+    TP Id TP_MQTT_BROKER_UNSUBSCRIBE_006
 
     Test objective
     "Verify that the IUT validates a UNSUBSCRIBE Control Packet to contain at least on topic filter."
@@ -2933,7 +2933,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBACK_001
+    TP Id TP_MQTT_BROKER_UNSUBACK_001
 
     Test objective
     "Verify that the IUT replies with an UNSUBACK Control Packet with valid header flags."
@@ -2962,7 +2962,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBACK_002
+    TP Id TP_MQTT_BROKER_UNSUBACK_002
 
     Test objective
     "Verify that the IUT replies with a UNSUBACK Control Packet containing a
@@ -2999,7 +2999,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBACK_003
+    TP Id TP_MQTT_BROKER_UNSUBACK_003
 
     Test objective
     "Verify that the IUT replies with an UNSUBACK Control Packet even if no topic subscriptions are deleted."
@@ -3033,7 +3033,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_UNSUBACK_004
+    TP Id TP_MQTT_BROKER_UNSUBACK_004
 
     Test objective
     "Verify that the IUT replies to UNSUBSCRIBE Control Packets with multiple topic filters
@@ -3069,7 +3069,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PINGREQ_001
+    TP Id TP_MQTT_BROKER_PINGREQ_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in PINGREQ Control Packet are invalid."
@@ -3097,7 +3097,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_PINGRESP_001
+    TP Id TP_MQTT_BROKER_PINGRESP_001
 
     Test objective
     "Verify that the IUT replies with a PINGRESP Control Packet with valid header flags."
@@ -3126,7 +3126,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_DISCONNECT_001
+    TP Id TP_MQTT_BROKER_DISCONNECT_001
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in DISCONNECT Control Packet are valid."
@@ -3153,7 +3153,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_DISCONNECT_002
+    TP Id TP_MQTT_BROKER_DISCONNECT_002
 
     Test objective
     "Verify that the IUT closes the network connection if fixed header flags in DISCONNECT Control Packet are valid."
@@ -3181,7 +3181,7 @@ Package mts_tst_mqtt {
 
   /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_REMLEN_001
+    TP Id TP_MQTT_BROKER_FEAT_REMLEN_001
 
     Test objective
     "Verify that the IUT forwards PUBLISH Control Packets with Remaining Length fields encoded in one byte."
@@ -3230,7 +3230,7 @@ Package mts_tst_mqtt {
 
   /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_REMLEN_002
+    TP Id TP_MQTT_BROKER_FEAT_REMLEN_002
 
     Test objective
     "Verify that the IUT forwards PUBLISH Control Packets with Remaining Length fields encoded in two bytes."
@@ -3279,7 +3279,7 @@ Package mts_tst_mqtt {
 
   /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_REMLEN_003
+    TP Id TP_MQTT_BROKER_FEAT_REMLEN_003
 
     Test objective
     "Verify that the IUT forwards PUBLISH Control Packets with Remaining Length fields encoded in three bytes."
@@ -3328,7 +3328,7 @@ Package mts_tst_mqtt {
 
   /* Note: remaining length does not have explicit conformance statements: reference section 2.2.3 within MQTT specification */
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_REMLEN_004
+    TP Id TP_MQTT_BROKER_FEAT_REMLEN_004
 
     Test objective
     "Verify that the IUT forwards PUBLISH Control Packets with Remaining Length fields encoded in four bytes."
@@ -3376,7 +3376,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_KEEPALIVE_001
+    TP Id TP_MQTT_BROKER_FEAT_KEEPALIVE_001
 
     Test objective
     "Verify that the IUT disconnects a client if it does not receive a Control Packet
@@ -3406,7 +3406,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_RTND_001
+    TP Id TP_MQTT_BROKER_FEAT_RTND_001
 
     Test objective
     "Verify that the IUT does not delete Retained Messages when a session with the corresponding client ends."
@@ -3446,7 +3446,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_RTND_002
+    TP Id TP_MQTT_BROKER_FEAT_RTND_002
 
     Test objective
     "Verify that the IUT stores Retained Messages for future deliveries."
@@ -3504,7 +3504,7 @@ Package mts_tst_mqtt {
 
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_RTND_003
+    TP Id TP_MQTT_BROKER_FEAT_RTND_003
 
     Test objective
     "Verify that the IUT sets the retain_flag to 0 when Retained Messages are delivered
@@ -3558,7 +3558,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_RTND_004
+    TP Id TP_MQTT_BROKER_FEAT_RTND_004
 
     Test objective
     "Verify that the IUT forwards Retained Messages with a zero-bytes payload."
@@ -3602,7 +3602,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_RTND_005
+    TP Id TP_MQTT_BROKER_FEAT_RTND_005
 
     Test objective
     "Verify that the IUT deletes a stored Retained Messages if it receives a new Retained Message with a zero-bytes payload."
@@ -3652,7 +3652,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_RTND_006
+    TP Id TP_MQTT_BROKER_FEAT_RTND_006
 
     Test objective
     "Verify that the IUT does neither store a Retained Message nor removes or
@@ -3710,7 +3710,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_RTND_007
+    TP Id TP_MQTT_BROKER_FEAT_RTND_007
 
     Test objective
     "Verify that the IUT stores Retained Messages with a QoS level of 0 for future deliveries.
@@ -3770,7 +3770,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_LWT_001
+    TP Id TP_MQTT_BROKER_FEAT_LWT_001
 
     Test objective
     "Verify that the IUT sends a Will Messages to subscribes if a client with LWT disconnects unexpectedly."
@@ -3811,7 +3811,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_LWT_002
+    TP Id TP_MQTT_BROKER_FEAT_LWT_002
 
     Test objective
     "Verify that the IUT deletes a Will Messages if the client with LWT disconnects
@@ -3850,7 +3850,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_LWT_003
+    TP Id TP_MQTT_BROKER_FEAT_LWT_003
 
     Test objective
     "Verify that the IUT sends no Will Message if a client without LWT disconnects unexpectedly."
@@ -3885,7 +3885,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_LWT_004
+    TP Id TP_MQTT_BROKER_FEAT_LWT_004
 
     Test objective
     "Verify that the IUT handles Will Messages with will_retain set to 1 as Retained Will Messages."
@@ -3931,7 +3931,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_LWT_005
+    TP Id TP_MQTT_BROKER_FEAT_LWT_005
 
     Test objective
     "Verify that the IUT handles Will Messages with will_retain set to 1 as non-retained Will Messages."
@@ -3974,7 +3974,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_001
+    TP Id TP_MQTT_BROKER_FEAT_PUBSUB_001
 
     Test objective
     "Verify that the IUT validates the UTF-8 encoded sequence 0xEF 0xBB 0xBF
@@ -4009,7 +4009,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_002
+    TP Id TP_MQTT_BROKER_FEAT_PUBSUB_002
 
     Test objective
     "Verify that the IUT validates the UTF-8 encoded sequence 0xEF 0xBB 0xBF
@@ -4045,7 +4045,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_003
+    TP Id TP_MQTT_BROKER_FEAT_PUBSUB_003
 
     Test objective
     "Verify that the IUT does not match topic filters starting with a multi-level wildcard character (#)
@@ -4078,7 +4078,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_004
+    TP Id TP_MQTT_BROKER_FEAT_PUBSUB_004
 
     Test objective
     "Verify that the IUT does not match topic filters starting with a single-level wildcard character (+)
@@ -4111,7 +4111,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_005
+    TP Id TP_MQTT_BROKER_FEAT_PUBSUB_005
 
     Test objective
     "Verify that the IUT does match topic names and filters beginning with a $ character."
@@ -4145,7 +4145,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_006
+    TP Id TP_MQTT_BROKER_FEAT_PUBSUB_006
 
     Test objective
     "Verify that the IUT resends PUBLISH Control Packets in the order in which
@@ -4226,7 +4226,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_PUBSUB_007
+    TP Id TP_MQTT_BROKER_FEAT_PUBSUB_007
 
     Test objective
     "Verify that the IUT resends PUBLISH Control Packets in the order in which
@@ -4307,7 +4307,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_QOS_001
+    TP Id TP_MQTT_BROKER_FEAT_QOS_001
 
     Test objective
     "Verify that the IUT delivers PUBLISH Control Packets (in case of overlapping topic filter)
@@ -4357,7 +4357,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_QOS_002
+    TP Id TP_MQTT_BROKER_FEAT_QOS_002
 
     Test objective
     "Verify that the IUT delivers PUBLISH Control Packets (in case of overlapping topic filter)
@@ -4407,7 +4407,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_QOS_003
+    TP Id TP_MQTT_BROKER_FEAT_QOS_003
 
     Test objective
     "Verify that the IUT delivers PUBLISH Control Packets (in case of overlapping topic filter)
@@ -4457,7 +4457,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_QOS_004
+    TP Id TP_MQTT_BROKER_FEAT_QOS_004
 
     Test objective
     "Verify that the IUT delivers PUBLISH Control Packets (in case of overlapping topic filter)
@@ -4501,7 +4501,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_FEAT_QOS_005
+    TP Id TP_MQTT_BROKER_FEAT_QOS_005
 
     Test objective
     "Verify that the IUT delivers PUBLISH Control Packets (in case of overlapping topic filter)
