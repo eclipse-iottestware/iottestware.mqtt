@@ -13,17 +13,6 @@
     <ReferencedProject name="TCCUsefulFunctions_CNL113472_Common" projectLocationURI="../../Libraries/TCCUsefulFunctions_CNL113472/TCCUsefulFunctions_CNL113472_Common.tpd"/>
   </ReferencedProjects>
   <Folders>
-    <FolderResource projectRelativePath="cfg" relativeURI="cfg"/>
-    <FolderResource projectRelativePath="cfg/oracle" relativeURI="cfg/oracle"/>
-    <FolderResource projectRelativePath="cfg/self_test" relativeURI="cfg/self_test"/>
-    <FolderResource projectRelativePath="cfg/templates" relativeURI="cfg/templates"/>
-    <FolderResource projectRelativePath="docs" relativeURI="docs"/>
-    <FolderResource projectRelativePath="docs/Conformance" relativeURI="docs/Conformance"/>
-    <FolderResource projectRelativePath="logs" relativeURI="logs"/>
-    <FolderResource projectRelativePath="logs/client_logs" relativeURI="logs/client_logs"/>
-    <FolderResource projectRelativePath="logs/fuzzing_logs" relativeURI="logs/fuzzing_logs"/>
-    <FolderResource projectRelativePath="logs/oracle_logs" relativeURI="logs/oracle_logs"/>
-    <FolderResource projectRelativePath="logs/selftest" relativeURI="logs/selftest"/>
     <FolderResource projectRelativePath="src" relativeURI="src"/>
     <FolderResource projectRelativePath="src/broker_testing" relativeURI="src/broker_testing"/>
     <FolderResource projectRelativePath="src/client_testing" relativeURI="src/client_testing"/>
@@ -36,37 +25,6 @@
     <FolderResource projectRelativePath="src/framework/utils" relativeURI="src/framework/utils"/>
   </Folders>
   <Files>
-    <FileResource projectRelativePath="CONTRIBUTING.md" relativeURI="CONTRIBUTING.md"/>
-    <FileResource projectRelativePath="GUIDELINES.md" relativeURI="GUIDELINES.md"/>
-    <FileResource projectRelativePath="LICENSE" relativeURI="LICENSE"/>
-    <FileResource projectRelativePath="MQTT_Summary.pdf" relativeURI="MQTT_Summary.pdf"/>
-    <FileResource projectRelativePath="README.md" relativeURI="README.md"/>
-    <FileResource projectRelativePath="cfg/broker_testing_01.cfg" relativeURI="cfg/broker_testing_01.cfg"/>
-    <FileResource projectRelativePath="cfg/broker_testing_fuzzing_01.cfg" relativeURI="cfg/broker_testing_fuzzing_01.cfg"/>
-    <FileResource projectRelativePath="cfg/oracle/broker_sut.cfg" relativeURI="cfg/oracle/broker_sut.cfg"/>
-    <FileResource projectRelativePath="cfg/oracle/client_ts.cfg" relativeURI="cfg/oracle/client_ts.cfg"/>
-    <FileResource projectRelativePath="cfg/self_test/sf_broker_01.cfg" relativeURI="cfg/self_test/sf_broker_01.cfg"/>
-    <FileResource projectRelativePath="cfg/self_test/sf_client_01.cfg" relativeURI="cfg/self_test/sf_client_01.cfg"/>
-    <FileResource projectRelativePath="cfg/templates/playground.cfg" relativeURI="cfg/templates/playground.cfg"/>
-    <FileResource projectRelativePath="docs/Conformance/mts_tst_mqtt_broker_tps.tplan2" relativeURI="docs/Conformance/mts_tst_mqtt_broker_tps.tplan2"/>
-    <FileResource projectRelativePath="docs/Conformance/mts_tst_mqtt_client_tps.tplan2" relativeURI="docs/Conformance/mts_tst_mqtt_client_tps.tplan2"/>
-    <FileResource projectRelativePath="docs/Conformance/mts_tst_mqtt_commons.tplan2" relativeURI="docs/Conformance/mts_tst_mqtt_commons.tplan2"/>
-    <FileResource projectRelativePath="fuzzing_proxy.sh" relativeURI="fuzzing_proxy.sh"/>
-    <FileResource projectRelativePath="iottestware.mqtt.tpd" relativeURI="iottestware.mqtt.tpd"/>
-    <FileResource projectRelativePath="logs/client_logs/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/client_logs/client_mqtt.alexander-VirtualBox-hc.log"/>
-    <FileResource projectRelativePath="logs/client_logs/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/client_logs/client_mqtt.alexander-VirtualBox-mtc.log"/>
-    <FileResource projectRelativePath="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-hc.log"/>
-    <FileResource projectRelativePath="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/fuzzing_logs/client_mqtt.alexander-VirtualBox-mtc.log"/>
-    <FileResource projectRelativePath="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-hc.log"/>
-    <FileResource projectRelativePath="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/oracle_logs/broker_mqtt.alexander-VirtualBox-mtc.log"/>
-    <FileResource projectRelativePath="logs/oracle_logs/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/oracle_logs/client_mqtt.alexander-VirtualBox-hc.log"/>
-    <FileResource projectRelativePath="logs/oracle_logs/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/oracle_logs/client_mqtt.alexander-VirtualBox-mtc.log"/>
-    <FileResource projectRelativePath="logs/selftest/broker_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/selftest/broker_mqtt.alexander-VirtualBox-hc.log"/>
-    <FileResource projectRelativePath="logs/selftest/broker_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/selftest/broker_mqtt.alexander-VirtualBox-mtc.log"/>
-    <FileResource projectRelativePath="logs/selftest/client_mqtt.alexander-VirtualBox-hc.log" relativeURI="logs/selftest/client_mqtt.alexander-VirtualBox-hc.log"/>
-    <FileResource projectRelativePath="logs/selftest/client_mqtt.alexander-VirtualBox-mtc.log" relativeURI="logs/selftest/client_mqtt.alexander-VirtualBox-mtc.log"/>
-    <FileResource projectRelativePath="oracle_broker_demo.sh" relativeURI="oracle_broker_demo.sh"/>
-    <FileResource projectRelativePath="selftest.sh" relativeURI="selftest.sh"/>
     <FileResource projectRelativePath="src/broker_testing/MQTT_Functions.ttcn" relativeURI="src/broker_testing/MQTT_Functions.ttcn"/>
     <FileResource projectRelativePath="src/broker_testing/MQTT_Client_Behaviors.ttcn" relativeURI="src/broker_testing/MQTT_Client_Behaviors.ttcn"/>
     <FileResource projectRelativePath="src/broker_testing/MQTT_Pixits.ttcn" relativeURI="src/broker_testing/MQTT_Pixits.ttcn"/>
@@ -133,7 +91,6 @@
     <FileResource projectRelativePath="src/framework/utils/UTF8_Helper.ttcn" relativeURI="src/framework/utils/UTF8_Helper.ttcn"/>
     <FileResource projectRelativePath="src/framework/utils/Data.payload" relativeURI="src/framework/utils/Data.payload"/>
     <FileResource projectRelativePath="src/framework/utils/Random_Helper.ttcn" relativeURI="src/framework/utils/Random_Helper.ttcn"/>
-    <FileResource projectRelativePath="start_mqtt_fuzzing.py" relativeURI="start_mqtt_fuzzing.py"/>
   </Files>
   <ActiveConfiguration>Default</ActiveConfiguration>
   <Configurations>
