@@ -9,18 +9,18 @@ Package mts_tst_mqtt {
   }
 
   Data {
-    UTF8String TOPIC_FILTER_SEC_CVE_01;  // topic filter used in TP_MQTT_Broker_SEC_CVE_001
+    UTF8String TOPIC_FILTER_SEC_CVE_01;  // topic filter used in TP_MQTT_BROKER_SEC_CVE_001
     Int16 TOPIC_FILTER_LEN_SEC_CVE_01;   // corresponds to lengthof(TOPIC_FILTER_SEC_CVE_01) + 1
 
-    UTF8String TOPIC_NAME_SEC_CVE_02;  // topic name used in TP_MQTT_Broker_SEC_CVE_002: e.g. $TEST
+    UTF8String TOPIC_NAME_SEC_CVE_02;  // topic name used in TP_MQTT_BROKER_SEC_CVE_002: e.g. $TEST
 
     Int16 PX_PROBE_CON_KEEP_ALIVE;       // the Keep alive time the PROBE_CLIENT should stay connected
 
-    UTF8String TOPIC_FILTER_SEC_CVE_03;  // topic filter used in TP_MQTT_Broker_SEC_CVE_03
+    UTF8String TOPIC_FILTER_SEC_CVE_03;  // topic filter used in TP_MQTT_BROKER_SEC_CVE_03
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SEC_CVE_001
+    TP Id TP_MQTT_BROKER_SEC_CVE_001
 
     Test objective
     "Verify that the IUT does not crash on reception of a malformed SUBSCRIBE Control Packet."
@@ -55,7 +55,7 @@ Package mts_tst_mqtt {
   *       However, CONNECT also contains a topic (will_topic). This one might be also checked
   */
   Test Purpose {
-    TP Id TP_MQTT_Broker_SEC_CVE_002
+    TP Id TP_MQTT_BROKER_SEC_CVE_002
 
     Test objective
     "Verify that the IUT does not crash on reception of a malformed PUBLISH Control Packet having topic names prefixed with '$SYS'."
@@ -86,7 +86,7 @@ Package mts_tst_mqtt {
   }
 
   Test Purpose {
-    TP Id TP_MQTT_Broker_SEC_CVE_003
+    TP Id TP_MQTT_BROKER_SEC_CVE_003
 
     Test objective
     "Verify that the IUT does not crash on reception of a SUBSCRIBE Control Packet
