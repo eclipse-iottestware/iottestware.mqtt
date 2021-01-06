@@ -3,7 +3,7 @@ Package mts_tst {
     import all from mts_mqtt_commons;
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_01
+        TP Id TP_MQTT_CLIENT_CONNECT_001
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with valid Header Flags."
@@ -25,7 +25,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_02
+        TP Id TP_MQTT_CLIENT_CONNECT_002
 
         Test objective
         "The protocol name representing the protocol is a UTF-8 encoded 'MQTT' string"
@@ -49,7 +49,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_03
+        TP Id TP_MQTT_CLIENT_CONNECT_003
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with Protocol Level 0x04 for MQTT 3.1.1"
@@ -71,7 +71,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_04
+        TP Id TP_MQTT_CLIENT_CONNECT_004
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with valid reserved flag."
@@ -95,7 +95,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_05
+        TP Id TP_MQTT_CLIENT_CONNECT_005
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with valid Last Will Testament settings."
@@ -128,7 +128,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_06
+        TP Id TP_MQTT_CLIENT_CONNECT_006
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets without Last Will Testament."
@@ -161,7 +161,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_07
+        TP Id TP_MQTT_CLIENT_CONNECT_007
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with valid settings
@@ -194,7 +194,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_08
+        TP Id TP_MQTT_CLIENT_CONNECT_008
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with only a User Name."
@@ -227,7 +227,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_09
+        TP Id TP_MQTT_CLIENT_CONNECT_009
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with a User Name and Password."
@@ -260,7 +260,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_10
+        TP Id TP_MQTT_CLIENT_CONNECT_010
 
         Test objective
         "Verify that the IUT sends CONNECT Control Packets with Payload fields
@@ -309,7 +309,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_11
+        TP Id TP_MQTT_CLIENT_CONNECT_011
 
         Test objective
         "Verify that the IUT is able to send CONNECT Control Packets with a
@@ -338,7 +338,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_12
+        TP Id TP_MQTT_CLIENT_CONNECT_012
 
         Test objective
         "Verify that the IUT sets the clean_session flag to 1 if it connects
@@ -369,7 +369,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_13
+        TP Id TP_MQTT_CLIENT_CONNECT_013
 
         Test objective
         "Verify that IUT encodes the Will Topic to well-formed UTF-8 encoded string."
@@ -403,7 +403,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_CONNECT_14
+        TP Id TP_MQTT_CLIENT_CONNECT_014
 
         Test objective
         "Verify that IUT encodes the User Name to well-formed UTF-8 encoded string."
@@ -437,7 +437,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_CONNACK_01
+      TP Id TP_MQTT_CLIENT_CONNACK_001
 
       Test objective
       "Verify that the IUT closes the network connection on receiption
@@ -465,7 +465,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_01
+        TP Id TP_MQTT_CLIENT_PUBLISH_001
 
         Test objective
         "Verify that the IUT sets the DUP flag to 0 for all QoS 0 PUBLISH Control Packets."
@@ -498,7 +498,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_02
+        TP Id TP_MQTT_CLIENT_PUBLISH_002
 
         Test objective
         "Verify that the IUT sets the DUP flag to 0 for all QoS 1 PUBLISH Control Packets."
@@ -531,7 +531,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_03
+        TP Id TP_MQTT_CLIENT_PUBLISH_003
 
         Test objective
         "Verify that the IUT sets the DUP flag to 0 for all QoS 2 PUBLISH Control Packets."
@@ -561,7 +561,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_04
+        TP Id TP_MQTT_CLIENT_PUBLISH_004
 
         Test objective
         "Verify that IUT encodes the topic name to a well-formed UTF-8 encoded string."
@@ -588,7 +588,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_05
+        TP Id TP_MQTT_CLIENT_PUBLISH_005
 
         Test objective
         "Verify that the IUT does not send PUBLISH Control Packets which contain
@@ -616,7 +616,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_06
+        TP Id TP_MQTT_CLIENT_PUBLISH_006
 
         Test objective
         "Verify that the IUT does not send any response on reception of a QoS level 0 PUBLISH Control Packet."
@@ -647,7 +647,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_07
+        TP Id TP_MQTT_CLIENT_PUBLISH_007
 
         Test objective
         "Verify that the IUT responds to a QoS level 1 PUBLISH Control Packet with a PUBACK Control Packet."
@@ -680,7 +680,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_PUBLISH_08
+        TP Id TP_MQTT_CLIENT_PUBLISH_008
 
         Test objective
         "Verify that the IUT responds to a QoS level 2 PUBLISH Control Packet
@@ -714,7 +714,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBLISH_09
+      TP Id TP_MQTT_CLIENT_PUBLISH_009
 
       Test objective
       "Verify that the IUT assigns a non-zero packet identifier on each new PUBLISH Control Packet
@@ -744,7 +744,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBLISH_10
+      TP Id TP_MQTT_CLIENT_PUBLISH_010
 
       Test objective
       "Verify that the IUT assigns a currently unused packet identifier on each new PUBLISH Control Packet
@@ -781,7 +781,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBLISH_11
+      TP Id TP_MQTT_CLIENT_PUBLISH_011
 
       Test objective
       "Verify that the IUT does not assign a packet identifier on PUBLISH Control Packet
@@ -811,7 +811,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBACK_01
+      TP Id TP_MQTT_CLIENT_PUBACK_001
 
       Test objective
       "Verify that the IUT is able to send PUBACK Control Packets with valid Header Flags."
@@ -843,7 +843,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBACK_02
+      TP Id TP_MQTT_CLIENT_PUBACK_002
 
       Test objective
       "Verify that the IUT acknowledges a PUBLISH Control Packet with the correct packet identifier."
@@ -876,7 +876,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBREC_01
+      TP Id TP_MQTT_CLIENT_PUBREC_001
 
       Test objective
       "Verify that the IUT is able to send PUBREC Control Packets with valid Header Flags."
@@ -908,7 +908,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBREC_02
+      TP Id TP_MQTT_CLIENT_PUBREC_002
 
       Test objective
       "Verify that the IUT acknowledges a PUBLISH Control Packet with the correct packet identifier."
@@ -941,7 +941,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBREL_01
+      TP Id TP_MQTT_CLIENT_PUBREL_001
 
       Test objective
       "Verify that the IUT is able to send PUBREL Control Packets with valid Header Flags."
@@ -968,7 +968,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBREL_02
+      TP Id TP_MQTT_CLIENT_PUBREL_002
 
       Test objective
       "Verify that the IUT acknowledges a PUBREC Control Packet with the correct packet identifier with a PUBREL Control Packet."
@@ -996,7 +996,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_PUBCOMP_01
+      TP Id TP_MQTT_CLIENT_PUBCOMP_001
 
       Test objective
       "Verify that the IUT is able to send PUBCOMP Control Packets with valid Header Flags."
@@ -1025,7 +1025,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_SUBSCRIBE_01
+        TP Id TP_MQTT_CLIENT_SUBSCRIBE_001
 
         Test objective
         "Verify that the IUT is able to send SUBSCRIBE Control Packets with valid Header Flags."
@@ -1052,7 +1052,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_SUBSCRIBE_02
+      TP Id TP_MQTT_CLIENT_SUBSCRIBE_002
 
       Test objective
       "Verify that the IUT assigns a non-zero packet identifier on each new
@@ -1080,7 +1080,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_SUBSCRIBE_03
+      TP Id TP_MQTT_CLIENT_SUBSCRIBE_003
 
       Test objective
       "Verify that the IUT assigns a currently unsued packet identifier on each new
@@ -1113,7 +1113,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_UNSUBSCRIBE_01
+        TP Id TP_MQTT_CLIENT_UNSUBSCRIBE_001
 
         Test objective
         "Verify that the IUT is able to send UNSUBSCRIBE Control Packets with valid Header Flags."
@@ -1140,7 +1140,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-      TP Id TP_MQTT_CLIENT_UNSUBSCRIBE_02
+      TP Id TP_MQTT_CLIENT_UNSUBSCRIBE_002
 
       Test objective
       "Verify that IUT encodes the topic filter to a well-formed UTF-8 encoded string."
@@ -1168,7 +1168,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_DISCONNECT_01
+        TP Id TP_MQTT_CLIENT_DISCONNECT_001
 
         Test objective
         "Verify that the IUT is able to send DISCONNECT Control Packets with valid Header Flags."
@@ -1195,7 +1195,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_DISCONNECT_02
+        TP Id TP_MQTT_CLIENT_DISCONNECT_002
 
         Test objective
         "Verify that the IUT closes the network connection after sending a DISCONNECT Control Packet."
@@ -1223,7 +1223,7 @@ Package mts_tst {
     }
 
     Test Purpose {
-        TP Id TP_MQTT_CLIENT_FEAT_KEEPALIVE_01
+        TP Id TP_MQTT_CLIENT_FEAT_KEEPALIVE_001
 
         Test objective
         "Verify that the IUT ensures that the interval
